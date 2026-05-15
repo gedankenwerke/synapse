@@ -62,6 +62,7 @@
     "transaction": "Transaction",
     "apiKeys": "API Keys",
     "customerSettlement": "Customer Settlement",
+    "payAgent": "Pay Agent",
     "userManagement": "User Management"
   },
   "breadcrumb": {
@@ -72,6 +73,7 @@
     "transaction": "Transaction",
     "apiKeys": "API Keys",
     "customerSettlement": "Customer Settlement",
+    "payAgent": "Pay Agent",
     "userManagement": "User Management",
     "transactions": "Transactions",
     "page": "Page"
@@ -355,6 +357,39 @@
       "bankTypeRequired": "Bank type is required",
       "accountNumberRequired": "Account number is required",
       "amountGreaterThanZero": "Amount must be greater than 0"
+    }
+  },
+  "payAgent": {
+    "title": "Pay Agent",
+    "success": {
+      "created": "Pay agent created successfully"
+    },
+    "form": {
+      "clientidaddLabel": "Client ID",
+      "clientidaddPlaceholder": "Enter client ID",
+      "parentclientLabel": "Parent Client",
+      "parentclientPlaceholder": "Enter parent client ID",
+      "secretLabel": "Secret",
+      "secretPlaceholder": "Enter secret key",
+      "aglevelLabel": "Agent Level",
+      "aglevelPlaceholder": "Optional, e.g. 1",
+      "submit": "Create Pay Agent",
+      "processing": "Creating..."
+    },
+    "result": {
+      "successTitle": "Pay Agent Created",
+      "clientId": "Client ID",
+      "adminId": "Admin ID",
+      "adminPassword": "Admin Password",
+      "apiEndpoint": "API Endpoint",
+      "key": "Key",
+      "callbackKey": "Callback Key",
+      "securityWarning": "Save these credentials securely. You will not be able to see the password again."
+    },
+    "validation": {
+      "clientidaddRequired": "Client ID is required",
+      "parentclientRequired": "Parent client is required",
+      "secretRequired": "Secret is required"
     }
   },
   "userManagement": {

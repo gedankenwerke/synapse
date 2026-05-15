@@ -11,6 +11,7 @@ import {
   IconBuildingBank,
   IconUsers,
   IconScale,
+  IconRobot,
 } from "@tabler/icons-react";
 
 const navItems = [
@@ -20,6 +21,7 @@ const navItems = [
   { labelKey: "transaction", icon: IconArrowsExchange, href: "/deposits-withdrawals" },
   { labelKey: "apiKeys", icon: IconKey, href: "/api-keys" },
   { labelKey: "customerSettlement", icon: IconBuildingBank, href: "/customer-settlement" },
+  { labelKey: "payAgent", icon: IconRobot, href: "/pay-agent" },
   { labelKey: "userManagement", icon: IconUsers, href: "/user-management" },
 ] as const;
 

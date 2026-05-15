@@ -62,6 +62,7 @@
     "transaction": "ธุรกรรม",
     "apiKeys": "API Keys",
     "customerSettlement": "การชำระเงินลูกค้า",
+    "payAgent": "Pay Agent",
     "userManagement": "จัดการผู้ใช้"
   },
   "breadcrumb": {
@@ -72,6 +73,7 @@
     "transaction": "ธุรกรรม",
     "apiKeys": "API Keys",
     "customerSettlement": "การชำระเงินลูกค้า",
+    "payAgent": "Pay Agent",
     "userManagement": "จัดการผู้ใช้",
     "transactions": "ธุรกรรม",
     "page": "หน้า"
@@ -355,6 +357,39 @@
       "bankTypeRequired": "ต้องเลือกธนาคาร",
       "accountNumberRequired": "ต้องระบุเลขบัญชี",
       "amountGreaterThanZero": "จำนวนเงินต้องมากกว่า 0"
+    }
+  },
+  "payAgent": {
+    "title": "Pay Agent",
+    "success": {
+      "created": "สร้าง Pay Agent สำเร็จ"
+    },
+    "form": {
+      "clientidaddLabel": "รหัสลูกค้า",
+      "clientidaddPlaceholder": "กรอกรหัสลูกค้า",
+      "parentclientLabel": "Parent Client",
+      "parentclientPlaceholder": "กรอกรหัส Parent Client",
+      "secretLabel": "Secret",
+      "secretPlaceholder": "กรอก Secret Key",
+      "aglevelLabel": "ระดับ Agent",
+      "aglevelPlaceholder": "ไม่บังคับ เช่น 1",
+      "submit": "สร้าง Pay Agent",
+      "processing": "กำลังสร้าง..."
+    },
+    "result": {
+      "successTitle": "สร้าง Pay Agent สำเร็จ",
+      "clientId": "Client ID",
+      "adminId": "Admin ID",
+      "adminPassword": "Admin Password",
+      "apiEndpoint": "API Endpoint",
+      "key": "Key",
+      "callbackKey": "Callback Key",
+      "securityWarning": "กรุณาบันทึกข้อมูลเหล่านี้ให้ปลอดภัย คุณจะไม่สามารถดูรหัสผ่านนี้ได้อีก"
+    },
+    "validation": {
+      "clientidaddRequired": "ต้องระบุรหัสลูกค้า",
+      "parentclientRequired": "ต้องระบุ Parent Client",
+      "secretRequired": "ต้องระบุ Secret"
     }
   },
   "userManagement": {
