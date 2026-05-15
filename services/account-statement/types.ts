@@ -24,6 +24,74 @@ export interface BankStatementItem {
   update_date: string;
 }
 
+export interface ApiBankStatementItem {
+  ClientID: string;
+  AcctID: number;
+  Trno: number;
+  Trdate: string;
+  OrigRqUID: string;
+  TransDate: string;
+  AcctBank: string;
+  AcctNo: string;
+  TransName: string;
+  Channel: string;
+  TransType: BankTransType;
+  NameTH: string;
+  NameEN: string;
+  Amount: number;
+  AcctAvail: number;
+  UClientID: string;
+  ReqTransID: number;
+  DPwdTransID: number;
+  Status: number;
+  CreateDate: string;
+  UpdateDate: string;
+}
+
+export function mapApiBankStatementItem(api: ApiBankStatementItem): BankStatementItem {
+  return {
+    client_id: api.ClientID,
+    acct_id: api.AcctID,
+    trno: api.Trno,
+    trdate: api.Trdate,
+    orig_rq_uid: api.OrigRqUID,
+    trans_date: api.TransDate,
+    acct_bank: api.AcctBank,
+    acct_no: api.AcctNo,
+    trans_name: api.TransName,
+    channel: api.Channel,
+    trans_type: api.TransType,
+    name_th: api.NameTH,
+    name_en: api.NameEN,
+    amount: api.Amount,
+    acct_avail: api.AcctAvail,
+    u_client_id: api.UClientID,
+    req_trans_id: api.ReqTransID,
+    dpwd_trans_id: api.DPwdTransID,
+    status: api.Status,
+    create_date: api.CreateDate,
+    update_date: api.UpdateDate,
+  };
+}
+
+export interface ApiBankStatementPage {
+  Before: string;
+  After: string;
+  Limit: number;
+  Items: ApiBankStatementItem[];
+  Header: Record<string, unknown>;
+}
+
+export function mapApiBankStatementPage(api: ApiBankStatementPage): BankStatementPage {
+  return {
+    before: api.Before,
+    after: api.After,
+    limit: api.Limit,
+    items: api.Items.map(mapApiBankStatementItem),
+    header: api.Header,
+  };
+}
+
 export interface BankStatementPage {
   before: string;
   after: string;

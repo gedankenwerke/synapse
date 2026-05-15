@@ -1,13 +1,13 @@
 import httpClient from "@/libs/axios";
-import { BankStatementRequest, BankStatementPage } from "./types";
+import { BankStatementRequest, BankStatementPage, ApiBankStatementPage, mapApiBankStatementPage } from "./types";
 import { ResponseWrapper } from "@/types/response";
 
 export const accountStatement = {
   fetchPage: async (payload: BankStatementRequest): Promise<BankStatementPage> => {
-    const response = await httpClient.post<ResponseWrapper<BankStatementPage>>(
+    const response = await httpClient.post<ResponseWrapper<ApiBankStatementPage>>(
       "/api/v1/search-bank-statement",
       payload
     );
-    return (response as unknown as ResponseWrapper<BankStatementPage>).data;
+    return mapApiBankStatementPage((response as unknown as ResponseWrapper<ApiBankStatementPage>).data);
   },
 };
