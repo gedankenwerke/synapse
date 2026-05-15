@@ -9,6 +9,7 @@ export type LoginRequestUser = {
     created_at: string;
     updated_at: string;
     tenant_id: string;
+    isSuperAdmin: boolean;
 };
 
 export type LoginRequestResponse = {

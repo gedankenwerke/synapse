@@ -1,6 +1,6 @@
-import httpClient from "../libs/axios";
-import { SettlementRequest, SettlementResponse } from "./settlement.types";
-import { ResponseWrapper } from "../types/response";
+import httpClient from "@/libs/axios";
+import { SettlementRequest, SettlementResponse } from "./types";
+import { ResponseWrapper } from "@/types/response";
 
 export const settlement = {
   create: async (payload: SettlementRequest): Promise<SettlementResponse> => {

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import Cookies from "js-cookie";
-import { LoginRequestUser } from "../services/authentication.types";
+import { LoginRequestUser } from "../services/authentication/types";
 
 const COOKIE_NAME = "auth_token";
 const COOKIE_MAX_AGE_DAYS = 7;
@@ -14,6 +14,7 @@ interface AppState {
   user: LoginRequestUser | null;
   token: string | null;
   isAuthenticated: boolean;
+  isSuperAdmin: boolean;
 
   setLogin: (token: string, user: LoginRequestUser) => void;
   setLogout: () => void;
@@ -50,6 +51,7 @@ export const useAppStore = create<AppState>()(
       user: null,
       token: null,
       isAuthenticated: false,
+      isSuperAdmin: false,
 
       setLogin: (token, user) => {
         const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
@@ -59,12 +61,12 @@ export const useAppStore = create<AppState>()(
           sameSite: "Strict",
           ...(isSecure && { secure: true }),
         });
-        set({ token, user, isAuthenticated: true });
+        set({ token, user, isAuthenticated: true, isSuperAdmin: user.isSuperAdmin });
       },
 
       setLogout: () => {
         Cookies.remove(COOKIE_NAME, { path: "/" });
-        set({ token: null, user: null, isAuthenticated: false });
+        set({ token: null, user: null, isAuthenticated: false, isSuperAdmin: false });
       },
     }),
     {

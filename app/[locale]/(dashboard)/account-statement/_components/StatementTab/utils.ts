@@ -1,4 +1,4 @@
-import type { BankStatementItem } from "@/services/account-statement.types";
+import type { BankStatementItem } from "@/services/account-statement/types";
 
 export function formatBaht(amount: number): string {
   return `฿ ${amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Drawer, ScrollArea, Divider, Button, Group, Stack, Loader, Center } from "@mantine/core";
 import { ProfileForm, type ProfileFormHandle } from "./ProfileForm";
 import { AssignmentManager } from "./AssignmentManager";
-import type { UserData, AssignmentData } from "@/services/user.types";
+import type { UserData, AssignmentData } from "@/services/user/types";
 
 interface EditUserDrawerProps {
   opened: boolean;

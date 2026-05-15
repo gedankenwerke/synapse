@@ -5,7 +5,7 @@ import { Container, Stack, Text, Transition } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
 import { payAgent } from "@/services/pay-agent";
-import type { PayAgentResponse } from "@/services/pay-agent.types";
+import type { PayAgentResponse } from "@/services/pay-agent/types";
 import { PayAgentForm } from "./_components/PayAgentTab/PayAgentForm";
 import { PayAgentResult } from "./_components/PayAgentTab/PayAgentResult";
 

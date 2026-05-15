@@ -1,12 +1,12 @@
-import httpClient from "../libs/axios";
+import httpClient from "@/libs/axios";
 import type {
   UserListParams,
   CreateUserPayload,
   UpdateUserPayload,
   User,
   PaginatedUserResponse,
-} from "./user.types";
-import { ResponseWrapper } from "../types/response";
+} from "./types";
+import { ResponseWrapper } from "@/types/response";
 
 export const userService = {
   list: async (params: UserListParams): Promise<PaginatedUserResponse> => {

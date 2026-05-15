@@ -5,7 +5,7 @@ import { Container, Group, Loader, Stack, Text, Transition } from "@mantine/core
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
-import type { TransactionItem } from "@/services/transaction.types";
+import type { TransactionItem } from "@/services/transaction/types";
 import { TransactionToolbar } from "./_components/TransactionTab/TransactionToolbar";
 import { TransactionTable } from "./_components/TransactionTab/TransactionTable";
 import { TransactionDetailModal } from "./_components/TransactionTab/TransactionModals";

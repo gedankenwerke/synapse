@@ -1,6 +1,6 @@
-import httpClient from "../libs/axios";
-import { BankStatementRequest, BankStatementPage } from "./account-statement.types";
-import { ResponseWrapper } from "../types/response";
+import httpClient from "@/libs/axios";
+import { BankStatementRequest, BankStatementPage } from "./types";
+import { ResponseWrapper } from "@/types/response";
 
 export const accountStatement = {
   fetchPage: async (payload: BankStatementRequest): Promise<BankStatementPage> => {

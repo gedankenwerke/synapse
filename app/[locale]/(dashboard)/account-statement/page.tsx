@@ -5,7 +5,7 @@ import { Container, Group, Loader, Stack, Text, Transition } from "@mantine/core
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
-import type { BankStatementItem } from "@/services/account-statement.types";
+import type { BankStatementItem } from "@/services/account-statement/types";
 import { StatementToolbar } from "./_components/StatementTab/StatementToolbar";
 import { StatementTable } from "./_components/StatementTab/StatementTable";
 import { StatementDetailModal } from "./_components/StatementTab/StatementModals";

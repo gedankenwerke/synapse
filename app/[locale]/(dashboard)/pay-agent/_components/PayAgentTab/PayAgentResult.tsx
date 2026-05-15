@@ -15,7 +15,7 @@ import {
 } from "@mantine/core";
 import { IconCheck, IconCopy } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import type { PayAgentResponse } from "@/services/pay-agent.types";
+import type { PayAgentResponse } from "@/services/pay-agent/types";
 
 interface PayAgentResultProps {
   result: PayAgentResponse;
