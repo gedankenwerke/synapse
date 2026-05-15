@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   Badge,
@@ -7,21 +8,70 @@ import {
   Group,
   Stack,
   Text,
+  Select,
+  Button,
   Divider,
-  Tooltip,
 } from "@mantine/core";
-import { IconX, IconLock } from "@tabler/icons-react";
-import type { AssignmentData } from "./types";
+import { IconX, IconPlus } from "@tabler/icons-react";
+import type { AssignmentData } from "@/services/user.types";
+import type { Tenant } from "@/services/tenant.types";
+import type { TenantRole } from "@/services/tenant-role.types";
 
 interface AssignmentManagerProps {
   assignments: AssignmentData[];
   onChange: (assignments: AssignmentData[]) => void;
+  tenants: Tenant[];
+  roles: TenantRole[];
 }
 
 export function AssignmentManager({
   assignments,
+  onChange,
+  tenants,
+  roles,
 }: AssignmentManagerProps) {
   const t = useTranslations("userManagement");
+  const [selectedTenant, setSelectedTenant] = useState<string | null>(null);
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
+
+  const tenantOptions = tenants.map((tenant) => ({
+    value: tenant.id,
+    label: tenant.name,
+  }));
+
+  const roleOptions = roles.map((role) => ({
+    value: role.id,
+    label: role.name,
+  }));
+
+  const handleRemove = (assignmentId: string) => {
+    onChange(assignments.filter((a) => a.id !== assignmentId));
+  };
+
+  const handleAdd = () => {
+    if (!selectedTenant || !selectedRole) return;
+
+    const isDuplicate = assignments.some(
+      (a) => a.tenantId === selectedTenant && a.roleId === selectedRole
+    );
+    if (isDuplicate) return;
+
+    const tenant = tenants.find((t) => t.id === selectedTenant);
+    const role = roles.find((r) => r.id === selectedRole);
+
+    const newAssignment: AssignmentData = {
+      id: `new-${Date.now()}`,
+      tenantId: selectedTenant,
+      tenantName: tenant?.name ?? "",
+      roleId: selectedRole,
+      roleName: role?.name ?? "",
+      permissions: [],
+    };
+
+    onChange([...assignments, newAssignment]);
+    setSelectedTenant(null);
+    setSelectedRole(null);
+  };
 
   return (
     <Stack gap="sm">
@@ -41,17 +91,15 @@ export function AssignmentManager({
                   {assignment.roleName}
                 </Badge>
               </Group>
-              <Tooltip label={t("comingSoon.tenants")}>
-                <ActionIcon
-                  variant="subtle"
-                  color="gray"
-                  size="sm"
-                  disabled
-                  aria-label={t("removeAssignment")}
-                >
-                  <IconX size={14} />
-                </ActionIcon>
-              </Tooltip>
+              <ActionIcon
+                variant="subtle"
+                color="red"
+                size="sm"
+                onClick={() => handleRemove(assignment.id)}
+                aria-label={t("removeAssignment")}
+              >
+                <IconX size={14} />
+              </ActionIcon>
             </Group>
           ))}
         </Stack>
@@ -59,11 +107,35 @@ export function AssignmentManager({
 
       <Divider my="xs" />
 
-      <Group gap="xs">
-        <IconLock size={14} />
-        <Text c="dimmed" size="sm" fs="italic">
-          {t("comingSoon.tenants")}
-        </Text>
+      <Text fw={600} size="sm">{t("drawer.addAssignmentSection")}</Text>
+
+      <Group gap="xs" align="flex-end">
+        <Select
+          label={t("modal.tenantLabel")}
+          placeholder={t("modal.tenantPlaceholder")}
+          data={tenantOptions}
+          value={selectedTenant}
+          onChange={setSelectedTenant}
+          searchable
+          w={180}
+        />
+        <Select
+          label={t("modal.roleLabel") === t("modal.roleLabel") ? "Role" : t("modal.roleLabel")}
+          placeholder="Select role"
+          data={roleOptions}
+          value={selectedRole}
+          onChange={setSelectedRole}
+          searchable
+          w={180}
+        />
+        <Button
+          leftSection={<IconPlus size={16} />}
+          size="sm"
+          onClick={handleAdd}
+          disabled={!selectedTenant || !selectedRole}
+        >
+          {t("addAssignment")}
+        </Button>
       </Group>
     </Stack>
   );

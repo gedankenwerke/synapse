@@ -398,6 +398,10 @@
     "allStatus": "สถานะทั้งหมด",
     "addUser": "เพิ่มผู้ใช้",
     "tab": {
+      "users": "ผู้ใช้",
+      "tenants": "ผู้เช่า",
+      "roles": "บทบาท",
+      "permissions": "สิทธิ์",
       "userRole": "บทบาทผู้ใช้",
       "username": "ชื่อผู้ใช้",
       "activityLog": "บันทึกกิจกรรม"
@@ -492,6 +496,106 @@
       "next": "ถัดไป",
       "showing": "แสดง {start}-{end} จาก {total}",
       "totalItems": "{total} ผู้ใช้"
+    },
+    "tenants": {
+      "title": "ผู้เช่า",
+      "searchPlaceholder": "ค้นหาผู้เช่า...",
+      "addTenant": "เพิ่มผู้เช่า",
+      "colName": "ชื่อ",
+      "colParent": "ผู้เช่าหลัก",
+      "colCreated": "วันที่สร้าง",
+      "colActions": "การดำเนินการ",
+      "rootLabel": "ราก",
+      "modal": {
+        "addTitle": "เพิ่มผู้เช่า",
+        "editTitle": "แก้ไขผู้เช่า",
+        "deleteTitle": "ลบผู้เช่า",
+        "deleteConfirmation": "คุณแน่ใจหรือว่าต้องการลบผู้เช่า \"{name}\"?",
+        "nameLabel": "ชื่อ",
+        "namePlaceholder": "กรอกชื่อผู้เช่า",
+        "parentLabel": "ผู้เช่าหลัก",
+        "parentPlaceholder": "เลือกผู้เช่าหลัก"
+      },
+      "validation": {
+        "nameRequired": "กรุณากรอกชื่อผู้เช่า",
+        "parentRequired": "กรุณาเลือกผู้เช่าหลัก"
+      },
+      "success": {
+        "created": "เพิ่มผู้เช่าสำเร็จ",
+        "updated": "อัปเดตผู้เช่าสำเร็จ",
+        "deleted": "ลบผู้เช่าสำเร็จ"
+      },
+      "error": {
+        "createFailed": "เพิ่มผู้เช่าไม่สำเร็จ",
+        "updateFailed": "อัปเดตผู้เช่าไม่สำเร็จ",
+        "deleteFailed": "ลบผู้เช่าไม่สำเร็จ",
+        "loadFailed": "โหลดข้อมูลผู้เช่าไม่สำเร็จ"
+      }
+    },
+    "roles": {
+      "title": "บทบาท",
+      "searchPlaceholder": "ค้นหาบทบาท...",
+      "addRole": "เพิ่มบทบาท",
+      "colName": "ชื่อ",
+      "colTenant": "ผู้เช่า",
+      "colCreated": "วันที่สร้าง",
+      "colActions": "การดำเนินการ",
+      "modal": {
+        "addTitle": "เพิ่มบทบาท",
+        "editTitle": "แก้ไขบทบาท",
+        "deleteTitle": "ลบบทบาท",
+        "deleteConfirmation": "คุณแน่ใจหรือว่าต้องการลบบทบาท \"{name}\"?",
+        "nameLabel": "ชื่อ",
+        "namePlaceholder": "กรอกชื่อบทบาท",
+        "tenantLabel": "ผู้เช่า",
+        "tenantPlaceholder": "เลือกผู้เช่า"
+      },
+      "validation": {
+        "nameRequired": "กรุณากรอกชื่อบทบาท",
+        "tenantRequired": "กรุณาเลือกผู้เช่า"
+      },
+      "success": {
+        "created": "เพิ่มบทบาทสำเร็จ",
+        "updated": "อัปเดตบทบาทสำเร็จ",
+        "deleted": "ลบบทบาทสำเร็จ"
+      },
+      "error": {
+        "createFailed": "เพิ่มบทบาทไม่สำเร็จ",
+        "updateFailed": "อัปเดตบทบาทไม่สำเร็จ",
+        "deleteFailed": "ลบบทบาทไม่สำเร็จ",
+        "loadFailed": "โหลดข้อมูลบทบาทไม่สำเร็จ"
+      }
+    },
+    "permissions": {
+      "title": "สิทธิ์",
+      "searchPlaceholder": "ค้นหาสิทธิ์...",
+      "addPermission": "เพิ่มสิทธิ์",
+      "colAction": "การดำเนินการ",
+      "colRole": "บทบาท",
+      "colCreated": "วันที่สร้าง",
+      "colActions": "การดำเนินการ",
+      "modal": {
+        "addTitle": "เพิ่มสิทธิ์",
+        "deleteTitle": "ลบสิทธิ์",
+        "deleteConfirmation": "คุณแน่ใจหรือว่าต้องการลบสิทธิ์นี้?",
+        "actionLabel": "การดำเนินการ",
+        "actionPlaceholder": "เลือกการดำเนินการ",
+        "roleLabel": "บทบาท",
+        "rolePlaceholder": "เลือกบทบาท"
+      },
+      "validation": {
+        "actionRequired": "กรุณาเลือกการดำเนินการ",
+        "roleRequired": "กรุณาเลือกบทบาท"
+      },
+      "success": {
+        "created": "เพิ่มสิทธิ์สำเร็จ",
+        "deleted": "ลบสิทธิ์สำเร็จ"
+      },
+      "error": {
+        "createFailed": "เพิ่มสิทธิ์ไม่สำเร็จ",
+        "deleteFailed": "ลบสิทธิ์ไม่สำเร็จ",
+        "loadFailed": "โหลดข้อมูลสิทธิ์ไม่สำเร็จ"
+      }
     }
   }
 }

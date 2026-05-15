@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Drawer, ScrollArea, Divider, Button, Group, Stack, Loader, Center } from "@mantine/core";
+import { Drawer, ScrollArea, Divider, Button, Group, Stack } from "@mantine/core";
 import { ProfileForm, type ProfileFormHandle } from "./ProfileForm";
 import { AssignmentManager } from "./AssignmentManager";
 import type { UserData, AssignmentData } from "@/services/user.types";
+import type { Tenant } from "@/services/tenant.types";
+import type { TenantRole } from "@/services/tenant-role.types";
 
 interface EditUserDrawerProps {
   opened: boolean;
@@ -13,6 +15,8 @@ interface EditUserDrawerProps {
   user: UserData | null;
   onSave: (user: UserData, assignments: AssignmentData[]) => void;
   loading?: boolean;
+  tenants: Tenant[];
+  roles: TenantRole[];
 }
 
 export function EditUserDrawer({
@@ -21,6 +25,8 @@ export function EditUserDrawer({
   user,
   onSave,
   loading,
+  tenants,
+  roles,
 }: EditUserDrawerProps) {
   const t = useTranslations("userManagement");
   const tc = useTranslations("common");
@@ -70,6 +76,8 @@ export function EditUserDrawer({
           <AssignmentManager
             assignments={localAssignments}
             onChange={setLocalAssignments}
+            tenants={tenants}
+            roles={roles}
           />
         </Stack>
       </ScrollArea>

@@ -20,131 +20,189 @@ Response:
 ========================================
 1) TENANTS
 ========================================
-GET /api/v1/tenants
-GET /api/v1/tenants/:id
+GET    /api/v1/tenants         -> flat array
+GET    /api/v1/tenants/:id     -> single object
+POST   /api/v1/tenants         -> 201 Created
+PUT    /api/v1/tenants/:id     -> 200 OK
+DELETE /api/v1/tenants/:id     -> 200 { deleted: 1 }
 
-Response: flat array (no pagination)
-Fields: ID, ParentID, Name, CreatedAt, UpdatedAt
+Response fields: ID, ParentID, Name, CreatedAt, UpdatedAt
 
-Current data:
-  ID=1                    ParentID=0   Name=default
-  ID=2055151987908939776   ParentID=1   Name=Test
-  ID=2055156347325911040   ParentID=1   Name=Test2
+CREATE body (snake_case):
+  { "name": "string", "parent_id": "1" }
+  NOTE: parent_id is REQUIRED (validation error if missing)
+
+UPDATE body:
+  { "name": "string" }
+
+Tested OK:
+  GET list         -> 200, returns array
+  GET by ID (/1)   -> 200, returns single tenant
+  POST create      -> 201 (with parent_id)
+  PUT update       -> 200, name updated
+  DELETE            -> 200 { deleted: 1 }
 
 
 ========================================
 2) USERS
 ========================================
-GET /api/v1/users
-GET /api/v1/users/:id
+GET /api/v1/users       -> paginated
+GET /api/v1/users/:id   -> single object
 
 Response: paginated
   { Items: User[], Before, After, Limit, Total }
 
 Fields: ID, Username, TenantID, CreatedAt, UpdatedAt
 
-Current data (Total: 2):
-  ID=2054953837864685568   Username=testuser   TenantID=1
-  ID=2054037179725778944   Username=string     TenantID=1
-
 
 ========================================
 3) TENANT ROLES
 ========================================
-GET /api/v1/tenant-roles
-GET /api/v1/tenant-roles/:id
+GET    /api/v1/tenant-roles         -> flat array
+GET    /api/v1/tenant-roles/:id    -> single object
+POST   /api/v1/tenant-roles         -> 201 Created
+PUT    /api/v1/tenant-roles/:id     -> 200 OK
+DELETE /api/v1/tenant-roles/:id      -> (not tested, would delete data)
 
-Response: flat array (no pagination)
-Fields: ID, TenantID, Name, CreatedAt, UpdatedAt
+Response fields: ID, TenantID, Name, CreatedAt, UpdatedAt
 
-Current data:
-  ID=2054037180031963136   TenantID=1   Name=admin
+CREATE body (snake_case):
+  { "name": "staff", "tenant_id": "1" }
+
+UPDATE body (snake_case):
+  { "name": "admin", "tenant_id": "1" }
+
+Tested OK:
+  POST create      -> 201, returns new role
+  GET by ID        -> 200
+  PUT update       -> 200
 
 
 ========================================
 4) TENANT PERMISSIONS (28 total)
 ========================================
-GET /api/v1/tenant-permissions
-GET /api/v1/tenant-permissions/:id
+GET    /api/v1/tenant-permissions         -> flat array
+GET    /api/v1/tenant-permissions/:id    -> single object
+POST   /api/v1/tenant-permissions         -> 201 Created
+PUT    /api/v1/tenant-permissions/:id     -> 200 OK
+DELETE /api/v1/tenant-permissions/:id      -> (not tested)
 
-Response: flat array (no pagination)
-Fields: ID, RoleID, Action, CreatedAt, UpdatedAt
+Response fields: ID, RoleID, Action, CreatedAt, UpdatedAt
 
-All 28 permissions belong to RoleID=2054037180031963136 (admin)
+CREATE body (snake_case):
+  { "action": "SearchBankStatement", "role_id": "2054037180031963136" }
+
+UPDATE body (snake_case):
+  { "action": "SearchBankStatement" }
+
+Tested OK:
+  POST create      -> 201
+  GET by ID        -> 200
+  PUT update       -> 200
+
+All 28 permissions belong to RoleID=2054037180031963136 (admin):
 
 Bank & Transaction (3):
   - SearchBankStatement
   - SearchNetBalance
   - SearchTransactionHistory
 
-Tenant (5):
-  - CreateTenant
-  - ListTenants
-  - GetTenant
-  - UpdateTenant
-  - DeleteTenant
-
-Tenant Role (5):
-  - CreateTenantRole
-  - ListTenantRoles
-  - GetTenantRole
-  - UpdateTenantRole
-  - DeleteTenantRole
-
-Tenant Permission (5):
-  - CreateTenantPermission
-  - ListTenantPermissions
-  - GetTenantPermission
-  - UpdateTenantPermission
-  - DeleteTenantPermission
-
-Tenant User (5):
-  - CreateTenantUser
-  - ListTenantUsers
-  - GetTenantUser
-  - UpdateTenantUser
-  - DeleteTenantUser
-
-User (5):
-  - CreateUser
-  - ListUsers
-  - GetUser
-  - UpdateUser
-  - DeleteUser
+Tenant (5):          CreateTenant, ListTenants, GetTenant, UpdateTenant, DeleteTenant
+Tenant Role (5):     CreateTenantRole, ListTenantRoles, GetTenantRole, UpdateTenantRole, DeleteTenantRole
+Tenant Permission (5): CreateTenantPermission, ListTenantPermissions, GetTenantPermission, UpdateTenantPermission, DeleteTenantPermission
+Tenant User (5):     CreateTenantUser, ListTenantUsers, GetTenantUser, UpdateTenantUser, DeleteTenantUser
+User (5):            CreateUser, ListUsers, GetUser, UpdateUser, DeleteUser
 
 
 ========================================
-5) TENANT USERS
+5) TENANT USERS (FULLY TESTED)
 ========================================
-GET /api/v1/tenant-users
-GET /api/v1/tenant-users/:id
+GET    /api/v1/tenant-users                        -> flat array
+GET    /api/v1/tenant-users?tenant_id=1            -> filter by tenant
+GET    /api/v1/tenant-users?user_id=xxx           -> filter by user
+GET    /api/v1/tenant-users?tenant_id=1&user_id=xxx -> filter by both
+GET    /api/v1/tenant-users/:id                    -> single object
+POST   /api/v1/tenant-users                        -> 201 Created
+PUT    /api/v1/tenant-users/:id                     -> 200 OK
+DELETE /api/v1/tenant-users/:id                     -> 200 { deleted: 1 }
 
-Response: flat array (no pagination)
-Fields: ID, TenantID, TenantRoleID, UserID, CreatedAt, UpdatedAt
+Response fields: ID, TenantID, TenantRoleID, UserID, CreatedAt, UpdatedAt
+
+CREATE body (snake_case ONLY — PascalCase returns 400):
+  { "tenant_id": "1", "user_id": "2054953837864685568", "tenant_role_id": "2055228568710942720" }
+  Returns 201 with full object
+  Returns 409 if mapping already exists (duplicate)
+
+  NOTE: PascalCase body like {"TenantID":"1","UserID":"x","TenantRoleID":"x"}
+        returns 400 validation error. Use snake_case only.
+
+UPDATE body (snake_case — PascalCase also works but snake_case is preferred):
+  { "tenant_role_id": "2054037180031963136" }
+  Returns 200 with updated object
+
+FILTERS (tested):
+  ?tenant_id=1                           -> returns only mappings for tenant 1
+  ?user_id=2054037179725778944           -> returns only mappings for that user
+  ?tenant_id=1&user_id=2054037179725778944 -> returns both filters combined
+  All return 200 with array
+
+DELETE:
+  Returns 200 { deleted: 1 } on success
+  Returns 404 { code:404, message:"database error: not found" } if ID not found
 
 Current data:
-  ID=2054037180141015040   TenantID=1   Role=admin   User=string
-
-Meaning: user "string" belongs to tenant "default" with role "admin"
+  ID=2054037180141015040    TenantID=1    TenantRoleID=admin   UserID=string
+  ID=2055231274582282240    TenantID=Test TenantRoleID=staff  UserID=string
+  ID=2055231606972485632    TenantID=1    TenantRoleID=admin   UserID=testuser
 
 
 ========================================
-API vs FRONTEND MISMATCHES
+API BEHAVIOR NOTES
 ========================================
-1. Casing:    API = PascalCase (ID, ParentID, Name)
-              Frontend types = snake_case (id, parent_id, name)
+1. REQUEST BODY CASING:
+   - CREATE: snake_case ONLY for tenant-users (PascalCase returns 400)
+   - CREATE: snake_case for tenant-roles (PascalCase not tested)
+   - UPDATE: both snake_case and PascalCase work for tenant-users
+   - RESPONSE: always PascalCase (ID, TenantID, TenantRoleID, etc.)
+
+2. ID TYPE:
+   - All IDs are strings (snowflake IDs), not numbers
+
+3. PAGINATION:
+   - Users endpoint: paginated (Items/Before/After/Limit/Total)
+   - Tenants/Roles/Permissions/TenantUsers: flat arrays, no pagination
+
+4. STATUS CODES:
+   - 200 OK (get, update, delete success)
+   - 201 Created (successful create)
+   - 400 Validation error (missing required fields, wrong casing)
+   - 404 Not found (get/update/delete non-existent ID)
+   - 409 Conflict (create duplicate tenant-user mapping)
+
+5. TENANT CREATE requires parent_id field (not optional)
+
+6. TENANT-USER has query filters: ?tenant_id= and ?user_id=
+
+
+========================================
+API vs FRONTEND TYPE MISMATCHES
+========================================
+1. Casing:    API response = PascalCase (ID, ParentID, Name)
+               API request body = snake_case (tenant_id, user_id, tenant_role_id)
+               Frontend types = snake_case (id, parent_id, name)
 
 2. ID type:   API = string (snowflake)
-              Frontend types = number
+               Frontend types = number
 
 3. Tenant:    API has ParentID (hierarchical tenants)
-              Frontend type missing parent_id
+               Frontend type missing parent_id
 
-4. Users:     API = paginated (Items/Before/After/Limit/Total)
-              Tenants/Roles/Permissions/TenantUsers = flat array
-
-5. Permission: API fields = RoleID + Action
+4. Permission: API fields = RoleID + Action (no name, no description)
                Frontend types = name + action + tenant_id
 
-6. TenantUser: API field = TenantRoleID
+5. TenantUser: API field = TenantRoleID
                 Frontend type = role_id
+
+6. TenantUser CREATE: snake_case only in request body
+                       Frontend types use snake_case (good)
+                       But response comes back PascalCase (needs mapping)

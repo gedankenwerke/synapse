@@ -1,39 +1,40 @@
 import httpClient from "../libs/axios";
-import { Tenant, TenantCreateRequest, TenantUpdateRequest } from "./tenant.types";
+import { Tenant, TenantCreateRequest, TenantUpdateRequest, ApiTenant, mapApiTenant } from "./tenant.types";
 import { ResponseWrapper } from "../types/response";
 
 export const tenant = {
   list: async (): Promise<Tenant[]> => {
-    const response = await httpClient.get<ResponseWrapper<Tenant[]>>(
+    const response = await httpClient.get<ResponseWrapper<ApiTenant[]>>(
       "/api/v1/tenants"
     );
-    return (response as unknown as ResponseWrapper<Tenant[]>).data;
+    const data = (response as unknown as ResponseWrapper<ApiTenant[]>).data;
+    return data.map(mapApiTenant);
   },
 
-  get: async (id: number): Promise<Tenant> => {
-    const response = await httpClient.get<ResponseWrapper<Tenant>>(
+  get: async (id: string): Promise<Tenant> => {
+    const response = await httpClient.get<ResponseWrapper<ApiTenant>>(
       `/api/v1/tenants/${id}`
     );
-    return (response as unknown as ResponseWrapper<Tenant>).data;
+    return mapApiTenant((response as unknown as ResponseWrapper<ApiTenant>).data);
   },
 
   create: async (payload: TenantCreateRequest): Promise<Tenant> => {
-    const response = await httpClient.post<ResponseWrapper<Tenant>>(
+    const response = await httpClient.post<ResponseWrapper<ApiTenant>>(
       "/api/v1/tenants",
       payload
     );
-    return (response as unknown as ResponseWrapper<Tenant>).data;
+    return mapApiTenant((response as unknown as ResponseWrapper<ApiTenant>).data);
   },
 
-  update: async (id: number, payload: TenantUpdateRequest): Promise<Tenant> => {
-    const response = await httpClient.put<ResponseWrapper<Tenant>>(
+  update: async (id: string, payload: TenantUpdateRequest): Promise<Tenant> => {
+    const response = await httpClient.put<ResponseWrapper<ApiTenant>>(
       `/api/v1/tenants/${id}`,
       payload
     );
-    return (response as unknown as ResponseWrapper<Tenant>).data;
+    return mapApiTenant((response as unknown as ResponseWrapper<ApiTenant>).data);
   },
 
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     await httpClient.delete(`/api/v1/tenants/${id}`);
   },
 };

@@ -1,39 +1,40 @@
 import httpClient from "../libs/axios";
-import { TenantRole, TenantRoleCreateRequest, TenantRoleUpdateRequest } from "./tenant-role.types";
+import { TenantRole, TenantRoleCreateRequest, TenantRoleUpdateRequest, ApiTenantRole, mapApiTenantRole } from "./tenant-role.types";
 import { ResponseWrapper } from "../types/response";
 
 export const tenantRole = {
   list: async (): Promise<TenantRole[]> => {
-    const response = await httpClient.get<ResponseWrapper<TenantRole[]>>(
+    const response = await httpClient.get<ResponseWrapper<ApiTenantRole[]>>(
       "/api/v1/tenant-roles"
     );
-    return (response as unknown as ResponseWrapper<TenantRole[]>).data;
+    const data = (response as unknown as ResponseWrapper<ApiTenantRole[]>).data;
+    return data.map(mapApiTenantRole);
   },
 
-  get: async (id: number): Promise<TenantRole> => {
-    const response = await httpClient.get<ResponseWrapper<TenantRole>>(
+  get: async (id: string): Promise<TenantRole> => {
+    const response = await httpClient.get<ResponseWrapper<ApiTenantRole>>(
       `/api/v1/tenant-roles/${id}`
     );
-    return (response as unknown as ResponseWrapper<TenantRole>).data;
+    return mapApiTenantRole((response as unknown as ResponseWrapper<ApiTenantRole>).data);
   },
 
   create: async (payload: TenantRoleCreateRequest): Promise<TenantRole> => {
-    const response = await httpClient.post<ResponseWrapper<TenantRole>>(
+    const response = await httpClient.post<ResponseWrapper<ApiTenantRole>>(
       "/api/v1/tenant-roles",
       payload
     );
-    return (response as unknown as ResponseWrapper<TenantRole>).data;
+    return mapApiTenantRole((response as unknown as ResponseWrapper<ApiTenantRole>).data);
   },
 
-  update: async (id: number, payload: TenantRoleUpdateRequest): Promise<TenantRole> => {
-    const response = await httpClient.put<ResponseWrapper<TenantRole>>(
+  update: async (id: string, payload: TenantRoleUpdateRequest): Promise<TenantRole> => {
+    const response = await httpClient.put<ResponseWrapper<ApiTenantRole>>(
       `/api/v1/tenant-roles/${id}`,
       payload
     );
-    return (response as unknown as ResponseWrapper<TenantRole>).data;
+    return mapApiTenantRole((response as unknown as ResponseWrapper<ApiTenantRole>).data);
   },
 
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     await httpClient.delete(`/api/v1/tenant-roles/${id}`);
   },
 };

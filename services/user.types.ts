@@ -1,9 +1,25 @@
 export interface User {
-  id: number;
+  id: string;
   username: string;
-  tenant_id: number;
+  tenant_id: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface ApiUser {
+  ID: string;
+  Username: string;
+  TenantID: string;
+  CreatedAt: string;
+  UpdatedAt: string;
+}
+
+export interface ApiPaginatedUserResponse {
+  Items: ApiUser[];
+  Total: number;
+  Limit: number;
+  Before: string;
+  After: string;
 }
 
 export interface PaginatedUserResponse {
@@ -19,19 +35,19 @@ export interface UserListParams {
   after?: string;
   limit?: number;
   username?: string;
-  tenant_id?: number;
+  tenant_id?: string;
 }
 
 export interface CreateUserPayload {
   username: string;
   password?: string;
-  tenant_id: number;
+  tenant_id: string;
 }
 
 export interface UpdateUserPayload {
   username: string;
   password?: string;
-  tenant_id: number;
+  tenant_id: string;
 }
 
 export interface DeleteUserResponse {
@@ -41,7 +57,7 @@ export interface DeleteUserResponse {
 export interface UserData {
   id: string;
   username: string;
-  tenantId: number;
+  tenantId: string;
   createdAt: string;
   updatedAt: string;
   assignments: AssignmentData[];
@@ -56,13 +72,33 @@ export interface AssignmentData {
   permissions: string[];
 }
 
+function mapApiUser(api: ApiUser): User {
+  return {
+    id: api.ID,
+    username: api.Username,
+    tenant_id: api.TenantID,
+    created_at: api.CreatedAt,
+    updated_at: api.UpdatedAt,
+  };
+}
+
 export function mapApiUserToUserData(user: User): UserData {
   return {
-    id: String(user.id),
+    id: user.id,
     username: user.username,
     tenantId: user.tenant_id,
     createdAt: user.created_at,
     updatedAt: user.updated_at,
     assignments: [],
+  };
+}
+
+export function mapApiPaginatedResponse(api: ApiPaginatedUserResponse): PaginatedUserResponse {
+  return {
+    items: api.Items.map(mapApiUser),
+    total: api.Total,
+    limit: api.Limit,
+    before: api.Before,
+    after: api.After,
   };
 }

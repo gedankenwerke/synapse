@@ -1,11 +1,14 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { userService } from "@/services/user";
+import { useAppStore } from "@/store/useAppStore";
 
 const PAGE_LIMIT = 10;
 
 export function useUsersQuery(search: string) {
+  const tenantId = useAppStore((s) => s.user?.tenant_id ?? "1");
+
   return useInfiniteQuery({
-    queryKey: ["users", search],
+    queryKey: ["users", search, tenantId],
     queryFn: ({ pageParam }) => {
       const after = typeof pageParam === "string" ? pageParam : "";
       return userService.list({
@@ -13,7 +16,7 @@ export function useUsersQuery(search: string) {
         before: "",
         limit: PAGE_LIMIT,
         username: search || undefined,
-        tenant_id: 1,
+        tenant_id: tenantId,
       });
     },
     initialPageParam: "",
