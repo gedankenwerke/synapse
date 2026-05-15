@@ -1,6 +1,6 @@
-import httpClient from "../libs/axios";
-import { TenantPermission, TenantPermissionCreateRequest, TenantPermissionUpdateRequest, ApiTenantPermission, mapApiTenantPermission } from "./tenant-permission.types";
-import { ResponseWrapper } from "../types/response";
+import httpClient from "@/libs/axios";
+import { TenantPermission, TenantPermissionCreateRequest, TenantPermissionUpdateRequest, ApiTenantPermission, mapApiTenantPermission } from "./types";
+import { ResponseWrapper } from "@/types/response";
 
 export const tenantPermission = {
   list: async (): Promise<TenantPermission[]> => {

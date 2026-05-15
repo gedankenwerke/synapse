@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { tenantPermission } from "@/services/tenant-permission";
-import type { TenantPermissionCreateRequest } from "@/services/tenant-permission.types";
+import type { TenantPermissionCreateRequest } from "@/services/tenant-permission/types";
 
 export function useCreateTenantPermission() {
   const queryClient = useQueryClient();

@@ -9,11 +9,11 @@ import { useDebouncedValue } from "@mantine/hooks";
 import { useAppStore } from "@/store/useAppStore";
 import { useUsersQuery } from "./hooks/useUsersQuery";
 import { useCreateUser, useUpdateUser, useDeleteUser } from "./hooks/useUserMutations";
-import { mapApiUserToUserData } from "@/services/user.types";
-import type { UserData, AssignmentData } from "@/services/user.types";
-import type { Tenant } from "@/services/tenant.types";
-import type { TenantRole } from "@/services/tenant-role.types";
-import type { TenantPermission } from "@/services/tenant-permission.types";
+import { mapApiUserToUserData } from "@/services/user/types";
+import type { UserData, AssignmentData } from "@/services/user/types";
+import type { Tenant } from "@/services/tenant/types";
+import type { TenantRole } from "@/services/tenant-role/types";
+import type { TenantPermission } from "@/services/tenant-permission/types";
 import { UserToolbar } from "./_components/UsersTab/UsersToolbar";
 import { UserTable } from "./_components/UsersTab/UsersTable";
 import { UserPagination } from "./_components/UsersTab/UsersPagination";
@@ -36,7 +36,7 @@ import {
   useUpdateTenant,
   useDeleteTenant,
 } from "./hooks/useTenantMutations";
-import type { TenantCreateRequest, TenantUpdateRequest } from "@/services/tenant.types";
+import type { TenantCreateRequest, TenantUpdateRequest } from "@/services/tenant/types";
 import { RolesToolbar } from "./_components/RolesTab/RolesToolbar";
 import { RolesTable } from "./_components/RolesTab/RolesTable";
 import {
@@ -50,7 +50,7 @@ import {
   useUpdateTenantRole,
   useDeleteTenantRole,
 } from "./hooks/useTenantRoleMutations";
-import type { TenantRoleCreateRequest, TenantRoleUpdateRequest } from "@/services/tenant-role.types";
+import type { TenantRoleCreateRequest, TenantRoleUpdateRequest } from "@/services/tenant-role/types";
 import { PermissionsToolbar } from "./_components/PermissionsTab/PermissionsToolbar";
 import { PermissionsTable } from "./_components/PermissionsTab/PermissionsTable";
 import {
@@ -62,7 +62,7 @@ import {
   useCreateTenantPermission,
   useDeleteTenantPermission,
 } from "./hooks/useTenantPermissionMutations";
-import type { TenantPermissionCreateRequest } from "@/services/tenant-permission.types";
+import type { TenantPermissionCreateRequest } from "@/services/tenant-permission/types";
 
 export default function UserManagementPage() {
   const t = useTranslations("userManagement");

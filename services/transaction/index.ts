@@ -1,6 +1,6 @@
-import httpClient from "../libs/axios";
-import { TransactionRequest, TransactionPage } from "./transaction.types";
-import { ResponseWrapper } from "../types/response";
+import httpClient from "@/libs/axios";
+import { TransactionRequest, TransactionPage } from "./types";
+import { ResponseWrapper } from "@/types/response";
 
 export const transaction = {
   fetchPage: async (payload: TransactionRequest): Promise<TransactionPage> => {

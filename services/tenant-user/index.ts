@@ -1,6 +1,6 @@
-import httpClient from "../libs/axios";
-import { TenantUser, TenantUserCreateRequest, TenantUserUpdateRequest, ApiTenantUser, mapApiTenantUser } from "./tenant-user.types";
-import { ResponseWrapper } from "../types/response";
+import httpClient from "@/libs/axios";
+import { TenantUser, TenantUserCreateRequest, TenantUserUpdateRequest, ApiTenantUser, mapApiTenantUser } from "./types";
+import { ResponseWrapper } from "@/types/response";
 
 export const tenantUser = {
   list: async (params?: { tenant_id?: string; user_id?: string }): Promise<TenantUser[]> => {

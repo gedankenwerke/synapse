@@ -13,9 +13,9 @@ import {
   Divider,
 } from "@mantine/core";
 import { IconX, IconPlus } from "@tabler/icons-react";
-import type { AssignmentData } from "@/services/user.types";
-import type { Tenant } from "@/services/tenant.types";
-import type { TenantRole } from "@/services/tenant-role.types";
+import type { AssignmentData } from "@/services/user/types";
+import type { Tenant } from "@/services/tenant/types";
+import type { TenantRole } from "@/services/tenant-role/types";
 
 interface AssignmentManagerProps {
   assignments: AssignmentData[];

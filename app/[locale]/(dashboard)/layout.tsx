@@ -5,6 +5,7 @@ import { useRouter } from "@/navigation";
 import { Loader, Center } from "@mantine/core";
 import AppShellLayout from "@/components/AppShellLayout";
 import { useAppStore } from "@/store/useAppStore";
+import { usePermissionStore } from "@/store/usePermissionStore";
 import { authentication } from "@/services/authentication";
 
 const VERIFY_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
@@ -55,6 +56,7 @@ export default function DashboardLayout({
   }, [hydrated, isAuthenticated, token, router, setLogout]);
 
   // Verify token with /me — runs on mount and on navigation if cooldown has elapsed
+  // Also fetches the policy catalog for permission checks
   useEffect(() => {
     if (!hydrated || !isAuthenticated || !token) return;
 
@@ -67,6 +69,7 @@ export default function DashboardLayout({
 
       try {
         await authentication.me();
+        await usePermissionStore.getState().fetchPolicies();
       } catch (err: any) {
         // Only logout if token is actually invalid (401), not on server errors
         if (err?.status === 401) {

@@ -9,7 +9,7 @@ import {
   Text,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import type { TenantRole } from "@/services/tenant-role.types";
+import type { TenantRole } from "@/services/tenant-role/types";
 
 const PERMISSION_ACTIONS = [
   "SearchBankStatement",

@@ -10,8 +10,8 @@ import {
   Text,
 } from "@mantine/core";
 import { useTranslations } from "next-intl";
-import type { BankStatementItem } from "@/services/account-statement.types";
-import { STATUS_MAP } from "@/services/account-statement.types";
+import type { BankStatementItem } from "@/services/account-statement/types";
+import { STATUS_MAP } from "@/services/account-statement/types";
 import { formatBaht, formatDateTime, formatBankName, displayOrNA } from "./utils";
 
 interface StatementDetailModalProps {

@@ -11,8 +11,8 @@ import {
   Text,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import type { TenantRole } from "@/services/tenant-role.types";
-import type { Tenant } from "@/services/tenant.types";
+import type { TenantRole } from "@/services/tenant-role/types";
+import type { Tenant } from "@/services/tenant/types";
 
 export interface RoleFormValues {
   name: string;

@@ -1,6 +1,6 @@
-import httpClient from "../libs/axios";
-import { PayAgentRequest, PayAgentResponse } from "./pay-agent.types";
-import { ResponseWrapper } from "../types/response";
+import httpClient from "@/libs/axios";
+import { PayAgentRequest, PayAgentResponse } from "./types";
+import { ResponseWrapper } from "@/types/response";
 
 export const payAgent = {
   create: async (payload: PayAgentRequest): Promise<PayAgentResponse> => {

@@ -1,14 +1,14 @@
-import httpClient from "../libs/axios";
+import httpClient from "@/libs/axios";
 import type {
   UserListParams,
   CreateUserPayload,
   UpdateUserPayload,
   ApiPaginatedUserResponse,
   PaginatedUserResponse,
-} from "./user.types";
-import { mapApiPaginatedResponse } from "./user.types";
-import { ResponseWrapper } from "../types/response";
-import type { User } from "./user.types";
+} from "./types";
+import type { User } from "./types";
+import { mapApiPaginatedResponse } from "./types";
+import { ResponseWrapper } from "@/types/response";
 
 export const userService = {
   list: async (params: UserListParams): Promise<PaginatedUserResponse> => {

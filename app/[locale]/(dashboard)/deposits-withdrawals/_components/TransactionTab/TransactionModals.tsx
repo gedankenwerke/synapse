@@ -10,8 +10,8 @@ import {
   Text,
 } from "@mantine/core";
 import { useTranslations } from "next-intl";
-import type { TransactionItem } from "@/services/transaction.types";
-import { DWS_STATUS_MAP } from "@/services/transaction.types";
+import type { TransactionItem } from "@/services/transaction/types";
+import { DWS_STATUS_MAP } from "@/services/transaction/types";
 import { formatBaht, formatDateTime, displayOrNA, formatBankName } from "./utils";
 
 interface TransactionDetailModalProps {

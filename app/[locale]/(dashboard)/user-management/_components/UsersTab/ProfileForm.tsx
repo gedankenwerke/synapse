@@ -4,7 +4,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { useTranslations } from "next-intl";
 import { TextInput, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import type { UserData } from "@/services/user.types";
+import type { UserData } from "@/services/user/types";
 
 export interface ProfileFormValues {
   username: string;

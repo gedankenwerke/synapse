@@ -5,7 +5,7 @@ import { Container, Stack, Text, Transition } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
 import { settlement } from "@/services/settlement";
-import type { SettlementResponse } from "@/services/settlement.types";
+import type { SettlementResponse } from "@/services/settlement/types";
 import { SettlementForm } from "./_components/SettlementTab/SettlementForm";
 import { SettlementResult } from "./_components/SettlementTab/SettlementResult";
 

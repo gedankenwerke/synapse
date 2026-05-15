@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useInView } from "react-intersection-observer";
 import { useTranslations } from "next-intl";
 import { COLUMNS } from "./columns";
-import type { BankStatementItem } from "@/services/account-statement.types";
+import type { BankStatementItem } from "@/services/account-statement/types";
 import { formatBaht, formatDateTime, formatBankName, getDisplayName, displayOrNA } from "./utils";
 
 interface StatementTableProps {

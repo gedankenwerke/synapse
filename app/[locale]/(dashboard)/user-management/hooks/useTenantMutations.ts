@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { tenant } from "@/services/tenant";
-import type { TenantCreateRequest, TenantUpdateRequest } from "@/services/tenant.types";
+import type { TenantCreateRequest, TenantUpdateRequest } from "@/services/tenant/types";
 
 export function useCreateTenant() {
   const queryClient = useQueryClient();

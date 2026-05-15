@@ -1,5 +1,5 @@
 import type { useTranslations } from "next-intl";
-import type { TransactionItem } from "@/services/transaction.types";
+import type { TransactionItem } from "@/services/transaction/types";
 
 export function formatBaht(amount: number): string {
   return `฿ ${amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

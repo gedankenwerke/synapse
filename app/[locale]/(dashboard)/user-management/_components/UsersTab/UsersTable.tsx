@@ -28,7 +28,7 @@ function formatThaiDate(iso: string): string {
     minute: "2-digit",
   });
 }
-import type { UserData } from "@/services/user.types";
+import type { UserData } from "@/services/user/types";
 
 interface UserTableProps {
   data: UserData[];

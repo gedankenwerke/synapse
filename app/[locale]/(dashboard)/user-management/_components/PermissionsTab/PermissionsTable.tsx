@@ -12,8 +12,8 @@ import {
 } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 import { getColumns } from "./columns";
-import type { TenantPermission } from "@/services/tenant-permission.types";
-import type { TenantRole } from "@/services/tenant-role.types";
+import type { TenantPermission } from "@/services/tenant-permission/types";
+import type { TenantRole } from "@/services/tenant-role/types";
 
 const TH_TZ = "Asia/Bangkok";
 

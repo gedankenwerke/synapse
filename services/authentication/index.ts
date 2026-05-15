@@ -1,7 +1,6 @@
-import httpClient from "../libs/axios";
-import { LoginRequestBody, LoginRequestResponse, RefreshTokenResponse } from './authentication.types';
-
-import { ResponseWrapper } from '../types/response';
+import httpClient from "@/libs/axios";
+import { LoginRequestBody, LoginRequestResponse, RefreshTokenResponse } from './types';
+import { ResponseWrapper } from '@/types/response';
 
 export const authentication = {
     login: async (payload: LoginRequestBody): Promise<ResponseWrapper<LoginRequestResponse>> => {

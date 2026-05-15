@@ -1,6 +1,6 @@
-import httpClient from "../libs/axios";
-import { NetBalanceRequest, NetBalancePage } from "./net-balance.types";
-import { ResponseWrapper } from "../types/response";
+import httpClient from "@/libs/axios";
+import { NetBalanceRequest, NetBalancePage } from "./types";
+import { ResponseWrapper } from "@/types/response";
 
 export const netBalance = {
   fetchPage: async (payload: NetBalanceRequest): Promise<NetBalancePage> => {

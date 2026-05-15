@@ -19,7 +19,7 @@ import { DonutChart } from "@mantine/charts";
 import { IconArrowUpRight, IconArrowDownRight, IconCalendar } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
-import type { NetBalanceItem } from "@/services/net-balance.types";
+import type { NetBalanceItem } from "@/services/net-balance/types";
 import { useNetBalanceQuery } from "./hooks/useNetBalanceQuery";
 import { formatBaht, formatCompact, formatDate, formatLastUpdated } from "./_components/utils";
 import { formatStartDateTime, formatEndDateTime } from "@/utils/formatDateRange";

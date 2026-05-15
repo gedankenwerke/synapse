@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import { IconCheck, IconAlertTriangle } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import type { SettlementResponse } from "@/services/settlement.types";
+import type { SettlementResponse } from "@/services/settlement/types";
 
 function formatBaht(amount: number): string {
   return `฿${amount.toLocaleString("en-US", {

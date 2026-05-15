@@ -16,8 +16,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { useInView } from "react-intersection-observer";
 import { useTranslations } from "next-intl";
 import { getColumns } from "./columns";
-import type { TransactionItem } from "@/services/transaction.types";
-import { DWS_STATUS_MAP } from "@/services/transaction.types";
+import type { TransactionItem } from "@/services/transaction/types";
+import { DWS_STATUS_MAP } from "@/services/transaction/types";
 import { formatBaht, formatDateTime, getUserDisplay } from "./utils";
 
 interface TransactionTableProps {
