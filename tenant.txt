@@ -206,3 +206,48 @@ API vs FRONTEND TYPE MISMATCHES
 6. TenantUser CREATE: snake_case only in request body
                        Frontend types use snake_case (good)
                        But response comes back PascalCase (needs mapping)
+
+
+========================================
+FRONTEND IMPLEMENTATION
+========================================
+User Management Page (/user-management) has 3 tabs:
+
+1. USERS TAB
+   - Paginated user table with search
+   - Add user modal
+   - Edit user drawer (right side slide-in)
+     - Profile form (username)
+     - Assignment manager: add/remove tenant+role assignments
+   - Delete confirmation modal
+
+2. TENANTS TAB
+   - Flat tenant table with search
+   - Add tenant modal (name + parent tenant dropdown)
+   - Edit tenant modal
+   - Delete confirmation modal
+
+3. ROLES TAB (Discord-style permission editor)
+   - Flat role table with search
+   - Add role modal (name + tenant dropdown)
+   - Edit role drawer (right side slide-in) — shows role info + permission checkboxes
+     - Permissions grouped by category:
+       * Bank & Transaction: SearchBankStatement, SearchNetBalance, SearchTransactionHistory
+       * Tenant: Create, List, Get, Update, Delete
+       * Tenant Role: Create, List, Get, Update, Delete
+       * Tenant Permission: Create, List, Get, Update, Delete
+       * Tenant User: Create, List, Get, Update, Delete
+       * User: Create, List, Get, Update, Delete
+     - Checking a box = create TenantPermission (POST)
+     - Unchecking a box = delete TenantPermission (DELETE by ID)
+   - Delete confirmation modal
+
+PERMISSIONS TAB WAS REMOVED — permissions are now managed inline in the Roles tab drawer.
+
+KEY FILES:
+  - page.tsx: main page with all state, tabs, modals, drawer
+  - _components/UsersTab/: UserToolbar, UserTable, UserPagination, UserModals, EditUserDrawer, AssignmentManager, ProfileForm
+  - _components/TenantsTab/: TenantsToolbar, TenantsTable, TenantsModals, columns
+  - _components/RolesTab/: RolesToolbar, RolesTable, RolesModals, EditRoleDrawer, permissionActions, columns
+  - hooks/: useUsersQuery, useUserMutations, useTenantsQuery, useTenantMutations, useTenantRolesQuery, useTenantRoleMutations, useTenantPermissionsQuery, useTenantPermissionMutations
+  - services/: user, tenant, tenant-role, tenant-permission, tenant-user (all with PascalCase→camelCase mappers)

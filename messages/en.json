@@ -112,7 +112,8 @@
       "colUser": "User",
       "colType": "Type",
       "colAmount": "Amount",
-      "colStatus": "Status"
+      "colStatus": "Status",
+      "noData": "No recent transactions"
     }
   },
   "status": {
