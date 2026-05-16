@@ -400,8 +400,8 @@
     "addUser": "เพิ่มผู้ใช้",
     "tab": {
       "users": "ผู้ใช้",
-      "tenants": "ผู้เช่า",
-      "roles": "บทบาท",
+      "tenants": "แผนก",
+      "roles": "สิทธิ์",
       "userRole": "บทบาทผู้ใช้",
       "username": "ชื่อผู้ใช้",
       "activityLog": "บันทึกกิจกรรม"
@@ -409,8 +409,8 @@
     "comingSoon": {
       "userRole": "เนื้อหาบทบาทผู้ใช้จะเพิ่มเร็วๆ นี้",
       "activityLog": "เนื้อหาบันทึกกิจกรรมจะเพิ่มเร็วๆ นี้",
-      "tenants": "การจัดการผู้เช่าและบทบาทจะเพิ่มเร็วๆ นี้",
-      "roles": "การจัดการบทบาทจะเพิ่มเร็วๆ นี้"
+      "tenants": "การจัดการแผนกและบทบาทจะเพิ่มเร็วๆ นี้",
+      "roles": "การจัดการสิทธิ์จะเพิ่มเร็วๆ นี้"
     },
     "success": {
       "userAdded": "เพิ่มผู้ใช้สำเร็จ",
@@ -426,118 +426,11 @@
     "colDateCreated": "วันที่สร้าง",
     "colStatus": "สถานะ",
     "roles": {
-      "superAdmin": "ผู้ดูแลระบบสูงสุด",
-      "admin": "ผู้ดูแลระบบ",
-      "manager": "ผู้จัดการ",
-      "staff": "เจ้าหน้าที่",
-      "viewer": "ผู้ดู"
-    },
-    "modal": {
-      "addTitle": "เพิ่มผู้ใช้",
-      "editTitle": "แก้ไขผู้ใช้",
-      "deleteTitle": "ลบผู้ใช้",
-      "roleLabel": "บทบาท",
-      "rolePlaceholder": "เลือกบทบาท",
-      "fullNameLabel": "ชื่อ-นามสกุล",
-      "fullNamePlaceholder": "กรอกชื่อ-นามสกุล",
-      "usernameLabel": "ชื่อผู้ใช้",
-      "usernamePlaceholder": "กรอกชื่อผู้ใช้",
-      "emailLabel": "อีเมล",
-      "emailPlaceholder": "กรอกอีเมล",
-      "phoneLabel": "เบอร์โทรศัพท์",
-      "phonePlaceholder": "กรอกเบอร์โทรศัพท์",
-      "statusLabel": "สถานะ",
-      "deleteConfirmation": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ \"${userName}\"?",
-      "assignTitle": "มอบหมายผู้เช่า",
-      "editAssignmentTitle": "แก้ไขการมอบหมาย",
-      "removeAssignmentTitle": "ลบการมอบหมาย",
-      "removeAssignmentConfirmation": "คุณแน่ใจหรือไม่ที่จะลบการมอบหมายของ \"{userName}\" ใน \"{tenantName}\"?",
-      "tenantLabel": "ผู้เช่า",
-      "tenantPlaceholder": "เลือกผู้เช่า",
-      "permissionsLabel": "สิทธิ์",
-      "assign": "มอบหมาย",
-      "passwordLabel": "รหัสผ่าน",
-      "passwordPlaceholder": "กรอกรหัสผ่าน"
-    },
-    "validation": {
-      "fullNameRequired": "ต้องระบุชื่อ-นามสกุล",
-      "usernameRequired": "ต้องระบุชื่อผู้ใช้",
-      "invalidEmail": "อีเมลไม่ถูกต้อง",
-      "roleRequired": "ต้องเลือกบทบาท",
-      "tenantRequired": "ต้องระบุผู้เช่า",
-      "duplicateAssignment": "ผู้ใช้ถูกมอบหมายให้ผู้เช่ารายนี้แล้ว",
-      "passwordRequired": "ต้องระบุรหัสผ่าน"
-    },
-    "colUserInfo": "ผู้ใช้",
-    "colTenants": "ผู้เช่าและบทบาท",
-    "colActions": "การดำเนินการ",
-    "colCreated": "วันที่สร้าง",
-    "badgeMore": "+{count} เพิ่มเติม",
-    "noAssignments": "ไม่มีการมอบหมาย",
-    "drawer": {
-      "editTitle": "แก้ไขผู้ใช้ — {name}",
-      "profileSection": "ข้อมูลส่วนตัว",
-      "assignmentsSection": "การมอบหมายผู้เช่าและบทบาท",
-      "addAssignmentSection": "มอบหมายให้ผู้เช่ารายใหม่",
-      "saveChanges": "บันทึกการเปลี่ยนแปลง"
-    },
-    "assignTenant": "มอบหมายผู้เช่า",
-    "tenantCount": "{count} ผู้เช่า",
-    "removeAssignment": "ลบ",
-    "addAssignment": "เพิ่มการมอบหมาย",
-    "error": {
-      "createFailed": "เพิ่มผู้ใช้ไม่สำเร็จ",
-      "updateFailed": "อัปเดตผู้ใช้ไม่สำเร็จ",
-      "deleteFailed": "ลบผู้ใช้ไม่สำเร็จ",
-      "loadFailed": "โหลดข้อมูลผู้ใช้ไม่สำเร็จ"
-    },
-    "pagination": {
-      "previous": "ก่อนหน้า",
-      "next": "ถัดไป",
-      "showing": "แสดง {start}-{end} จาก {total}",
-      "totalItems": "{total} ผู้ใช้"
-    },
-    "tenants": {
-      "title": "ผู้เช่า",
-      "searchPlaceholder": "ค้นหาผู้เช่า...",
-      "addTenant": "เพิ่มผู้เช่า",
-      "colName": "ชื่อ",
-      "colParent": "ผู้เช่าหลัก",
-      "colCreated": "วันที่สร้าง",
-      "colActions": "การดำเนินการ",
-      "rootLabel": "ราก",
-      "modal": {
-        "addTitle": "เพิ่มผู้เช่า",
-        "editTitle": "แก้ไขผู้เช่า",
-        "deleteTitle": "ลบผู้เช่า",
-        "deleteConfirmation": "คุณแน่ใจหรือว่าต้องการลบผู้เช่า \"{name}\"?",
-        "nameLabel": "ชื่อ",
-        "namePlaceholder": "กรอกชื่อผู้เช่า",
-        "parentLabel": "ผู้เช่าหลัก",
-        "parentPlaceholder": "เลือกผู้เช่าหลัก"
-      },
-      "validation": {
-        "nameRequired": "กรุณากรอกชื่อผู้เช่า",
-        "parentRequired": "กรุณาเลือกผู้เช่าหลัก"
-      },
-      "success": {
-        "created": "เพิ่มผู้เช่าสำเร็จ",
-        "updated": "อัปเดตผู้เช่าสำเร็จ",
-        "deleted": "ลบผู้เช่าสำเร็จ"
-      },
-      "error": {
-        "createFailed": "เพิ่มผู้เช่าไม่สำเร็จ",
-        "updateFailed": "อัปเดตผู้เช่าไม่สำเร็จ",
-        "deleteFailed": "ลบผู้เช่าไม่สำเร็จ",
-        "loadFailed": "โหลดข้อมูลผู้เช่าไม่สำเร็จ"
-      }
-    },
-    "roles": {
-      "title": "บทบาท",
+      "title": "สิทธิ์",
       "searchPlaceholder": "ค้นหาบทบาท...",
       "addRole": "เพิ่มบทบาท",
       "colName": "ชื่อ",
-      "colTenant": "ผู้เช่า",
+      "colTenant": "แผนก",
       "colCreated": "วันที่สร้าง",
       "colActions": "การดำเนินการ",
       "modal": {
@@ -547,12 +440,12 @@
         "deleteConfirmation": "คุณแน่ใจหรือว่าต้องการลบบทบาท \"{name}\"?",
         "nameLabel": "ชื่อ",
         "namePlaceholder": "กรอกชื่อบทบาท",
-        "tenantLabel": "ผู้เช่า",
-        "tenantPlaceholder": "เลือกผู้เช่า"
+        "tenantLabel": "แผนก",
+        "tenantPlaceholder": "เลือกแผนก"
       },
       "validation": {
         "nameRequired": "กรุณากรอกชื่อบทบาท",
-        "tenantRequired": "กรุณาเลือกผู้เช่า"
+        "tenantRequired": "กรุณาเลือกแผนก"
       },
       "success": {
         "created": "เพิ่มบทบาทสำเร็จ",
@@ -570,10 +463,10 @@
         "selectRole": "เลือกบทบาทเพื่อจัดการสิทธิ์",
         "categories": {
           "bankTransaction": "ธนาคารและธุรกรรม",
-          "tenant": "ผู้เช่า",
-          "tenantRole": "บทบาทผู้เช่า",
-          "tenantPermission": "สิทธิ์ผู้เช่า",
-          "tenantUser": "ผู้ใช้ผู้เช่า",
+          "tenant": "แผนก",
+          "tenantRole": "บทบาทแผนก",
+          "tenantPermission": "สิทธิ์แผนก",
+          "tenantUser": "ผู้ใช้แผนก",
           "user": "ผู้ใช้"
         },
         "success": {
@@ -584,6 +477,106 @@
           "permissionAddFailed": "เพิ่มสิทธิ์ไม่สำเร็จ",
           "permissionRemoveFailed": "ลบสิทธิ์ไม่สำเร็จ"
         }
+      }
+    },
+    "modal": {
+      "addTitle": "เพิ่มผู้ใช้",
+      "editTitle": "แก้ไขผู้ใช้",
+      "deleteTitle": "ลบผู้ใช้",
+      "roleLabel": "บทบาท",
+      "rolePlaceholder": "เลือกบทบาท",
+      "fullNameLabel": "ชื่อ-นามสกุล",
+      "fullNamePlaceholder": "กรอกชื่อ-นามสกุล",
+      "usernameLabel": "ชื่อผู้ใช้",
+      "usernamePlaceholder": "กรอกชื่อผู้ใช้",
+      "emailLabel": "อีเมล",
+      "emailPlaceholder": "กรอกอีเมล",
+      "phoneLabel": "เบอร์โทรศัพท์",
+      "phonePlaceholder": "กรอกเบอร์โทรศัพท์",
+      "statusLabel": "สถานะ",
+      "deleteConfirmation": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ \"${userName}\"?",
+      "assignTitle": "มอบหมายแผนก",
+      "editAssignmentTitle": "แก้ไขการมอบหมาย",
+      "removeAssignmentTitle": "ลบการมอบหมาย",
+      "removeAssignmentConfirmation": "คุณแน่ใจหรือไม่ที่จะลบการมอบหมายของ \"{userName}\" ใน \"{tenantName}\"?",
+      "tenantLabel": "แผนก",
+      "tenantPlaceholder": "เลือกแผนก",
+      "permissionsLabel": "สิทธิ์",
+      "assign": "มอบหมาย",
+      "passwordLabel": "รหัสผ่าน",
+      "passwordPlaceholder": "กรอกรหัสผ่าน"
+    },
+    "validation": {
+      "fullNameRequired": "ต้องระบุชื่อ-นามสกุล",
+      "usernameRequired": "ต้องระบุชื่อผู้ใช้",
+      "invalidEmail": "อีเมลไม่ถูกต้อง",
+      "roleRequired": "ต้องเลือกบทบาท",
+      "tenantRequired": "ต้องระบุแผนก",
+      "duplicateAssignment": "ผู้ใช้ถูกมอบหมายให้แผนกนี้แล้ว",
+      "passwordRequired": "ต้องระบุรหัสผ่าน"
+    },
+    "colUserInfo": "ผู้ใช้",
+    "colTenants": "แผนกและบทบาท",
+    "colActions": "การดำเนินการ",
+    "colCreated": "วันที่สร้าง",
+    "badgeMore": "+{count} เพิ่มเติม",
+    "noAssignments": "ไม่มีการมอบหมาย",
+    "drawer": {
+      "editTitle": "แก้ไขผู้ใช้ — {name}",
+      "profileSection": "ข้อมูลส่วนตัว",
+      "assignmentsSection": "การมอบหมายแผนกและบทบาท",
+      "addAssignmentSection": "มอบหมายให้แผนกใหม่",
+      "saveChanges": "บันทึกการเปลี่ยนแปลง"
+    },
+    "assignTenant": "มอบหมายแผนก",
+    "tenantCount": "{count} แผนก",
+    "removeAssignment": "ลบ",
+    "addAssignment": "เพิ่มการมอบหมาย",
+    "error": {
+      "createFailed": "เพิ่มผู้ใช้ไม่สำเร็จ",
+      "updateFailed": "อัปเดตผู้ใช้ไม่สำเร็จ",
+      "deleteFailed": "ลบผู้ใช้ไม่สำเร็จ",
+      "loadFailed": "โหลดข้อมูลผู้ใช้ไม่สำเร็จ"
+    },
+    "pagination": {
+      "previous": "ก่อนหน้า",
+      "next": "ถัดไป",
+      "showing": "แสดง {start}-{end} จาก {total}",
+      "totalItems": "{total} ผู้ใช้"
+    },
+    "tenants": {
+      "title": "แผนก",
+      "searchPlaceholder": "ค้นหาแผนก...",
+      "addTenant": "เพิ่มแผนก",
+      "colName": "ชื่อ",
+      "colParent": "ผู้เช่าหลัก",
+      "colCreated": "วันที่สร้าง",
+      "colActions": "การดำเนินการ",
+      "rootLabel": "ราก",
+      "modal": {
+        "addTitle": "เพิ่มแผนก",
+        "editTitle": "แก้ไขแผนก",
+        "deleteTitle": "ลบแผนก",
+        "deleteConfirmation": "คุณแน่ใจหรือว่าต้องการลบแผนก \"{name}\"?",
+        "nameLabel": "ชื่อ",
+        "namePlaceholder": "กรอกชื่อแผนก",
+        "parentLabel": "แผนกหลัก",
+        "parentPlaceholder": "เลือกแผนกหลัก"
+      },
+      "validation": {
+        "nameRequired": "กรุณากรอกชื่อแผนก",
+        "parentRequired": "กรุณาเลือกแผนกหลัก"
+      },
+      "success": {
+        "created": "เพิ่มแผนกสำเร็จ",
+        "updated": "อัปเดตแผนกสำเร็จ",
+        "deleted": "ลบแผนกสำเร็จ"
+      },
+      "error": {
+        "createFailed": "เพิ่มแผนกไม่สำเร็จ",
+        "updateFailed": "อัปเดตแผนกไม่สำเร็จ",
+        "deleteFailed": "ลบแผนกไม่สำเร็จ",
+        "loadFailed": "โหลดข้อมูลแผนกไม่สำเร็จ"
       }
     }
   }

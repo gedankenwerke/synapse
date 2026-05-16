@@ -10,11 +10,20 @@ import {
 } from "@tabler/icons-react";
 import { useAppStore } from "@/store/useAppStore";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useQuery } from "@tanstack/react-query";
+import { tenant } from "@/services/tenant";
 
 export function UserAvatar() {
   const router = useRouter();
   const { user, setLogout } = useAppStore();
   const t = useTranslations("user");
+
+  const { data: tenants = [] } = useQuery({
+    queryKey: ["tenants"],
+    queryFn: () => tenant.list(),
+    staleTime: 60_000,
+    enabled: !!user,
+  });
 
   const handleLogout = () => {
     setLogout();
@@ -24,6 +33,18 @@ export function UserAvatar() {
   const initials = user?.username
     ? user.username.substring(0, 2).toUpperCase()
     : "U";
+
+  const tenantName = user?.tenant_id
+    ? tenants.find((t) => t.id === user.tenant_id)?.name
+    : undefined;
+
+  const roleLabel = user?.isSuperAdmin
+    ? t("role.superAdmin")
+    : undefined;
+
+  const subtitle = tenantName && roleLabel
+    ? `${tenantName} / ${roleLabel}`
+    : tenantName ?? roleLabel ?? t("role.superAdmin");
 
   return (
     <Menu shadow="md" width={200}>
@@ -38,7 +59,7 @@ export function UserAvatar() {
                 {user?.username ?? t("unknown")}
               </Text>
               <Text size="xs" c="dimmed">
-                {t("role.superAdmin")}
+                {subtitle}
               </Text>
             </div>
           </Group>

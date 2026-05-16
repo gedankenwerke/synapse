@@ -400,8 +400,8 @@
     "addUser": "Add User",
     "tab": {
       "users": "Users",
-      "tenants": "Tenants",
-      "roles": "Roles",
+      "tenants": "Departments",
+      "roles": "Permissions",
       "userRole": "User Role",
       "username": "Username",
       "activityLog": "Activity Log"
@@ -409,8 +409,8 @@
     "comingSoon": {
       "userRole": "User Role content coming soon",
       "activityLog": "Activity Log content coming soon",
-      "tenants": "Tenant & role management coming soon",
-      "roles": "Role management coming soon"
+      "tenants": "Department & role management coming soon",
+      "roles": "Permission management coming soon"
     },
     "success": {
       "userAdded": "User added successfully",
@@ -426,118 +426,11 @@
     "colDateCreated": "Date Created",
     "colStatus": "Status",
     "roles": {
-      "superAdmin": "Super Admin",
-      "admin": "Admin",
-      "manager": "Manager",
-      "staff": "Staff",
-      "viewer": "Viewer"
-    },
-    "modal": {
-      "addTitle": "Add User",
-      "editTitle": "Edit User",
-      "deleteTitle": "Delete User",
-      "roleLabel": "Role",
-      "rolePlaceholder": "Select role",
-      "fullNameLabel": "Full Name",
-      "fullNamePlaceholder": "Enter full name",
-      "usernameLabel": "Username",
-      "usernamePlaceholder": "Enter username",
-      "emailLabel": "Email",
-      "emailPlaceholder": "Enter email address",
-      "phoneLabel": "Phone Number",
-      "phonePlaceholder": "Enter phone number",
-      "statusLabel": "Status",
-      "deleteConfirmation": "Are you sure you want to delete user \"${userName}\"?",
-      "assignTitle": "Assign Tenant",
-      "editAssignmentTitle": "Edit Assignment",
-      "removeAssignmentTitle": "Remove Assignment",
-      "removeAssignmentConfirmation": "Are you sure you want to remove the assignment for \"{userName}\" in \"{tenantName}\"?",
-      "tenantLabel": "Tenant",
-      "tenantPlaceholder": "Select tenant",
-      "permissionsLabel": "Permissions",
-      "assign": "Assign",
-      "passwordLabel": "Password",
-      "passwordPlaceholder": "Enter password"
-    },
-    "validation": {
-      "fullNameRequired": "Full name is required",
-      "usernameRequired": "Username is required",
-      "invalidEmail": "Invalid email address",
-      "roleRequired": "Role is required",
-      "tenantRequired": "Tenant is required",
-      "duplicateAssignment": "User is already assigned to this tenant",
-      "passwordRequired": "Password is required"
-    },
-    "colUserInfo": "User",
-    "colTenants": "Tenants & Roles",
-    "colActions": "Actions",
-    "colCreated": "Created",
-    "badgeMore": "+{count} more",
-    "noAssignments": "No assignments",
-    "drawer": {
-      "editTitle": "Edit User — {name}",
-      "profileSection": "Profile",
-      "assignmentsSection": "Tenant & Role Assignments",
-      "addAssignmentSection": "Assign to New Tenant",
-      "saveChanges": "Save Changes"
-    },
-    "assignTenant": "Assign Tenant",
-    "tenantCount": "{count} tenant(s)",
-    "removeAssignment": "Remove",
-    "addAssignment": "Add Assignment",
-    "error": {
-      "createFailed": "Failed to create user",
-      "updateFailed": "Failed to update user",
-      "deleteFailed": "Failed to delete user",
-      "loadFailed": "Failed to load users"
-    },
-    "pagination": {
-      "previous": "Previous",
-      "next": "Next",
-      "showing": "Showing {start}-{end} of {total}",
-      "totalItems": "{total} users"
-    },
-    "tenants": {
-      "title": "Tenants",
-      "searchPlaceholder": "Search tenants...",
-      "addTenant": "Add Tenant",
-      "colName": "Name",
-      "colParent": "Parent",
-      "colCreated": "Created",
-      "colActions": "Actions",
-      "rootLabel": "Root",
-      "modal": {
-        "addTitle": "Add Tenant",
-        "editTitle": "Edit Tenant",
-        "deleteTitle": "Delete Tenant",
-        "deleteConfirmation": "Are you sure you want to delete tenant \"{name}\"?",
-        "nameLabel": "Name",
-        "namePlaceholder": "Enter tenant name",
-        "parentLabel": "Parent Tenant",
-        "parentPlaceholder": "Select parent tenant"
-      },
-      "validation": {
-        "nameRequired": "Tenant name is required",
-        "parentRequired": "Parent tenant is required"
-      },
-      "success": {
-        "created": "Tenant created successfully",
-        "updated": "Tenant updated successfully",
-        "deleted": "Tenant deleted successfully"
-      },
-      "error": {
-        "createFailed": "Failed to create tenant",
-        "updateFailed": "Failed to update tenant",
-        "deleteFailed": "Failed to delete tenant",
-        "loadFailed": "Failed to load tenants"
-      }
-    },
-    "roles": {
-      "title": "Roles",
+      "title": "Permissions",
       "searchPlaceholder": "Search roles...",
       "addRole": "Add Role",
       "colName": "Name",
-      "colTenant": "Tenant",
+      "colTenant": "Department",
       "colCreated": "Created",
       "colActions": "Actions",
       "modal": {
@@ -547,12 +440,12 @@
         "deleteConfirmation": "Are you sure you want to delete role \"{name}\"?",
         "nameLabel": "Name",
         "namePlaceholder": "Enter role name",
-        "tenantLabel": "Tenant",
-        "tenantPlaceholder": "Select tenant"
+        "tenantLabel": "Department",
+        "tenantPlaceholder": "Select department"
       },
       "validation": {
         "nameRequired": "Role name is required",
-        "tenantRequired": "Tenant is required"
+        "tenantRequired": "Department is required"
       },
       "success": {
         "created": "Role created successfully",
@@ -570,10 +463,10 @@
         "selectRole": "Select a role to manage permissions",
         "categories": {
           "bankTransaction": "Bank & Transaction",
-          "tenant": "Tenant",
-          "tenantRole": "Tenant Role",
-          "tenantPermission": "Tenant Permission",
-          "tenantUser": "Tenant User",
+          "tenant": "Department",
+          "tenantRole": "Department Role",
+          "tenantPermission": "Department Permission",
+          "tenantUser": "Department User",
           "user": "User"
         },
         "success": {
@@ -584,6 +477,106 @@
           "permissionAddFailed": "Failed to add permission",
           "permissionRemoveFailed": "Failed to remove permission"
         }
+      }
+    },
+    "modal": {
+      "addTitle": "Add User",
+      "editTitle": "Edit User",
+      "deleteTitle": "Delete User",
+      "roleLabel": "Role",
+      "rolePlaceholder": "Select role",
+      "fullNameLabel": "Full Name",
+      "fullNamePlaceholder": "Enter full name",
+      "usernameLabel": "Username",
+      "usernamePlaceholder": "Enter username",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Enter email address",
+      "phoneLabel": "Phone Number",
+      "phonePlaceholder": "Enter phone number",
+      "statusLabel": "Status",
+      "deleteConfirmation": "Are you sure you want to delete user \"${userName}\"?",
+      "assignTitle": "Assign Department",
+      "editAssignmentTitle": "Edit Assignment",
+      "removeAssignmentTitle": "Remove Assignment",
+      "removeAssignmentConfirmation": "Are you sure you want to remove the assignment for \"{userName}\" in \"{tenantName}\"?",
+      "tenantLabel": "Department",
+      "tenantPlaceholder": "Select department",
+      "permissionsLabel": "Permissions",
+      "assign": "Assign",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter password"
+    },
+    "validation": {
+      "fullNameRequired": "Full name is required",
+      "usernameRequired": "Username is required",
+      "invalidEmail": "Invalid email address",
+      "roleRequired": "Role is required",
+      "tenantRequired": "Department is required",
+      "duplicateAssignment": "User is already assigned to this department",
+      "passwordRequired": "Password is required"
+    },
+    "colUserInfo": "User",
+    "colTenants": "Departments & Roles",
+    "colActions": "Actions",
+    "colCreated": "Created",
+    "badgeMore": "+{count} more",
+    "noAssignments": "No assignments",
+    "drawer": {
+      "editTitle": "Edit User — {name}",
+      "profileSection": "Profile",
+      "assignmentsSection": "Department & Role Assignments",
+      "addAssignmentSection": "Assign to New Department",
+      "saveChanges": "Save Changes"
+    },
+    "assignTenant": "Assign Department",
+    "tenantCount": "{count} department(s)",
+    "removeAssignment": "Remove",
+    "addAssignment": "Add Assignment",
+    "error": {
+      "createFailed": "Failed to create user",
+      "updateFailed": "Failed to update user",
+      "deleteFailed": "Failed to delete user",
+      "loadFailed": "Failed to load users"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "showing": "Showing {start}-{end} of {total}",
+      "totalItems": "{total} users"
+    },
+    "tenants": {
+      "title": "Departments",
+      "searchPlaceholder": "Search departments...",
+      "addTenant": "Add Department",
+      "colName": "Name",
+      "colParent": "Parent",
+      "colCreated": "Created",
+      "colActions": "Actions",
+      "rootLabel": "Root",
+      "modal": {
+        "addTitle": "Add Department",
+        "editTitle": "Edit Department",
+        "deleteTitle": "Delete Department",
+        "deleteConfirmation": "Are you sure you want to delete department \"{name}\"?",
+        "nameLabel": "Name",
+        "namePlaceholder": "Enter department name",
+        "parentLabel": "Parent Department",
+        "parentPlaceholder": "Select parent department"
+      },
+      "validation": {
+        "nameRequired": "Department name is required",
+        "parentRequired": "Parent department is required"
+      },
+      "success": {
+        "created": "Department created successfully",
+        "updated": "Department updated successfully",
+        "deleted": "Department deleted successfully"
+      },
+      "error": {
+        "createFailed": "Failed to create department",
+        "updateFailed": "Failed to update department",
+        "deleteFailed": "Failed to delete department",
+        "loadFailed": "Failed to load departments"
       }
     }
   }
