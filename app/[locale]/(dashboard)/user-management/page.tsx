@@ -18,6 +18,11 @@ import { UserTable } from "./_components/UsersTab/UsersTable";
 import { UserPagination } from "./_components/UsersTab/UsersPagination";
 import { EditUserDrawer } from "./_components/UsersTab/EditUserDrawer";
 import {
+  useCreateTenantUser,
+  useUpdateTenantUser,
+  useDeleteTenantUser,
+} from "./hooks/useTenantUserMutations";
+import {
   AddUserModal,
   DeleteConfirmModal,
 } from "./_components/UsersTab/UserModals";
@@ -51,6 +56,7 @@ import {
   useDeleteTenantRole,
 } from "./hooks/useTenantRoleMutations";
 import type { TenantRoleCreateRequest, TenantRoleUpdateRequest } from "@/services/tenant-role/types";
+import { useTenantUsersQuery } from "./hooks/useTenantUsersQuery";
 import { useTenantPermissionsQuery } from "./hooks/useTenantPermissionsQuery";
 import {
   useCreateTenantPermission,
@@ -85,8 +91,37 @@ export default function UserManagementPage() {
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
   const deleteUser = useDeleteUser();
+  const createTenantUser = useCreateTenantUser();
+  const updateTenantUser = useUpdateTenantUser();
+  const deleteTenantUser = useDeleteTenantUser();
 
-  const users: UserData[] = usersData?.pages.flatMap((p) => p.items.map(mapApiUserToUserData)) ?? [];
+  const { data: tenantUsers = [] } = useTenantUsersQuery();
+  const { data: tenants = [] } = useTenantsQuery();
+  const { data: roles = [] } = useTenantRolesQuery();
+  const { data: permissions = [] } = useTenantPermissionsQuery();
+
+  const tenantMap = new Map(tenants.map((t) => [t.id, t.name]));
+  const roleMap = new Map(roles.map((r) => [r.id, r.name]));
+  const permissionMap = new Map<string, string[]>();
+  for (const p of permissions) {
+    const list = permissionMap.get(p.role_id) ?? [];
+    list.push(p.action);
+    permissionMap.set(p.role_id, list);
+  }
+
+  const users: UserData[] = (usersData?.pages.flatMap((p) => p.items.map(mapApiUserToUserData)) ?? []).map((user) => {
+    const assignments: AssignmentData[] = tenantUsers
+      .filter((tu) => tu.user_id === user.id)
+      .map((tu) => ({
+        id: tu.id,
+        tenantId: tu.tenant_id,
+        tenantName: tenantMap.get(tu.tenant_id) ?? "—",
+        roleId: tu.tenant_role_id,
+        roleName: roleMap.get(tu.tenant_role_id) ?? "—",
+        permissions: permissionMap.get(tu.tenant_role_id) ?? [],
+      }));
+    return { ...user, assignments };
+  });
   const totalItems = usersData?.pages[0]?.total ?? users.length;
 
   const handleAddUser = (formData: UserFormValues) => {
@@ -109,11 +144,35 @@ export default function UserManagementPage() {
 
   const handleEdit = (user: UserData) => { setSelectedUser(user); openEdit(); };
 
-  const handleSave = (updatedUser: UserData, _updatedAssignments: AssignmentData[]) => {
+  const handleSave = (updatedUser: UserData, updatedAssignments: AssignmentData[]) => {
+    const originalAssignments = selectedUser?.assignments ?? [];
+    const added = updatedAssignments.filter((a) => a.id.startsWith("new-"));
+    const removed = originalAssignments.filter(
+      (orig) => !updatedAssignments.some((a) => a.id === orig.id)
+    );
+    const changed = updatedAssignments.filter((a) => {
+      if (a.id.startsWith("new-")) return false;
+      const orig = originalAssignments.find((o) => o.id === a.id);
+      return orig && orig.roleId !== a.roleId;
+    });
+
     updateUser.mutate(
       { id: updatedUser.id, data: { username: updatedUser.username, tenant_id: currentTenantId } },
       {
         onSuccess: () => {
+          added.forEach((a) => {
+            createTenantUser.mutate({
+              user_id: updatedUser.id,
+              tenant_id: a.tenantId,
+              tenant_role_id: a.roleId,
+            });
+          });
+          removed.forEach((a) => {
+            deleteTenantUser.mutate(a.id);
+          });
+          changed.forEach((a) => {
+            updateTenantUser.mutate({ id: a.id, data: { tenant_role_id: a.roleId } });
+          });
           closeEdit();
           notifications.show({ title: tc("success"), message: t("success.userUpdated"), color: "green" });
         },
@@ -149,7 +208,7 @@ export default function UserManagementPage() {
   const [deleteTenantOpened, { open: openDeleteTenant, close: closeDeleteTenant }] = useDisclosure(false);
   const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
 
-  const { data: tenants = [], isLoading: tenantsLoading } = useTenantsQuery();
+  const { isLoading: tenantsLoading } = useTenantsQuery();
   const createTenant = useCreateTenant();
   const updateTenant = useUpdateTenant();
   const deleteTenant = useDeleteTenant();
@@ -213,13 +272,13 @@ export default function UserManagementPage() {
   const [roleDrawerOpened, { open: openRoleDrawer, close: closeRoleDrawer }] = useDisclosure(false);
   const [drawerRole, setDrawerRole] = useState<TenantRole | null>(null);
 
-  const { data: roles = [], isLoading: rolesLoading } = useTenantRolesQuery();
+  const { isLoading: rolesLoading } = useTenantRolesQuery();
   const createRole = useCreateTenantRole();
   const updateRole = useUpdateTenantRole();
   const deleteRole = useDeleteTenantRole();
 
   // ── Role permissions ──
-  const { data: permissions = [], isLoading: permissionsLoading } = useTenantPermissionsQuery();
+  const { isLoading: permissionsLoading } = useTenantPermissionsQuery();
   const createPerm = useCreateTenantPermission();
   const deletePerm = useDeleteTenantPermission();
 

@@ -112,7 +112,8 @@
       "colUser": "ผู้ใช้",
       "colType": "ประเภท",
       "colAmount": "จำนวน",
-      "colStatus": "สถานะ"
+      "colStatus": "สถานะ",
+      "noData": "ไม่มีรายการธุรกรรมล่าสุด"
     }
   },
   "status": {

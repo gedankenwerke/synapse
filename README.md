@@ -8,7 +8,7 @@ Internal Organization System — a Next.js admin dashboard with Thai/English loc
 - **Mantine 9** — UI components
 - **next-intl** — i18n with `[locale]` URL routing
 - **Zustand** — client state management
-- **Tailwind CSS** — utility styling
+- **No Tailwind** — Mantine-only styling (no Tailwind)
 - **TypeScript**
 
 ## Getting Started
@@ -99,8 +99,8 @@ proxy.ts                  # Middleware (locale routing + auth guard)
 | Transaction | `POST /search-transaction-history` | `transaction.ts` | `/deposits-withdrawals` | ✅ Done |
 | User | `GET/POST /users`, `GET/PUT/DELETE /users/{id}` | `user.ts` | `/user-management` | ✅ Done |
 | Policy | `GET /policies`, `POST /policies/reload` | `policy.ts` | — | 🔧 Service only |
-| Tenant | `GET/POST /tenants`, `GET/PUT/DELETE /tenants/{id}` | `tenant.ts` | — | 🔧 Service only |
-| TenantRole | `GET/POST /tenant-roles`, `GET/PUT/DELETE /tenant-roles/{id}` | `tenant-role.ts` | — | 🔧 Service only |
-| TenantPermission | `GET/POST /tenant-permissions`, `GET/PUT/DELETE /tenant-permissions/{id}` | `tenant-permission.ts` | — | 🔧 Service only |
-| TenantUser | `GET/POST /tenant-users`, `GET/PUT/DELETE /tenant-users/{id}` | `tenant-user.ts` | — | 🔧 Service only |
+| Tenant | `GET/POST /tenants`, `GET/PUT/DELETE /tenants/{id}` | `tenant.ts` | `/user-management` Tenants tab | ✅ Done |
+| TenantRole | `GET/POST /tenant-roles`, `GET/PUT/DELETE /tenant-roles/{id}` | `tenant-role.ts` | `/user-management` Roles tab | ✅ Done |
+| TenantPermission | `GET/POST /tenant-permissions`, `GET/PUT/DELETE /tenant-permissions/{id}` | `tenant-permission.ts` | `/user-management` Roles tab (drawer) | ✅ Done |
+| TenantUser | `GET/POST /tenant-users`, `GET/PUT/DELETE /tenant-users/{id}` | `tenant-user.ts` | `/user-management` Users tab (assignments) | ✅ Done |
 | Info | `GET /health`, `GET /scalar` | — | — | ⬜ N/A |
