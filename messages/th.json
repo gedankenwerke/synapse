@@ -112,7 +112,8 @@
       "colUser": "ผู้ใช้",
       "colType": "ประเภท",
       "colAmount": "จำนวน",
-      "colStatus": "สถานะ"
+      "colStatus": "สถานะ",
+      "noData": "ไม่มีรายการธุรกรรมล่าสุด"
     }
   },
   "status": {
@@ -401,7 +402,6 @@
       "users": "ผู้ใช้",
       "tenants": "ผู้เช่า",
       "roles": "บทบาท",
-      "permissions": "สิทธิ์",
       "userRole": "บทบาทผู้ใช้",
       "username": "ชื่อผู้ใช้",
       "activityLog": "บันทึกกิจกรรม"
@@ -564,37 +564,26 @@
         "updateFailed": "อัปเดตบทบาทไม่สำเร็จ",
         "deleteFailed": "ลบบทบาทไม่สำเร็จ",
         "loadFailed": "โหลดข้อมูลบทบาทไม่สำเร็จ"
-      }
-    },
-    "permissions": {
-      "title": "สิทธิ์",
-      "searchPlaceholder": "ค้นหาสิทธิ์...",
-      "addPermission": "เพิ่มสิทธิ์",
-      "colAction": "การดำเนินการ",
-      "colRole": "บทบาท",
-      "colCreated": "วันที่สร้าง",
-      "colActions": "การดำเนินการ",
-      "modal": {
-        "addTitle": "เพิ่มสิทธิ์",
-        "deleteTitle": "ลบสิทธิ์",
-        "deleteConfirmation": "คุณแน่ใจหรือว่าต้องการลบสิทธิ์นี้?",
-        "actionLabel": "การดำเนินการ",
-        "actionPlaceholder": "เลือกการดำเนินการ",
-        "roleLabel": "บทบาท",
-        "rolePlaceholder": "เลือกบทบาท"
       },
-      "validation": {
-        "actionRequired": "กรุณาเลือกการดำเนินการ",
-        "roleRequired": "กรุณาเลือกบทบาท"
-      },
-      "success": {
-        "created": "เพิ่มสิทธิ์สำเร็จ",
-        "deleted": "ลบสิทธิ์สำเร็จ"
-      },
-      "error": {
-        "createFailed": "เพิ่มสิทธิ์ไม่สำเร็จ",
-        "deleteFailed": "ลบสิทธิ์ไม่สำเร็จ",
-        "loadFailed": "โหลดข้อมูลสิทธิ์ไม่สำเร็จ"
+      "permissions": {
+        "title": "สิทธิ์สำหรับ {role}",
+        "selectRole": "เลือกบทบาทเพื่อจัดการสิทธิ์",
+        "categories": {
+          "bankTransaction": "ธนาคารและธุรกรรม",
+          "tenant": "ผู้เช่า",
+          "tenantRole": "บทบาทผู้เช่า",
+          "tenantPermission": "สิทธิ์ผู้เช่า",
+          "tenantUser": "ผู้ใช้ผู้เช่า",
+          "user": "ผู้ใช้"
+        },
+        "success": {
+          "permissionAdded": "เพิ่มสิทธิ์สำเร็จ",
+          "permissionRemoved": "ลบสิทธิ์สำเร็จ"
+        },
+        "error": {
+          "permissionAddFailed": "เพิ่มสิทธิ์ไม่สำเร็จ",
+          "permissionRemoveFailed": "ลบสิทธิ์ไม่สำเร็จ"
+        }
       }
     }
   }

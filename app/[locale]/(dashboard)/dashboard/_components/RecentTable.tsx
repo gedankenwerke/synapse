@@ -1,11 +1,12 @@
 "use client";
 
-import { Paper, Table, Text, Badge, ScrollArea, Group } from "@mantine/core";
+import { Paper, Table, Text, Badge, ScrollArea, Skeleton, Center } from "@mantine/core";
 import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import { RECENT_TRANSACTIONS, formatBaht, type TransactionData } from "./mockData";
+import type { DashboardTransaction } from "@/services/dashboard/types";
+import { formatBaht } from "@/services/dashboard/types";
 
-function TypeBadge({ type }: { type: TransactionData["type"] }) {
+function TypeBadge({ type }: { type: DashboardTransaction["type"] }) {
   const t = useTranslations("type");
   if (type === "Deposit") {
     return (
@@ -21,14 +22,14 @@ function TypeBadge({ type }: { type: TransactionData["type"] }) {
   );
 }
 
-function StatusBadge({ status }: { status: TransactionData["status"] }) {
+function StatusBadge({ status }: { status: DashboardTransaction["status"] }) {
   const t = useTranslations("status");
-  const colorMap: Record<TransactionData["status"], string> = {
+  const colorMap: Record<DashboardTransaction["status"], string> = {
     Pending: "yellow",
     Completed: "green",
     Rejected: "red",
   };
-  const keyMap: Record<TransactionData["status"], string> = {
+  const keyMap: Record<DashboardTransaction["status"], string> = {
     Pending: "pending",
     Completed: "completed",
     Rejected: "rejected",
@@ -40,26 +41,51 @@ function StatusBadge({ status }: { status: TransactionData["status"] }) {
   );
 }
 
-export function RecentTable() {
+interface RecentTableProps {
+  transactions: DashboardTransaction[];
+  isLoading?: boolean;
+}
+
+export function RecentTable({ transactions, isLoading }: RecentTableProps) {
   const t = useTranslations("dashboard.recentTransactions");
 
-  const rows = RECENT_TRANSACTIONS.map((txn) => (
-    <Table.Tr key={txn.id}>
-      <Table.Td>
-        <Text size="sm" fw={500}>
-          {txn.id}
-        </Text>
-      </Table.Td>
-      <Table.Td>{txn.user}</Table.Td>
-      <Table.Td>
-        <TypeBadge type={txn.type} />
-      </Table.Td>
-      <Table.Td>{formatBaht(txn.amount)}</Table.Td>
-      <Table.Td>
-        <StatusBadge status={txn.status} />
-      </Table.Td>
-    </Table.Tr>
-  ));
+  const rows = isLoading
+    ? Array.from({ length: 5 }).map((_, i) => (
+        <Table.Tr key={i}>
+          <Table.Td>
+            <Skeleton height={16} />
+          </Table.Td>
+          <Table.Td>
+            <Skeleton height={16} />
+          </Table.Td>
+          <Table.Td>
+            <Skeleton height={20} width={80} />
+          </Table.Td>
+          <Table.Td>
+            <Skeleton height={16} />
+          </Table.Td>
+          <Table.Td>
+            <Skeleton height={20} width={70} />
+          </Table.Td>
+        </Table.Tr>
+      ))
+    : transactions.map((txn) => (
+        <Table.Tr key={txn.id}>
+          <Table.Td>
+            <Text size="sm" fw={500}>
+              {txn.id}
+            </Text>
+          </Table.Td>
+          <Table.Td>{txn.user}</Table.Td>
+          <Table.Td>
+            <TypeBadge type={txn.type} />
+          </Table.Td>
+          <Table.Td>{formatBaht(txn.amount)}</Table.Td>
+          <Table.Td>
+            <StatusBadge status={txn.status} />
+          </Table.Td>
+        </Table.Tr>
+      ));
 
   return (
     <Paper shadow="sm" p="md" radius="md">
@@ -77,7 +103,19 @@ export function RecentTable() {
               <Table.Th>{t("colStatus")}</Table.Th>
             </Table.Tr>
           </Table.Thead>
-          <Table.Tbody>{rows}</Table.Tbody>
+          <Table.Tbody>
+            {!isLoading && transactions.length === 0 ? (
+              <Table.Tr>
+                <Table.Td colSpan={5}>
+                  <Center py="md">
+                    <Text c="dimmed">{t("noData")}</Text>
+                  </Center>
+                </Table.Td>
+              </Table.Tr>
+            ) : (
+              rows
+            )}
+          </Table.Tbody>
         </Table>
       </ScrollArea>
     </Paper>

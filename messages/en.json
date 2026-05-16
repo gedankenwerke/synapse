@@ -112,7 +112,8 @@
       "colUser": "User",
       "colType": "Type",
       "colAmount": "Amount",
-      "colStatus": "Status"
+      "colStatus": "Status",
+      "noData": "No recent transactions"
     }
   },
   "status": {
@@ -401,7 +402,6 @@
       "users": "Users",
       "tenants": "Tenants",
       "roles": "Roles",
-      "permissions": "Permissions",
       "userRole": "User Role",
       "username": "Username",
       "activityLog": "Activity Log"
@@ -564,37 +564,26 @@
         "updateFailed": "Failed to update role",
         "deleteFailed": "Failed to delete role",
         "loadFailed": "Failed to load roles"
-      }
-    },
-    "permissions": {
-      "title": "Permissions",
-      "searchPlaceholder": "Search permissions...",
-      "addPermission": "Add Permission",
-      "colAction": "Action",
-      "colRole": "Role",
-      "colCreated": "Created",
-      "colActions": "Actions",
-      "modal": {
-        "addTitle": "Add Permission",
-        "deleteTitle": "Delete Permission",
-        "deleteConfirmation": "Are you sure you want to delete this permission?",
-        "actionLabel": "Action",
-        "actionPlaceholder": "Select action",
-        "roleLabel": "Role",
-        "rolePlaceholder": "Select role"
       },
-      "validation": {
-        "actionRequired": "Action is required",
-        "roleRequired": "Role is required"
-      },
-      "success": {
-        "created": "Permission created successfully",
-        "deleted": "Permission deleted successfully"
-      },
-      "error": {
-        "createFailed": "Failed to create permission",
-        "deleteFailed": "Failed to delete permission",
-        "loadFailed": "Failed to load permissions"
+      "permissions": {
+        "title": "Permissions for {role}",
+        "selectRole": "Select a role to manage permissions",
+        "categories": {
+          "bankTransaction": "Bank & Transaction",
+          "tenant": "Tenant",
+          "tenantRole": "Tenant Role",
+          "tenantPermission": "Tenant Permission",
+          "tenantUser": "Tenant User",
+          "user": "User"
+        },
+        "success": {
+          "permissionAdded": "Permission added",
+          "permissionRemoved": "Permission removed"
+        },
+        "error": {
+          "permissionAddFailed": "Failed to add permission",
+          "permissionRemoveFailed": "Failed to remove permission"
+        }
       }
     }
   }

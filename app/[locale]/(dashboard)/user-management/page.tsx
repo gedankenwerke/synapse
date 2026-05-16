@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Container, Tabs, Stack, Text, Center, Loader } from "@mantine/core";
+import { Container, Tabs, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
@@ -13,7 +13,6 @@ import { mapApiUserToUserData } from "@/services/user/types";
 import type { UserData, AssignmentData } from "@/services/user/types";
 import type { Tenant } from "@/services/tenant/types";
 import type { TenantRole } from "@/services/tenant-role/types";
-import type { TenantPermission } from "@/services/tenant-permission/types";
 import { UserToolbar } from "./_components/UsersTab/UsersToolbar";
 import { UserTable } from "./_components/UsersTab/UsersTable";
 import { UserPagination } from "./_components/UsersTab/UsersPagination";
@@ -39,6 +38,7 @@ import {
 import type { TenantCreateRequest, TenantUpdateRequest } from "@/services/tenant/types";
 import { RolesToolbar } from "./_components/RolesTab/RolesToolbar";
 import { RolesTable } from "./_components/RolesTab/RolesTable";
+import { EditRoleDrawer } from "./_components/RolesTab/EditRoleDrawer";
 import {
   AddRoleModal,
   EditRoleModal,
@@ -51,18 +51,11 @@ import {
   useDeleteTenantRole,
 } from "./hooks/useTenantRoleMutations";
 import type { TenantRoleCreateRequest, TenantRoleUpdateRequest } from "@/services/tenant-role/types";
-import { PermissionsToolbar } from "./_components/PermissionsTab/PermissionsToolbar";
-import { PermissionsTable } from "./_components/PermissionsTab/PermissionsTable";
-import {
-  AddPermissionModal,
-  DeletePermissionModal,
-} from "./_components/PermissionsTab/PermissionsModals";
 import { useTenantPermissionsQuery } from "./hooks/useTenantPermissionsQuery";
 import {
   useCreateTenantPermission,
   useDeleteTenantPermission,
 } from "./hooks/useTenantPermissionMutations";
-import type { TenantPermissionCreateRequest } from "@/services/tenant-permission/types";
 
 export default function UserManagementPage() {
   const t = useTranslations("userManagement");
@@ -217,11 +210,22 @@ export default function UserManagementPage() {
   const [editRoleOpened, { open: openEditRole, close: closeEditRole }] = useDisclosure(false);
   const [deleteRoleOpened, { open: openDeleteRole, close: closeDeleteRole }] = useDisclosure(false);
   const [selectedRole, setSelectedRole] = useState<TenantRole | null>(null);
+  const [roleDrawerOpened, { open: openRoleDrawer, close: closeRoleDrawer }] = useDisclosure(false);
+  const [drawerRole, setDrawerRole] = useState<TenantRole | null>(null);
 
   const { data: roles = [], isLoading: rolesLoading } = useTenantRolesQuery();
   const createRole = useCreateTenantRole();
   const updateRole = useUpdateTenantRole();
   const deleteRole = useDeleteTenantRole();
+
+  // ── Role permissions ──
+  const { data: permissions = [], isLoading: permissionsLoading } = useTenantPermissionsQuery();
+  const createPerm = useCreateTenantPermission();
+  const deletePerm = useDeleteTenantPermission();
+
+  const rolePermissions = drawerRole
+    ? permissions.filter((p) => p.role_id === drawerRole.id)
+    : [];
 
   const filteredRoles = roles.filter((r) =>
     r.name.toLowerCase().includes(debouncedRoleSearch.toLowerCase())
@@ -240,7 +244,11 @@ export default function UserManagementPage() {
     });
   };
 
-  const handleEditRole = (role: TenantRole) => { setSelectedRole(role); openEditRole(); };
+  const handleEditRole = (role: TenantRole) => {
+    setSelectedRole(role);
+    setDrawerRole(role);
+    openRoleDrawer();
+  };
 
   const handleUpdateRole = (data: TenantRoleUpdateRequest) => {
     if (!selectedRole) return;
@@ -272,48 +280,34 @@ export default function UserManagementPage() {
     });
   };
 
-  // ── Permissions state ──
-  const [permSearch, setPermSearch] = useState("");
-  const [debouncedPermSearch] = useDebouncedValue(permSearch, 300);
-  const [addPermOpened, { open: openAddPerm, close: closeAddPerm }] = useDisclosure(false);
-  const [deletePermOpened, { open: openDeletePerm, close: closeDeletePerm }] = useDisclosure(false);
-  const [selectedPerm, setSelectedPerm] = useState<TenantPermission | null>(null);
-
-  const { data: permissions = [], isLoading: permissionsLoading } = useTenantPermissionsQuery();
-  const createPerm = useCreateTenantPermission();
-  const deletePerm = useDeleteTenantPermission();
-
-  const filteredPermissions = permissions.filter((p) =>
-    p.action.toLowerCase().includes(debouncedPermSearch.toLowerCase())
-  );
-
-  const handleAddPermission = (data: TenantPermissionCreateRequest) => {
-    createPerm.mutate(data, {
-      onSuccess: () => {
-        closeAddPerm();
-        notifications.show({ title: tc("success"), message: t("permissions.success.created"), color: "green" });
-      },
-      onError: (err: any) => {
-        const msg = err?.message || t("permissions.error.createFailed");
-        notifications.show({ title: tc("error"), message: msg, color: "red" });
-      },
-    });
-  };
-
-  const handleDeletePermission = (perm: TenantPermission) => { setSelectedPerm(perm); openDeletePerm(); };
-
-  const handleDeletePermConfirm = () => {
-    if (!selectedPerm) return;
-    deletePerm.mutate(selectedPerm.id, {
-      onSuccess: () => {
-        closeDeletePerm();
-        notifications.show({ title: tc("success"), message: t("permissions.success.deleted"), color: "green" });
-      },
-      onError: (err: any) => {
-        const msg = err?.message || t("permissions.error.deleteFailed");
-        notifications.show({ title: tc("error"), message: msg, color: "red" });
-      },
-    });
+  const handleTogglePermission = (action: string, enabled: boolean) => {
+    if (!drawerRole) return;
+    if (enabled) {
+      createPerm.mutate(
+        { action, role_id: drawerRole.id },
+        {
+          onSuccess: () => {
+            notifications.show({ title: tc("success"), message: t("roles.permissions.success.permissionAdded"), color: "green" });
+          },
+          onError: (err: any) => {
+            const msg = err?.message || t("roles.permissions.error.permissionAddFailed");
+            notifications.show({ title: tc("error"), message: msg, color: "red" });
+          },
+        }
+      );
+    } else {
+      const perm = permissions.find((p) => p.role_id === drawerRole.id && p.action === action);
+      if (!perm) return;
+      deletePerm.mutate(perm.id, {
+        onSuccess: () => {
+          notifications.show({ title: tc("success"), message: t("roles.permissions.success.permissionRemoved"), color: "green" });
+        },
+        onError: (err: any) => {
+          const msg = err?.message || t("roles.permissions.error.permissionRemoveFailed");
+          notifications.show({ title: tc("error"), message: msg, color: "red" });
+        },
+      });
+    }
   };
 
   if (queryError) {
@@ -333,7 +327,6 @@ export default function UserManagementPage() {
           <Tabs.Tab value="users">{t("tab.users")}</Tabs.Tab>
           <Tabs.Tab value="tenants">{t("tab.tenants")}</Tabs.Tab>
           <Tabs.Tab value="roles">{t("tab.roles")}</Tabs.Tab>
-          <Tabs.Tab value="permissions">{t("tab.permissions")}</Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="users">
@@ -381,22 +374,6 @@ export default function UserManagementPage() {
             />
           </Stack>
         </Tabs.Panel>
-
-        <Tabs.Panel value="permissions">
-          <Stack gap="md">
-            <PermissionsToolbar
-              searchValue={permSearch}
-              onSearchChange={setPermSearch}
-              onAddPermission={openAddPerm}
-            />
-            <PermissionsTable
-              data={filteredPermissions}
-              roles={roles}
-              isLoading={permissionsLoading}
-              onDelete={handleDeletePermission}
-            />
-          </Stack>
-        </Tabs.Panel>
       </Tabs>
 
       {/* Users modals */}
@@ -409,14 +386,22 @@ export default function UserManagementPage() {
       <EditTenantModal opened={editTenantOpened} onClose={closeEditTenant} tenant={selectedTenant} onSave={handleUpdateTenant} loading={updateTenant.isPending} tenants={tenants} />
       <DeleteTenantModal opened={deleteTenantOpened} onClose={closeDeleteTenant} onConfirm={handleDeleteTenantConfirm} tenantName={selectedTenant?.name ?? ""} loading={deleteTenant.isPending} />
 
-      {/* Roles modals */}
+      {/* Roles modals + drawer */}
       <AddRoleModal opened={addRoleOpened} onClose={closeAddRole} onSave={handleAddRole} loading={createRole.isPending} tenants={tenants} />
       <EditRoleModal opened={editRoleOpened} onClose={closeEditRole} role={selectedRole} onSave={handleUpdateRole} loading={updateRole.isPending} tenants={tenants} />
       <DeleteRoleModal opened={deleteRoleOpened} onClose={closeDeleteRole} onConfirm={handleDeleteRoleConfirm} roleName={selectedRole?.name ?? ""} loading={deleteRole.isPending} />
 
-      {/* Permissions modals */}
-      <AddPermissionModal opened={addPermOpened} onClose={closeAddPerm} onSave={handleAddPermission} loading={createPerm.isPending} roles={roles} />
-      <DeletePermissionModal opened={deletePermOpened} onClose={closeDeletePerm} onConfirm={handleDeletePermConfirm} loading={deletePerm.isPending} />
+      {/* Role permissions drawer */}
+      <EditRoleDrawer
+        opened={roleDrawerOpened}
+        onClose={closeRoleDrawer}
+        role={drawerRole}
+        permissions={rolePermissions}
+        tenants={tenants}
+        onToggle={handleTogglePermission}
+        isToggling={createPerm.isPending || deletePerm.isPending}
+        isLoading={permissionsLoading}
+      />
     </Container>
   );
 }
