@@ -20,6 +20,7 @@ import type { Tenant } from "@/services/tenant/types";
 import type { TenantRole } from "@/services/tenant-role/types";
 import type { TenantPermission } from "@/services/tenant-permission/types";
 import { EditRoleDrawer } from "../RolesTab/EditRoleDrawer";
+import { ActionGuard } from "@/components/ActionGuard";
 
 const TH_TZ = "Asia/Bangkok";
 
@@ -115,9 +116,11 @@ export function PermissionsTab({
             clearable
             w={250}
           />
-          <Button variant="light" size="xs" onClick={onAddDept}>
-            {t("tenants.addTenant")}
-          </Button>
+          <ActionGuard action="CreateTenant">
+            <Button variant="light" size="xs" onClick={onAddDept}>
+              {t("tenants.addTenant")}
+            </Button>
+          </ActionGuard>
         </Group>
         <Group gap="sm">
           <TextInput
@@ -127,9 +130,11 @@ export function PermissionsTab({
             onChange={(e) => setRoleSearch(e.currentTarget.value)}
             w={250}
           />
-          <Button leftSection={<IconPlus size={16} />} onClick={onAddRole}>
-            {tr("addRole")}
-          </Button>
+          <ActionGuard action="CreateTenantRole">
+            <Button leftSection={<IconPlus size={16} />} onClick={onAddRole}>
+              {tr("addRole")}
+            </Button>
+          </ActionGuard>
         </Group>
       </Group>
 
@@ -137,12 +142,16 @@ export function PermissionsTab({
         const dept = tenants.find((t) => t.id === selectedDeptId);
         return dept ? (
           <Group gap={4} mt={-8}>
-            <ActionIcon variant="subtle" color="blue" size="sm" onClick={() => onEditDept(dept)} aria-label="Edit department">
-              <IconPencil size={14} />
-            </ActionIcon>
-            <ActionIcon variant="subtle" color="red" size="sm" onClick={() => onDeleteDept(dept)} aria-label="Delete department">
-              <IconTrash size={14} />
-            </ActionIcon>
+            <ActionGuard action="UpdateTenant">
+              <ActionIcon variant="subtle" color="blue" size="sm" onClick={() => onEditDept(dept)} aria-label="Edit department">
+                <IconPencil size={14} />
+              </ActionIcon>
+            </ActionGuard>
+            <ActionGuard action="DeleteTenant">
+              <ActionIcon variant="subtle" color="red" size="sm" onClick={() => onDeleteDept(dept)} aria-label="Delete department">
+                <IconTrash size={14} />
+              </ActionIcon>
+            </ActionGuard>
           </Group>
         ) : null;
       })()}
@@ -174,12 +183,16 @@ export function PermissionsTab({
                     <Table.Td><Text size="sm">{formatThaiDate(role.created_at)}</Text></Table.Td>
                     <Table.Td>
                       <Group gap={4} wrap="nowrap">
-                        <ActionIcon variant="subtle" color="blue" onClick={() => handleEditRole(role)} aria-label="Edit role">
-                          <IconPencil size={16} />
-                        </ActionIcon>
-                        <ActionIcon variant="subtle" color="red" onClick={() => onDeleteRole(role)} aria-label="Delete role">
-                          <IconTrash size={16} />
-                        </ActionIcon>
+                        <ActionGuard action="UpdateTenantRole">
+                          <ActionIcon variant="subtle" color="blue" onClick={() => handleEditRole(role)} aria-label="Edit role">
+                            <IconPencil size={16} />
+                          </ActionIcon>
+                        </ActionGuard>
+                        <ActionGuard action="DeleteTenantRole">
+                          <ActionIcon variant="subtle" color="red" onClick={() => onDeleteRole(role)} aria-label="Delete role">
+                            <IconTrash size={16} />
+                          </ActionIcon>
+                        </ActionGuard>
                       </Group>
                     </Table.Td>
                   </Table.Tr>

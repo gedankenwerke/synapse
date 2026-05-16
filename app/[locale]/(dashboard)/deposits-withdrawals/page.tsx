@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { Container, Group, Loader, Stack, Text, Transition } from "@mantine/core";
+import { Container, Group, Loader, Center, Stack, Text, Transition } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
+import { usePageGuard } from "@/hooks/usePageGuard";
 import type { TransactionItem } from "@/services/transaction/types";
 import { TransactionToolbar } from "./_components/TransactionTab/TransactionToolbar";
 import { TransactionTable } from "./_components/TransactionTab/TransactionTable";
@@ -20,6 +21,9 @@ function getItemKey(item: TransactionItem) {
 export default function DepositsWithdrawalsPage() {
   const t = useTranslations("transaction");
   const tc = useTranslations("common");
+  const { allowed, loading } = usePageGuard("SearchTransactionHistory");
+  if (loading) return <Center mih="100vh"><Loader /></Center>;
+  if (!allowed) return null;
 
   const [searchInput, setSearchInput] = useState("");
   const [activeSearch, setActiveSearch] = useState("");

@@ -21,8 +21,8 @@ const ROUTE_BREADCRUMBS: Record<string, { labelKey: string; hrefKey?: string }[]
   "/account-statement": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "accountStatement" }],
   "/net-balance": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "netBalance" }],
   "/deposits-withdrawals": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "transaction" }],
-  "/api-keys": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "apiKeys" }],
   "/customer-settlement": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "customerSettlement" }],
+  "/pay-agent": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "payAgent" }],
   "/user-management": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "userManagement" }],
   "/transactions": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "transactions" }],
 };

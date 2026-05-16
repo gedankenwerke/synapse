@@ -70,6 +70,7 @@ export default function DashboardLayout({
       try {
         await authentication.me();
         await usePermissionStore.getState().fetchPolicies();
+        await usePermissionStore.getState().fetchUserPermissions();
       } catch (err: any) {
         // Only logout if token is actually invalid (401), not on server errors
         if (err?.status === 401) {

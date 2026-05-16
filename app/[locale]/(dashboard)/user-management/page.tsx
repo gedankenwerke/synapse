@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Container, Tabs, Stack, Text } from "@mantine/core";
+import { Container, Tabs, Stack, Text, Loader, Center } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
 import { useDebouncedValue } from "@mantine/hooks";
+import { usePageGuard } from "@/hooks/usePageGuard";
 import { useAppStore } from "@/store/useAppStore";
 import { useUsersQuery } from "./hooks/useUsersQuery";
 import { useCreateUser, useUpdateUser, useDeleteUser } from "./hooks/useUserMutations";
@@ -58,6 +59,9 @@ import {
 export default function UserManagementPage() {
   const t = useTranslations("userManagement");
   const tc = useTranslations("common");
+  const { allowed, loading } = usePageGuard("ListUsers");
+  if (loading) return <Center mih="100vh"><Loader /></Center>;
+  if (!allowed) return null;
   const currentTenantId = useAppStore((s) => s.user?.tenant_id ?? "1");
 
   // ── Active tab ──

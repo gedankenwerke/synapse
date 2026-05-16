@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Container, Stack, Text, Transition } from "@mantine/core";
+import { Container, Stack, Text, Transition, Loader, Center } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
+import { usePageGuard } from "@/hooks/usePageGuard";
 import { payAgent } from "@/services/pay-agent";
 import type { PayAgentResponse } from "@/services/pay-agent/types";
 import { PayAgentForm } from "./_components/PayAgentTab/PayAgentForm";
@@ -12,6 +13,9 @@ import { PayAgentResult } from "./_components/PayAgentTab/PayAgentResult";
 export default function PayAgentPage() {
   const t = useTranslations("payAgent");
   const tc = useTranslations("common");
+  const { allowed, loading: guardLoading } = usePageGuard("CreatePayAgent");
+  if (guardLoading) return <Center mih="100vh"><Loader /></Center>;
+  if (!allowed) return null;
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PayAgentResponse | null>(null);

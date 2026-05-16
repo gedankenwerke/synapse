@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { Container, Group, Loader, Stack, Text, Transition } from "@mantine/core";
+import { Container, Group, Loader, Center, Stack, Text, Transition } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
+import { usePageGuard } from "@/hooks/usePageGuard";
 import type { BankStatementItem } from "@/services/account-statement/types";
 import { StatementToolbar } from "./_components/StatementTab/StatementToolbar";
 import { StatementTable } from "./_components/StatementTab/StatementTable";
@@ -20,6 +21,9 @@ function getItemKey(item: BankStatementItem) {
 export default function AccountStatementPage() {
   const t = useTranslations("accountStatement");
   const tc = useTranslations("common");
+  const { allowed, loading } = usePageGuard("SearchBankStatement");
+  if (loading) return <Center mih="100vh"><Loader /></Center>;
+  if (!allowed) return null;
 
   const [searchInput, setSearchInput] = useState("");
   const [activeSearch, setActiveSearch] = useState("");

@@ -7,6 +7,9 @@ export function usePermission() {
   const error = usePermissionStore((s) => s.error);
   const hasPermission = usePermissionStore((s) => s.hasPermission);
   const isSuperAdminOnly = usePermissionStore((s) => s.isSuperAdminOnly);
+  const hasAction = usePermissionStore((s) => s.hasAction);
+  const canSeePage = usePermissionStore((s) => s.canSeePage);
+  const userActions = usePermissionStore((s) => s.userActions);
 
-  return { policies, isLoading, error, hasPermission, isSuperAdminOnly };
+  return { policies, isLoading, error, hasPermission, isSuperAdminOnly, hasAction, canSeePage, userActions };
 }

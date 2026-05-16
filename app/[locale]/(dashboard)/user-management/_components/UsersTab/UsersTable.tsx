@@ -29,6 +29,7 @@ function formatThaiDate(iso: string): string {
   });
 }
 import type { UserData } from "@/services/user/types";
+import { ActionGuard } from "@/components/ActionGuard";
 
 interface UserTableProps {
   data: UserData[];
@@ -88,12 +89,16 @@ export function UserTable({
         </Table.Td>
         <Table.Td>
           <Group gap={4} wrap="nowrap">
-            <ActionIcon variant="subtle" color="blue" onClick={() => onEdit(user)} aria-label="Edit user">
-              <IconPencil size={16} />
-            </ActionIcon>
-            <ActionIcon variant="subtle" color="red" onClick={() => onDelete(user)} aria-label="Delete user">
-              <IconTrash size={16} />
-            </ActionIcon>
+            <ActionGuard action="UpdateUser">
+              <ActionIcon variant="subtle" color="blue" onClick={() => onEdit(user)} aria-label="Edit user">
+                <IconPencil size={16} />
+              </ActionIcon>
+            </ActionGuard>
+            <ActionGuard action="DeleteUser">
+              <ActionIcon variant="subtle" color="red" onClick={() => onDelete(user)} aria-label="Delete user">
+                <IconTrash size={16} />
+              </ActionIcon>
+            </ActionGuard>
           </Group>
         </Table.Td>
       </Table.Tr>

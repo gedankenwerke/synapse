@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Container, Stack, Text, Transition } from "@mantine/core";
+import { Container, Stack, Text, Transition, Loader, Center } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
+import { usePageGuard } from "@/hooks/usePageGuard";
 import { settlement } from "@/services/settlement";
 import type { SettlementResponse } from "@/services/settlement/types";
 import { SettlementForm } from "./_components/SettlementTab/SettlementForm";
@@ -12,6 +13,9 @@ import { SettlementResult } from "./_components/SettlementTab/SettlementResult";
 export default function CustomerSettlementPage() {
   const t = useTranslations("settlement");
   const tc = useTranslations("common");
+  const { allowed, loading: guardLoading } = usePageGuard("Settlement");
+  if (guardLoading) return <Center mih="100vh"><Loader /></Center>;
+  if (!allowed) return null;
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SettlementResponse | null>(null);

@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Group, TextInput, Button } from "@mantine/core";
 import { IconSearch, IconPlus } from "@tabler/icons-react";
+import { ActionGuard } from "@/components/ActionGuard";
 
 interface UserToolbarProps {
   searchValue: string;
@@ -27,9 +28,11 @@ export function UserToolbar({
         w={280}
       />
 
-      <Button leftSection={<IconPlus size={16} />} onClick={onAddUser}>
-        {t("addUser")}
-      </Button>
+      <ActionGuard action="CreateUser">
+        <Button leftSection={<IconPlus size={16} />} onClick={onAddUser}>
+          {t("addUser")}
+        </Button>
+      </ActionGuard>
     </Group>
   );
 }

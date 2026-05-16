@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import {
   Badge,
+  Center,
   Container,
   Divider,
   Group,
@@ -19,6 +20,7 @@ import { DonutChart } from "@mantine/charts";
 import { IconArrowUpRight, IconArrowDownRight, IconCalendar } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
+import { usePageGuard } from "@/hooks/usePageGuard";
 import type { NetBalanceItem } from "@/services/net-balance/types";
 import { useNetBalanceQuery } from "./hooks/useNetBalanceQuery";
 import { formatBaht, formatCompact, formatDate, formatLastUpdated } from "./_components/utils";
@@ -97,6 +99,9 @@ function AccountCard({ item }: { item: NetBalanceItem }) {
 export default function NetBalancePage() {
   const t = useTranslations("netBalance");
   const tc = useTranslations("common");
+  const { allowed, loading } = usePageGuard("SearchNetBalance");
+  if (loading) return <Center mih="100vh"><Loader /></Center>;
+  if (!allowed) return null;
   const notifiedRef = useRef(false);
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());

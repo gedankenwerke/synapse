@@ -17,6 +17,7 @@ import {
 import { useState } from "react";
 import { authentication } from "@/services/authentication";
 import { useAppStore } from "@/store/useAppStore";
+import { usePermissionStore } from "@/store/usePermissionStore";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
@@ -46,6 +47,8 @@ export default function LoginPage() {
       });
 
       setLogin(response.data.token, response.data.user);
+      await usePermissionStore.getState().fetchPolicies();
+      await usePermissionStore.getState().fetchUserPermissions();
       router.push("/dashboard");
     } catch (err: any) {
       const errorMessage = err?.message || t("error.loginFailed");
