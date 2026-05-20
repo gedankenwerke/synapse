@@ -9,6 +9,7 @@ import {
   IconUserCircle,
 } from "@tabler/icons-react";
 import { useAppStore } from "@/store/useAppStore";
+import { isSuperAdmin } from "@/store/useAppStore";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useQuery } from "@tanstack/react-query";
 import { tenant } from "@/services/tenant";
@@ -16,6 +17,7 @@ import { tenant } from "@/services/tenant";
 export function UserAvatar() {
   const router = useRouter();
   const { user, setLogout } = useAppStore();
+  const isSuperAdminUser = useAppStore((s) => s.user?.tenant_id === "1");
   const t = useTranslations("user");
 
   const { data: tenants = [] } = useQuery({
@@ -38,7 +40,7 @@ export function UserAvatar() {
     ? tenants.find((t) => t.id === user.tenant_id)?.name
     : undefined;
 
-  const roleLabel = user?.isSuperAdmin
+  const roleLabel = isSuperAdminUser
     ? t("role.superAdmin")
     : undefined;
 

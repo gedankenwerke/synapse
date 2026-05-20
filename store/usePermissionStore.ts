@@ -3,7 +3,7 @@ import { policy } from "../services/policy";
 import { PolicyCatalogItem, PolicyName } from "../services/policy/types";
 import { tenantUser } from "../services/tenant-user";
 import { tenantPermission } from "../services/tenant-permission";
-import { useAppStore } from "./useAppStore";
+import { useAppStore, isSuperAdmin } from "./useAppStore";
 
 interface PermissionState {
   policies: PolicyCatalogItem[];
@@ -36,10 +36,10 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
   },
 
   fetchUserPermissions: async () => {
-    const { user, isSuperAdmin } = useAppStore.getState();
+    const { user } = useAppStore.getState();
 
     // SuperAdmin bypasses permission checks entirely
-    if (isSuperAdmin) {
+    if (isSuperAdmin()) {
       set({ userActions: [] });
       return;
     }
@@ -76,7 +76,7 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
   },
 
   hasAction: (action: string) => {
-    if (useAppStore.getState().isSuperAdmin) return true;
+    if (isSuperAdmin()) return true;
     return get().userActions.includes(action);
   },
 
@@ -86,7 +86,7 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
     if (!policyItem) return false;
 
     if (policyItem.SuperAdminOnly) {
-      return useAppStore.getState().isSuperAdmin;
+      return isSuperAdmin();
     }
     return true;
   },
@@ -98,7 +98,7 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
   },
 
   canSeePage: (name: PolicyName) => {
-    if (useAppStore.getState().isSuperAdmin) return true;
+    if (isSuperAdmin()) return true;
     const { policies } = get();
     const policyItem = policies.find((p) => p.Name === name);
     // SuperAdminOnly policies are only visible to SuperAdmin (already handled above)

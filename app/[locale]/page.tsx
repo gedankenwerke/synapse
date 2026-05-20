@@ -46,7 +46,7 @@ export default function LoginPage() {
         password,
       });
 
-      setLogin(response.data.token, response.data.user);
+      setLogin(response.data.access_token, response.data.refresh_token, response.data.user);
       await usePermissionStore.getState().fetchPolicies();
       await usePermissionStore.getState().fetchUserPermissions();
       router.push("/dashboard");

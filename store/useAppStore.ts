@@ -3,7 +3,8 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import Cookies from "js-cookie";
 import { LoginRequestUser } from "../services/authentication/types";
 
-const COOKIE_NAME = "auth_token";
+const AUTH_COOKIE = "auth_token";
+const REFRESH_COOKIE = "refresh_token";
 const COOKIE_MAX_AGE_DAYS = 7;
 
 interface AppState {
@@ -13,12 +14,12 @@ interface AppState {
 
   user: LoginRequestUser | null;
   token: string | null;
+  refreshToken: string | null;
   isAuthenticated: boolean;
-  isSuperAdmin: boolean;
 
-  setLogin: (token: string, user: LoginRequestUser) => void;
+  setLogin: (accessToken: string, refreshToken: string, user: LoginRequestUser) => void;
   setLogout: () => void;
-  updateToken: (token: string) => void;
+  updateTokens: (accessToken: string, refreshToken: string) => void;
 }
 
 const noopStorage = {
@@ -39,6 +40,23 @@ function safeLocalStorage(): Storage {
   }
 }
 
+function setAuthCookies(accessToken: string, refreshToken: string) {
+  const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
+  const options: Cookies.CookieAttributes = {
+    path: "/",
+    expires: COOKIE_MAX_AGE_DAYS,
+    sameSite: "Strict",
+    ...(isSecure && { secure: true }),
+  };
+  Cookies.set(AUTH_COOKIE, accessToken, options);
+  Cookies.set(REFRESH_COOKIE, refreshToken, options);
+}
+
+function removeAuthCookies() {
+  Cookies.remove(AUTH_COOKIE, { path: "/" });
+  Cookies.remove(REFRESH_COOKIE, { path: "/" });
+}
+
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
@@ -51,32 +69,20 @@ export const useAppStore = create<AppState>()(
 
       user: null,
       token: null,
+      refreshToken: null,
       isAuthenticated: false,
-      isSuperAdmin: false,
 
-      setLogin: (token, user) => {
-        const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
-        Cookies.set(COOKIE_NAME, token, {
-          path: "/",
-          expires: COOKIE_MAX_AGE_DAYS,
-          sameSite: "Strict",
-          ...(isSecure && { secure: true }),
-        });
-        set({ token, user, isAuthenticated: true, isSuperAdmin: user.isSuperAdmin });
+      setLogin: (accessToken, refreshToken, user) => {
+        setAuthCookies(accessToken, refreshToken);
+        set({ token: accessToken, refreshToken, user, isAuthenticated: true });
       },
       setLogout: () => {
-        Cookies.remove(COOKIE_NAME, { path: "/" });
-        set({ token: null, user: null, isAuthenticated: false, isSuperAdmin: false });
+        removeAuthCookies();
+        set({ token: null, refreshToken: null, user: null, isAuthenticated: false });
       },
-      updateToken: (token: string) => {
-        const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
-        Cookies.set(COOKIE_NAME, token, {
-          path: "/",
-          expires: COOKIE_MAX_AGE_DAYS,
-          sameSite: "Strict",
-          ...(isSecure && { secure: true }),
-        });
-        set({ token });
+      updateTokens: (accessToken, refreshToken) => {
+        setAuthCookies(accessToken, refreshToken);
+        set({ token: accessToken, refreshToken });
       },
     }),
     {
@@ -97,11 +103,16 @@ export const useAppStore = create<AppState>()(
   )
 );
 
+// Derived helper — not stored in state, survives rehydration
+export function isSuperAdmin(): boolean {
+  return useAppStore.getState().user?.tenant_id === "1";
+}
+
 // Listen for token refresh events from the axios interceptor
 if (typeof window !== "undefined") {
   window.addEventListener("token-refreshed", ((e: CustomEvent) => {
-    const newToken = e.detail as string;
-    useAppStore.getState().updateToken(newToken);
+    const { accessToken, refreshToken } = e.detail;
+    useAppStore.getState().updateTokens(accessToken, refreshToken);
   }) as EventListener);
 
   window.addEventListener("token-refresh-failed", () => {

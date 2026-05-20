@@ -9,14 +9,19 @@ export type LoginRequestUser = {
     created_at: string;
     updated_at: string;
     tenant_id: string;
-    isSuperAdmin: boolean;
 };
 
 export type LoginRequestResponse = {
-    token: string;
+    access_token: string;
+    refresh_token: string;
+    token_type: string;
+    expires_in: number;
     user: LoginRequestUser;
 };
 
 export type RefreshTokenResponse = {
-    token: string;
+    access_token: string;
+    refresh_token: string;
+    token_type: string;
+    expires_in: number;
 };
