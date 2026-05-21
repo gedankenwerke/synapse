@@ -22,8 +22,6 @@ export default function AccountStatementPage() {
   const t = useTranslations("accountStatement");
   const tc = useTranslations("common");
   const { allowed, loading } = usePageGuard("SearchBankStatement");
-  if (loading) return <Center mih="100vh"><Loader /></Center>;
-  if (!allowed) return null;
 
   const [searchInput, setSearchInput] = useState("");
   const [activeSearch, setActiveSearch] = useState("");
@@ -95,6 +93,9 @@ export default function AccountStatementPage() {
       color: "blue",
     });
   };
+
+  if (loading) return <Center mih="100vh"><Loader /></Center>;
+  if (!allowed) return null;
 
   if (isLoading && items.length === 0) {
     return (

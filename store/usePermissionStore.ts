@@ -13,6 +13,7 @@ interface PermissionState {
 
   fetchPolicies: () => Promise<void>;
   fetchUserPermissions: () => Promise<void>;
+  refreshAll: () => Promise<void>;
   hasAction: (action: string) => boolean;
   hasPermission: (name: PolicyName) => boolean;
   isSuperAdminOnly: (name: PolicyName) => boolean;
@@ -76,6 +77,13 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
     } catch (err) {
       set({ error: String(err), isLoading: false });
     }
+  },
+
+  refreshAll: async () => {
+    await Promise.all([
+      get().fetchPolicies(),
+      get().fetchUserPermissions(),
+    ]);
   },
 
   hasAction: (action: string) => {

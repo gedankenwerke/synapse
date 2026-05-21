@@ -60,8 +60,6 @@ export default function UserManagementPage() {
   const t = useTranslations("userManagement");
   const tc = useTranslations("common");
   const { allowed, loading } = usePageGuard("ListUsers");
-  if (loading) return <Center mih="100vh"><Loader /></Center>;
-  if (!allowed) return null;
   const currentTenantId = useAppStore((s) => s.user?.tenant_id ?? "1");
 
   // ── Active tab ──
@@ -296,6 +294,9 @@ export default function UserManagementPage() {
       );
     }
   };
+
+  if (loading) return <Center mih="100vh"><Loader /></Center>;
+  if (!allowed) return null;
 
   if (queryError) {
     return (

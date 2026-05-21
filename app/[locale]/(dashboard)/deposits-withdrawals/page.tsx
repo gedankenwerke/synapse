@@ -22,8 +22,6 @@ export default function DepositsWithdrawalsPage() {
   const t = useTranslations("transaction");
   const tc = useTranslations("common");
   const { allowed, loading } = usePageGuard("SearchTransactionHistory");
-  if (loading) return <Center mih="100vh"><Loader /></Center>;
-  if (!allowed) return null;
 
   const [searchInput, setSearchInput] = useState("");
   const [activeSearch, setActiveSearch] = useState("");
@@ -95,6 +93,9 @@ export default function DepositsWithdrawalsPage() {
       color: "blue",
     });
   };
+
+  if (loading) return <Center mih="100vh"><Loader /></Center>;
+  if (!allowed) return null;
 
   if (isLoading && items.length === 0) {
     return (

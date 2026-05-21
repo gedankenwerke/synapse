@@ -100,8 +100,6 @@ export default function NetBalancePage() {
   const t = useTranslations("netBalance");
   const tc = useTranslations("common");
   const { allowed, loading } = usePageGuard("SearchNetBalance");
-  if (loading) return <Center mih="100vh"><Loader /></Center>;
-  if (!allowed) return null;
   const notifiedRef = useRef(false);
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
@@ -132,6 +130,9 @@ export default function NetBalancePage() {
       notifiedRef.current = false;
     }
   }, [error, data, t, tc]);
+
+  if (loading) return <Center mih="100vh"><Loader /></Center>;
+  if (!allowed) return null;
 
   if (isLoading && items.length === 0) {
     return (

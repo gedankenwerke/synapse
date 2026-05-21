@@ -14,8 +14,6 @@ export default function CustomerSettlementPage() {
   const t = useTranslations("settlement");
   const tc = useTranslations("common");
   const { allowed, loading: guardLoading } = usePageGuard("Settlement");
-  if (guardLoading) return <Center mih="100vh"><Loader /></Center>;
-  if (!allowed) return null;
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SettlementResponse | null>(null);
@@ -65,6 +63,9 @@ export default function CustomerSettlementPage() {
       setLoading(false);
     }
   };
+
+  if (guardLoading) return <Center mih="100vh"><Loader /></Center>;
+  if (!allowed) return null;
 
   return (
     <Container size="lg" py="xl">

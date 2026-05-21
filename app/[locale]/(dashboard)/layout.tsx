@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "@/navigation";
+import { useRouter, usePathname } from "@/navigation";
 import { Loader, Center } from "@mantine/core";
 import AppShellLayout from "@/components/AppShellLayout";
 import { useAppStore } from "@/store/useAppStore";
 import { usePermissionStore } from "@/store/usePermissionStore";
 import { authentication } from "@/services/authentication";
-
-const VERIFY_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
 
 export default function DashboardLayout({
   children,
@@ -16,9 +14,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const isAuthenticated = useAppStore((state) => state.isAuthenticated);
   const token = useAppStore((state) => state.token);
   const setLogout = useAppStore((state) => state.setLogout);
+  const refreshAll = usePermissionStore((state) => state.refreshAll);
   const [hydrated, setHydrated] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const lastVerified = useRef<number>(0);
@@ -55,13 +55,9 @@ export default function DashboardLayout({
     }
   }, [hydrated, isAuthenticated, token, router, setLogout]);
 
-  // Verify token with /me — runs on mount and on navigation if cooldown has elapsed
-  // Also fetches the policy catalog for permission checks
+  // Verify token with /me on mount
   useEffect(() => {
     if (!hydrated || !isAuthenticated || !token) return;
-
-    const now = Date.now();
-    if (now - lastVerified.current < VERIFY_COOLDOWN_MS) return;
 
     const verify = async () => {
       lastVerified.current = Date.now();
@@ -69,8 +65,6 @@ export default function DashboardLayout({
 
       try {
         await authentication.me();
-        await usePermissionStore.getState().fetchPolicies();
-        await usePermissionStore.getState().fetchUserPermissions();
       } catch (err: any) {
         // Only logout if token is actually invalid (401), not on server errors
         if (err?.status === 401) {
@@ -84,6 +78,14 @@ export default function DashboardLayout({
 
     verify();
   }, [hydrated, isAuthenticated, token, router, setLogout]);
+
+  // Refresh permissions on every page navigation
+  // This ensures admin permission changes take effect immediately
+  useEffect(() => {
+    if (!hydrated || !isAuthenticated || !token) return;
+
+    refreshAll();
+  }, [pathname, hydrated, isAuthenticated, token, refreshAll]);
 
   // Wait for hydration
   if (!hydrated) {

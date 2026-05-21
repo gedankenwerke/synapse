@@ -9,44 +9,44 @@ export interface NetBalanceItem {
 }
 
 export interface ApiNetBalanceItem {
-  acctID: number;
-  clientID: string;
-  yearMonthDay: string;
-  acctDeposit: number;
-  acctWithdraw: number;
-  createDate: string;
-  updateDate: string;
+  ClientID: string;
+  AcctID: number;
+  YearMonthDay: string;
+  AcctDeposit: number;
+  AcctWithdraw: number;
+  CreateDate: string;
+  UpdateDate: string;
 }
 
 export function mapApiNetBalanceItem(api: ApiNetBalanceItem): NetBalanceItem {
   return {
-    acct_id: api.acctID,
-    client_id: api.clientID,
-    year_month_day: api.yearMonthDay,
-    acct_deposit: api.acctDeposit,
-    acct_withdraw: api.acctWithdraw,
-    create_date: api.createDate,
-    update_date: api.updateDate,
+    client_id: api.ClientID,
+    acct_id: api.AcctID,
+    year_month_day: api.YearMonthDay,
+    acct_deposit: api.AcctDeposit,
+    acct_withdraw: api.AcctWithdraw,
+    create_date: api.CreateDate,
+    update_date: api.UpdateDate,
   };
 }
 
 export interface ApiNetBalancePage {
-  after: string;
-  before: string;
-  limit: number;
-  items: ApiNetBalanceItem[];
-  header: Record<string, unknown>;
-  startDateTime: string;
-  endDateTime: string;
+  Before: string;
+  After: string;
+  Limit: number;
+  Items: ApiNetBalanceItem[];
+  Header: Record<string, unknown>;
+  StartDateTime: string;
+  EndDateTime: string;
 }
 
 export function mapApiNetBalancePage(api: ApiNetBalancePage): NetBalancePage {
   return {
-    before: api.before,
-    after: api.after,
-    limit: api.limit,
-    items: api.items.map(mapApiNetBalanceItem),
-    header: api.header,
+    before: api.Before,
+    after: api.After,
+    limit: api.Limit,
+    items: api.Items.map(mapApiNetBalanceItem),
+    header: api.Header,
   };
 }
 

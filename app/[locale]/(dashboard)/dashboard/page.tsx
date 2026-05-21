@@ -11,9 +11,10 @@ import { useDashboardData } from "./hooks/useDashboardData";
 export default function DashboardPage() {
   const t = useTranslations("dashboard");
   const { allowed, loading } = usePageGuard("SearchTransactionHistory");
+  const { statCards, areaChartData, donutChartData, recentTransactions, isLoading } = useDashboardData();
+
   if (loading) return <Center mih="100vh"><Loader /></Center>;
   if (!allowed) return null;
-  const { statCards, areaChartData, donutChartData, recentTransactions, isLoading } = useDashboardData();
 
   return (
     <Container size="xl" py="md">

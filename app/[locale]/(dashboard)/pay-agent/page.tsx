@@ -14,8 +14,6 @@ export default function PayAgentPage() {
   const t = useTranslations("payAgent");
   const tc = useTranslations("common");
   const { allowed, loading: guardLoading } = usePageGuard("CreatePayAgent");
-  if (guardLoading) return <Center mih="100vh"><Loader /></Center>;
-  if (!allowed) return null;
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PayAgentResponse | null>(null);
@@ -57,6 +55,9 @@ export default function PayAgentPage() {
       setLoading(false);
     }
   };
+
+  if (guardLoading) return <Center mih="100vh"><Loader /></Center>;
+  if (!allowed) return null;
 
   return (
     <Container size="lg" py="xl">
