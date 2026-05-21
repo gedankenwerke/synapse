@@ -25,70 +25,72 @@ export interface BankStatementItem {
 }
 
 export interface ApiBankStatementItem {
-  ClientID: string;
-  AcctID: number;
-  Trno: number;
-  Trdate: string;
-  OrigRqUID: string;
-  TransDate: string;
-  AcctBank: string;
-  AcctNo: string;
-  TransName: string;
-  Channel: string;
-  TransType: BankTransType;
-  NameTH: string;
-  NameEN: string;
-  Amount: number;
-  AcctAvail: number;
-  UClientID: string;
-  ReqTransID: number;
-  DPwdTransID: number;
-  Status: number;
-  CreateDate: string;
-  UpdateDate: string;
+  acctAvail: number;
+  acctBank: string;
+  acctID: number;
+  acctNo: string;
+  amount: number;
+  channel: string;
+  clientID: string;
+  createDate: string;
+  dpwdTransID: number;
+  nameEn: string;
+  nameTh: string;
+  origRqUid: string;
+  reqTransID: number;
+  status: number;
+  transDate: string;
+  transName: string;
+  transType: string;
+  trdate: string;
+  trno: number;
+  uclientID: string;
+  updateDate: string;
 }
 
 export function mapApiBankStatementItem(api: ApiBankStatementItem): BankStatementItem {
   return {
-    client_id: api.ClientID,
-    acct_id: api.AcctID,
-    trno: api.Trno,
-    trdate: api.Trdate,
-    orig_rq_uid: api.OrigRqUID,
-    trans_date: api.TransDate,
-    acct_bank: api.AcctBank,
-    acct_no: api.AcctNo,
-    trans_name: api.TransName,
-    channel: api.Channel,
-    trans_type: api.TransType,
-    name_th: api.NameTH,
-    name_en: api.NameEN,
-    amount: api.Amount,
-    acct_avail: api.AcctAvail,
-    u_client_id: api.UClientID,
-    req_trans_id: api.ReqTransID,
-    dpwd_trans_id: api.DPwdTransID,
-    status: api.Status,
-    create_date: api.CreateDate,
-    update_date: api.UpdateDate,
+    client_id: api.clientID,
+    acct_id: api.acctID,
+    trno: api.trno,
+    trdate: api.trdate,
+    orig_rq_uid: api.origRqUid,
+    trans_date: api.transDate,
+    acct_bank: api.acctBank,
+    acct_no: api.acctNo,
+    trans_name: api.transName,
+    channel: api.channel,
+    trans_type: api.transType as BankTransType,
+    name_th: api.nameTh,
+    name_en: api.nameEn,
+    amount: api.amount,
+    acct_avail: api.acctAvail,
+    u_client_id: api.uclientID,
+    req_trans_id: api.reqTransID,
+    dpwd_trans_id: api.dpwdTransID,
+    status: api.status,
+    create_date: api.createDate,
+    update_date: api.updateDate,
   };
 }
 
 export interface ApiBankStatementPage {
-  Before: string;
-  After: string;
-  Limit: number;
-  Items: ApiBankStatementItem[];
-  Header: Record<string, unknown>;
+  after: string;
+  before: string;
+  limit: number;
+  items: ApiBankStatementItem[];
+  header: Record<string, unknown>;
+  startDateTime: string;
+  endDateTime: string;
 }
 
 export function mapApiBankStatementPage(api: ApiBankStatementPage): BankStatementPage {
   return {
-    before: api.Before,
-    after: api.After,
-    limit: api.Limit,
-    items: api.Items.map(mapApiBankStatementItem),
-    header: api.Header,
+    before: api.before,
+    after: api.after,
+    limit: api.limit,
+    items: api.items.map(mapApiBankStatementItem),
+    header: api.header,
   };
 }
 

@@ -1,0 +1,274 @@
+Synapse API Notes — Tested 2026-05-21
+========================================
+
+Base URL: http://192.168.144.74:18080/api/v1
+Test credentials: username=string, password=string
+
+NAMING CONVENTION SUMMARY
+--------------------------
+Different endpoints use DIFFERENT naming conventions:
+
+  /login, /me, /token, /token/refresh → snake_case (access_token, tenant_id, etc.)
+  /policies                           → snake_case (name, detail, superadmin_only)
+  /users, /tenants, /tenant-roles     → PascalCase (ID, Username, TenantID, etc.)
+  /tenant-users                       → PascalCase (ID, TenantID, UserID, etc.)
+  /search-bank-statement (spec)       → camelCase (acctAvail, clientID, etc.)
+  /search-net-balance (spec)         → camelCase (acctDeposit, yearMonthDay, etc.)
+
+AUTH ENDPOINTS — ALL WORKING
+-----------------------------
+
+1. POST /login
+   Request:  {"username": "string", "password": "string"}
+   Response: 200
+   {
+     "code": 200,
+     "data": {
+       "user": {
+         "id": "2054037179725778944",
+         "username": "string",
+         "tenant_id": "1",
+         "created_at": "2026-05-12T03:13:20Z",
+         "updated_at": "2026-05-16T08:44:00Z"
+       },
+       "access_token": "eyJ...",
+       "refresh_token": "eyJ...",
+       "token_type": "Bearer",
+       "expires_in": 900
+     }
+   }
+   ✓ Confirmed working
+
+2. POST /me
+   Auth: Bearer access_token
+   Response: 200
+   {
+     "code": 200,
+     "data": {
+       "id": "2054037179725778944",
+       "username": "string",
+       "tenant_id": "1",
+       "created_at": "2026-05-12T03:13:20Z",
+       "updated_at": "2026-05-16T08:44:00Z"
+     }
+   }
+   ✓ Confirmed working
+
+3. GET /token (proactive rotation with valid access_token)
+   Auth: Bearer access_token
+   Response: 200
+   {
+     "code": 200,
+     "data": {
+       "access_token": "eyJ...",
+       "refresh_token": "eyJ...",
+       "token_type": "Bearer",
+       "expires_in": 900
+     }
+   }
+   ✓ Confirmed working
+
+4. POST /token/refresh
+   Request:  {"refresh_token": "eyJ..."}
+   Response: 200
+   {
+     "code": 200,
+     "data": {
+       "access_token": "eyJ...",
+       "refresh_token": "eyJ...",
+       "token_type": "Bearer",
+       "expires_in": 900
+     }
+   }
+   ✓ Confirmed working
+
+MANAGEMENT ENDPOINTS — ALL WORKING
+------------------------------------
+
+5. GET /policies
+   Auth: Bearer access_token
+   Response: 200
+   {
+     "code": 200,
+     "data": {
+       "policies": [
+         { "name": "DeleteTenantRole", "detail": "...", "superadmin_only": false },
+         ...
+       ]
+     }
+   }
+   ✓ Confirmed working — snake_case fields, key is "policies"
+
+6. GET /users?limit=N
+   Auth: Bearer access_token
+   Response: 200
+   {
+     "code": 200,
+     "data": {
+       "Items": [
+         { "ID": "...", "Username": "...", "Password": "...", "CreatedAt": "...", "UpdatedAt": "...", "TenantID": "..." }
+       ]
+     }
+   }
+   ✓ Confirmed working — PascalCase fields, Items with capital I
+
+7. GET /tenants
+   Auth: Bearer access_token
+   Response: 200
+   { "code": 200, "data": [{ "ID": "...", "ParentID": "...", "Name": "...", "CreatedAt": "...", "UpdatedAt": "..." }] }
+   ✓ Confirmed working — data is array, PascalCase fields
+
+8. GET /tenant-roles
+   Auth: Bearer access_token
+   Response: 200
+   { "code": 200, "data": [{ "ID": "...", "TenantID": "...", "Name": "...", "CreatedAt": "...", "UpdatedAt": "..." }] }
+   ✓ Confirmed working — data is array, PascalCase fields
+
+9. GET /tenant-users
+   Auth: Bearer access_token
+   Response: 200
+   { "code": 200, "data": [{ "ID": "...", "TenantID": "...", "TenantRoleID": "...", "UserID": "...", "CreatedAt": "...", "UpdatedAt": "..." }] }
+   ✓ Confirmed working — data is array, PascalCase fields
+
+10. GET /tenant-permissions
+    ✗ NOT FOUND — 404. Permissions are managed via /tenant-roles/{id}/permissions instead
+
+TENANT ROLE PERMISSIONS — TESTED & WORKING
+--------------------------------------------
+
+11. POST /tenant-roles/{roleId}/permissions (assign)
+    Auth: Bearer access_token
+    Request:  {"actions": ["ListUsers", "GetUser"]}
+    Response: 200
+    {
+      "code": 200,
+      "data": [
+        { "ID": "...", "RoleID": "...", "Action": "ListUsers", "CreatedAt": "...", "UpdatedAt": "..." },
+        { "ID": "...", "RoleID": "...", "Action": "GetUser", "CreatedAt": "...", "UpdatedAt": "..." }
+      ]
+    }
+    ✓ Working — PascalCase fields in response
+
+12. DELETE /tenant-roles/{roleId}/permissions (deassign)
+    Auth: Bearer access_token
+    Request:  {"actions": ["ListUsers"]}
+    Response: 200
+    { "code": 200, "data": 2 }
+    ✓ Working — data is count of removed actions
+
+BANK API ENDPOINTS — ALL RETURNING 500 (BACKEND ISSUE)
+-------------------------------------------------------
+
+11. POST /search-bank-statement
+    Auth: Bearer access_token
+    Request:  {"after":"","before":"","start_date_time":"2026-05-01T00:00:00Z","end_date_time":"2026-05-20T23:59:59Z","limit":5}
+    Response: 500 "internal server error"
+    ✗ NOT WORKING — backend returns 500
+
+12. POST /search-net-balance
+    Auth: Bearer access_token
+    Request:  {"after":"","before":"","start_date_time":"2026-05-01T00:00:00Z","end_date_time":"2026-05-20T23:59:59Z","limit":5}
+    Response: 500 "internal server error"
+    ✗ NOT WORKING — backend returns 500
+
+13. POST /search-transaction-history
+    Auth: Bearer access_token
+    Request:  {"after":"","before":"","start_date_time":"2026-05-01T00:00:00Z","end_date_time":"2026-05-20T23:59:59Z","limit":5}
+    Response: 500 "internal server error"
+    ✗ NOT WORKING — backend returns 500
+
+
+EXPECTED BANK API RESPONSE STRUCTURES (from spec, not yet confirmed live)
+--------------------------------------------------------------------------
+
+search-bank-statement response:
+{
+  "code": 1,
+  "data": {
+    "after": "string",
+    "before": "string",
+    "items": [
+      {
+        "acctAvail": 1,
+        "acctBank": "string",
+        "acctID": 1,
+        "acctNo": "string",
+        "amount": 1,
+        "channel": "string",
+        "clientID": "string",
+        "createDate": "string",
+        "dpwdTransID": 1,
+        "nameEn": "string",
+        "nameTh": "string",
+        "origRqUid": "string",
+        "reqTransID": 1,
+        "status": 1,
+        "transDate": "string",
+        "transName": "string",
+        "transType": "string",
+        "trdate": "string",
+        "trno": 1,
+        "uclientID": "string",
+        "updateDate": "string"
+      }
+    ],
+    "limit": 1,
+    "startDateTime": "string",
+    "endDateTime": "string"
+  },
+  "message": "string"
+}
+
+search-net-balance response:
+{
+  "code": 1,
+  "data": {
+    "after": "string",
+    "before": "string",
+    "items": [
+      {
+        "acctDeposit": 1,
+        "acctID": 1,
+        "acctWithdraw": 1,
+        "clientID": "string",
+        "createDate": "string",
+        "updateDate": "string",
+        "yearMonthDay": "string"
+      }
+    ],
+    "limit": 1,
+    "startDateTime": "string",
+    "endDateTime": "string"
+  },
+  "message": "string"
+}
+
+search-transaction-history response:
+(Same pagination envelope, items structure TBD)
+
+
+FRONTEND CHANGES MADE (2026-05-20/21)
+--------------------------------------
+
+1. AUTH SYSTEM — Updated to match actual API:
+   - Login response: { access_token, refresh_token, user, token_type, expires_in }
+   - Both tokens stored in cookies (auth_token + refresh_token)
+   - 401 handler uses POST /token/refresh with refresh_token (not GET /token)
+   - /me returns user profile object (not just true)
+   - Added authentication.refresh(refreshToken) and authentication.rotateToken()
+
+2. BANK API TYPES — Updated from PascalCase to camelCase:
+   - ApiBankStatementItem: acctAvail (not AcctAvail), clientID (not ClientID), etc.
+   - ApiBankStatementPage: after/before/items/limit (not After/Before/Items/Limit)
+   - Same pattern for net-balance and transaction types
+   - Domain model types (snake_case) unchanged — mappers updated accordingly
+
+3. POLICY SERVICE — Fixed critical bug:
+   - API returns snake_case (name, detail, superadmin_only) — was using PascalCase (Name, Detail, SuperAdminOnly)
+   - API key is "policies" — was reading "policy_catalog" (returned undefined)
+   - usePermissionStore updated to use .name and .superadmin_only
+
+4. KNOWN ISSUES:
+   - Bank API endpoints return 500 from backend (not a frontend issue)
+   - /tenant-permissions endpoint returns 404 (not implemented on backend)
+   - /users response includes Password field (security concern — backend should not send this)

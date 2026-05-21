@@ -1,24 +1,27 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { tenantPermission } from "@/services/tenant-permission";
-import type { TenantPermissionCreateRequest } from "@/services/tenant-permission/types";
+import type { AssignPermissionsRequest, DeassignPermissionsRequest } from "@/services/tenant-permission/types";
 
-export function useCreateTenantPermission() {
+export function useAssignPermissions() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: TenantPermissionCreateRequest) =>
-      tenantPermission.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenant-permissions"] });
+    mutationFn: ({ roleId, ...data }: AssignPermissionsRequest & { roleId: string }) =>
+      tenantPermission.assign(roleId, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["tenant-permissions", variables.roleId] });
+      queryClient.invalidateQueries({ queryKey: ["tenant-roles"] });
     },
   });
 }
 
-export function useDeleteTenantPermission() {
+export function useDeassignPermissions() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => tenantPermission.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenant-permissions"] });
+    mutationFn: ({ roleId, ...data }: DeassignPermissionsRequest & { roleId: string }) =>
+      tenantPermission.deassign(roleId, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["tenant-permissions", variables.roleId] });
+      queryClient.invalidateQueries({ queryKey: ["tenant-roles"] });
     },
   });
 }

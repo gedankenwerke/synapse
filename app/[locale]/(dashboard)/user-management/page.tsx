@@ -52,8 +52,8 @@ import {
 import type { TenantRoleCreateRequest, TenantRoleUpdateRequest } from "@/services/tenant-role/types";
 import { useTenantPermissionsQuery } from "./hooks/useTenantPermissionsQuery";
 import {
-  useCreateTenantPermission,
-  useDeleteTenantPermission,
+  useAssignPermissions,
+  useDeassignPermissions,
 } from "./hooks/useTenantPermissionMutations";
 
 export default function UserManagementPage() {
@@ -211,9 +211,10 @@ export default function UserManagementPage() {
   const deleteRole = useDeleteTenantRole();
 
   // ── Role permissions ──
-  const { data: permissions = [], isLoading: permissionsLoading } = useTenantPermissionsQuery();
-  const createPerm = useCreateTenantPermission();
-  const deletePerm = useDeleteTenantPermission();
+  const [selectedPermRoleId, setSelectedPermRoleId] = useState<string>("");
+  const { data: permissions = [], isLoading: permissionsLoading } = useTenantPermissionsQuery(selectedPermRoleId);
+  const assignPerm = useAssignPermissions();
+  const deassignPerm = useDeassignPermissions();
 
   const handleAddRole = (data: TenantRoleCreateRequest) => {
     createRole.mutate(data, {
@@ -264,9 +265,12 @@ export default function UserManagementPage() {
   };
 
   const handleTogglePermission = (action: string, enabled: boolean) => {
+    const roleId = selectedPermRoleId || selectedRole?.id;
+    if (!roleId) return;
+
     if (enabled) {
-      createPerm.mutate(
-        { action, role_id: selectedRole?.id ?? "" },
+      assignPerm.mutate(
+        { roleId, actions: [action] },
         {
           onSuccess: () => {
             notifications.show({ title: tc("success"), message: t("roles.permissions.success.permissionAdded"), color: "green" });
@@ -278,17 +282,18 @@ export default function UserManagementPage() {
         }
       );
     } else {
-      const perm = permissions.find((p) => p.role_id === (selectedRole?.id ?? "") && p.action === action);
-      if (!perm) return;
-      deletePerm.mutate(perm.id, {
-        onSuccess: () => {
-          notifications.show({ title: tc("success"), message: t("roles.permissions.success.permissionRemoved"), color: "green" });
-        },
-        onError: (err: any) => {
-          const msg = err?.message || t("roles.permissions.error.permissionRemoveFailed");
-          notifications.show({ title: tc("error"), message: msg, color: "red" });
-        },
-      });
+      deassignPerm.mutate(
+        { roleId, actions: [action] },
+        {
+          onSuccess: () => {
+            notifications.show({ title: tc("success"), message: t("roles.permissions.success.permissionRemoved"), color: "green" });
+          },
+          onError: (err: any) => {
+            const msg = err?.message || t("roles.permissions.error.permissionRemoveFailed");
+            notifications.show({ title: tc("error"), message: msg, color: "red" });
+          },
+        }
+      );
     }
   };
 
@@ -329,8 +334,9 @@ export default function UserManagementPage() {
             permissions={permissions}
             isLoading={tenantsLoading || rolesLoading}
             permissionsLoading={permissionsLoading}
-            isToggling={createPerm.isPending || deletePerm.isPending}
+            isToggling={assignPerm.isPending || deassignPerm.isPending}
             onTogglePermission={handleTogglePermission}
+            onSelectRole={setSelectedPermRoleId}
             onAddDept={openAddTenant}
             onEditDept={handleEditTenant}
             onDeleteDept={handleDeleteTenant}

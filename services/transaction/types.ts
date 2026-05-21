@@ -20,60 +20,62 @@ export interface TransactionItem {
 }
 
 export interface ApiTransactionItem {
-  CreateDate: string;
-  DPwdTransID: number;
-  AcctID: number;
-  UClientID: string;
-  ReqTransID: number;
-  TransType: TransactionTransType;
-  DPWDAmt: number;
-  DWS: number;
-  CS: number;
-  SendID: number;
-  SendStatus: string;
-  ResStatus: string;
-  UserID: string;
-  TAcctBank: string;
-  TAcctNo: string;
-  Remark2: string;
+  createDate: string;
+  dpwdTransID: number;
+  acctID: number;
+  uclientID: string;
+  reqTransID: number;
+  transType: string;
+  dpwdAmt: number;
+  dws: number;
+  cs: number;
+  sendID: number;
+  sendStatus: string;
+  resStatus: string;
+  userID: string;
+  tAcctBank: string;
+  tAcctNo: string;
+  remark2: string;
 }
 
 export function mapApiTransactionItem(api: ApiTransactionItem): TransactionItem {
   return {
-    create_date: api.CreateDate,
-    dpwd_trans_id: api.DPwdTransID,
-    acct_id: api.AcctID,
-    u_client_id: api.UClientID,
-    req_trans_id: api.ReqTransID,
-    trans_type: api.TransType,
-    dp_wd_amt: api.DPWDAmt,
-    dws: api.DWS,
-    cs: api.CS,
-    send_id: api.SendID,
-    send_status: api.SendStatus,
-    res_status: api.ResStatus,
-    user_id: api.UserID,
-    t_acct_bank: api.TAcctBank,
-    t_acct_no: api.TAcctNo,
-    remark2: api.Remark2,
+    create_date: api.createDate,
+    dpwd_trans_id: api.dpwdTransID,
+    acct_id: api.acctID,
+    u_client_id: api.uclientID,
+    req_trans_id: api.reqTransID,
+    trans_type: api.transType as TransactionTransType,
+    dp_wd_amt: api.dpwdAmt,
+    dws: api.dws,
+    cs: api.cs,
+    send_id: api.sendID,
+    send_status: api.sendStatus,
+    res_status: api.resStatus,
+    user_id: api.userID,
+    t_acct_bank: api.tAcctBank,
+    t_acct_no: api.tAcctNo,
+    remark2: api.remark2,
   };
 }
 
 export interface ApiTransactionPage {
-  Before: string;
-  After: string;
-  Limit: number;
-  Items: ApiTransactionItem[];
-  Header: Record<string, unknown>;
+  after: string;
+  before: string;
+  limit: number;
+  items: ApiTransactionItem[];
+  header: Record<string, unknown>;
+  startDateTime: string;
+  endDateTime: string;
 }
 
 export function mapApiTransactionPage(api: ApiTransactionPage): TransactionPage {
   return {
-    before: api.Before,
-    after: api.After,
-    limit: api.Limit,
-    items: api.Items.map(mapApiTransactionItem),
-    header: api.Header,
+    before: api.before,
+    after: api.after,
+    limit: api.limit,
+    items: api.items.map(mapApiTransactionItem),
+    header: api.header,
   };
 }
 

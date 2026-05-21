@@ -45,6 +45,7 @@ interface PermissionsTabProps {
   permissionsLoading?: boolean;
   isToggling?: boolean;
   onTogglePermission: (action: string, enabled: boolean) => void;
+  onSelectRole: (roleId: string) => void;
   onAddDept: () => void;
   onEditDept: (tenant: Tenant) => void;
   onDeleteDept: (tenant: Tenant) => void;
@@ -61,6 +62,7 @@ export function PermissionsTab({
   permissionsLoading,
   isToggling,
   onTogglePermission,
+  onSelectRole,
   onAddDept,
   onEditDept,
   onDeleteDept,
@@ -93,6 +95,7 @@ export function PermissionsTab({
 
   const handleEditRole = (role: TenantRole) => {
     setDrawerRole(role);
+    onSelectRole(role.id);
     setDrawerOpened(true);
   };
 

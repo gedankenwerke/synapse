@@ -24,11 +24,10 @@ export function mapApiTenantPermission(api: ApiTenantPermission): TenantPermissi
   };
 }
 
-export interface TenantPermissionCreateRequest {
-  action: string;
-  role_id: string;
+export interface AssignPermissionsRequest {
+  actions: string[];
 }
 
-export interface TenantPermissionUpdateRequest {
-  action?: string;
+export interface DeassignPermissionsRequest {
+  actions: string[];
 }

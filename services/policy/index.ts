@@ -3,7 +3,7 @@ import { PolicyCatalogItem, PolicyReloadResponse } from "./types";
 import { ResponseWrapper } from "@/types/response";
 
 interface PolicyListResponse {
-  policy_catalog: PolicyCatalogItem[];
+  policies: PolicyCatalogItem[];
 }
 
 export const policy = {
@@ -11,7 +11,7 @@ export const policy = {
     const response = await httpClient.get<ResponseWrapper<PolicyListResponse>>(
       "/api/v1/policies"
     );
-    return (response as unknown as ResponseWrapper<PolicyListResponse>).data.policy_catalog;
+    return (response as unknown as ResponseWrapper<PolicyListResponse>).data.policies;
   },
 
   reload: async (): Promise<PolicyReloadResponse> => {

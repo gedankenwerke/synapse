@@ -60,10 +60,13 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
         return;
       }
 
-      // Step 2: Get all permission assignments, filter to user's roles
-      const allPermissions = await tenantPermission.list();
-      const actions = allPermissions
-        .filter((p) => roleIds.includes(p.role_id))
+      // Step 2: Get permissions for each role the user has
+      const permissionPromises = roleIds.map((roleId) =>
+        tenantPermission.list(roleId)
+      );
+      const permissionResults = await Promise.all(permissionPromises);
+      const actions = permissionResults
+        .flat()
         .map((p) => p.action);
 
       // Deduplicate
@@ -82,10 +85,10 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
 
   hasPermission: (name: PolicyName) => {
     const { policies } = get();
-    const policyItem = policies.find((p) => p.Name === name);
+    const policyItem = policies.find((p) => p.name === name);
     if (!policyItem) return false;
 
-    if (policyItem.SuperAdminOnly) {
+    if (policyItem.superadmin_only) {
       return isSuperAdmin();
     }
     return true;
@@ -93,16 +96,16 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
 
   isSuperAdminOnly: (name: PolicyName) => {
     const { policies } = get();
-    const policyItem = policies.find((p) => p.Name === name);
-    return policyItem?.SuperAdminOnly ?? false;
+    const policyItem = policies.find((p) => p.name === name);
+    return policyItem?.superadmin_only ?? false;
   },
 
   canSeePage: (name: PolicyName) => {
     if (isSuperAdmin()) return true;
     const { policies } = get();
-    const policyItem = policies.find((p) => p.Name === name);
-    // SuperAdminOnly policies are only visible to SuperAdmin (already handled above)
-    if (policyItem?.SuperAdminOnly) return false;
+    const policyItem = policies.find((p) => p.name === name);
+    // superadmin_only policies are only visible to SuperAdmin (already handled above)
+    if (policyItem?.superadmin_only) return false;
     // All other pages are visible to any authenticated user
     return true;
   },
