@@ -1,8 +1,21 @@
+export type AGLevel = "Company" | "Director" | "AD" | "SM" | "Manager" | "Super" | "Senior" | "Master" | "Agent";
+
+export const AG_LEVELS: AGLevel[] = [
+  "Company",
+  "Director",
+  "AD",
+  "SM",
+  "Manager",
+  "Super",
+  "Senior",
+  "Master",
+  "Agent",
+];
+
 export interface PayAgentRequest {
-  aglevel?: string;
+  aglevel: AGLevel;
   clientidadd: string;
   parentclient: string;
-  secret: string;
 }
 
 export interface PayAgentResponse {

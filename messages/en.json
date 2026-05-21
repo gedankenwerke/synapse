@@ -370,10 +370,8 @@
       "clientidaddPlaceholder": "Enter client ID",
       "parentclientLabel": "Parent Client",
       "parentclientPlaceholder": "Enter parent client ID",
-      "secretLabel": "Secret",
-      "secretPlaceholder": "Enter secret key",
       "aglevelLabel": "Agent Level",
-      "aglevelPlaceholder": "Optional, e.g. 1",
+      "aglevelPlaceholder": "Select agent level",
       "submit": "Create Pay Agent",
       "processing": "Creating..."
     },
@@ -390,7 +388,7 @@
     "validation": {
       "clientidaddRequired": "Client ID is required",
       "parentclientRequired": "Parent client is required",
-      "secretRequired": "Secret is required"
+      "aglevelRequired": "Agent level is required"
     }
   },
   "userManagement": {

@@ -6,25 +6,25 @@ import {
   Group,
   SimpleGrid,
   TextInput,
-  PasswordInput,
+  Select,
   Stack,
   Loader,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconUserPlus } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { AG_LEVELS } from "@/services/pay-agent/types";
+import type { AGLevel } from "@/services/pay-agent/types";
 
 export interface PayAgentFormValues {
   clientidadd: string;
   parentclient: string;
-  secret: string;
-  aglevel: string;
+  aglevel: AGLevel | "";
 }
 
 const defaultFormValues: PayAgentFormValues = {
   clientidadd: "",
   parentclient: "",
-  secret: "",
   aglevel: "",
 };
 
@@ -44,10 +44,15 @@ export function PayAgentForm({ onSubmit, loading }: PayAgentFormProps) {
         val.trim().length > 0 ? null : t("validation.clientidaddRequired"),
       parentclient: (val: string) =>
         val.trim().length > 0 ? null : t("validation.parentclientRequired"),
-      secret: (val: string) =>
-        val.trim().length > 0 ? null : t("validation.secretRequired"),
+      aglevel: (val: string) =>
+        val.trim().length > 0 ? null : t("validation.aglevelRequired"),
     },
   });
+
+  const agLevelOptions = AG_LEVELS.map((level) => ({
+    value: level,
+    label: level,
+  }));
 
   return (
     <Card withBorder shadow="sm" padding="lg" radius="md">
@@ -65,18 +70,12 @@ export function PayAgentForm({ onSubmit, loading }: PayAgentFormProps) {
               {...form.getInputProps("parentclient")}
             />
           </SimpleGrid>
-          <SimpleGrid cols={2}>
-            <PasswordInput
-              label={t("form.secretLabel")}
-              placeholder={t("form.secretPlaceholder")}
-              {...form.getInputProps("secret")}
-            />
-            <TextInput
-              label={t("form.aglevelLabel")}
-              placeholder={t("form.aglevelPlaceholder")}
-              {...form.getInputProps("aglevel")}
-            />
-          </SimpleGrid>
+          <Select
+            label={t("form.aglevelLabel")}
+            placeholder={t("form.aglevelPlaceholder")}
+            data={agLevelOptions}
+            {...form.getInputProps("aglevel")}
+          />
           <Group justify="flex-end" mt="md">
             <Button
               type="submit"

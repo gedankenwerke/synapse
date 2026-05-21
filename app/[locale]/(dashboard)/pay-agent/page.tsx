@@ -6,7 +6,7 @@ import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
 import { usePageGuard } from "@/hooks/usePageGuard";
 import { payAgent } from "@/services/pay-agent";
-import type { PayAgentResponse } from "@/services/pay-agent/types";
+import type { PayAgentResponse, AGLevel } from "@/services/pay-agent/types";
 import { PayAgentForm } from "./_components/PayAgentTab/PayAgentForm";
 import { PayAgentResult } from "./_components/PayAgentTab/PayAgentResult";
 
@@ -22,7 +22,6 @@ export default function PayAgentPage() {
   const handleSubmit = async (values: {
     clientidadd: string;
     parentclient: string;
-    secret: string;
     aglevel: string;
   }) => {
     setLoading(true);
@@ -33,8 +32,7 @@ export default function PayAgentPage() {
       const response = await payAgent.create({
         clientidadd: values.clientidadd,
         parentclient: values.parentclient,
-        secret: values.secret,
-        aglevel: values.aglevel || undefined,
+        aglevel: values.aglevel as AGLevel,
       });
       setResult(response);
       notifications.show({

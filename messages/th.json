@@ -370,10 +370,8 @@
       "clientidaddPlaceholder": "กรอกรหัสลูกค้า",
       "parentclientLabel": "Parent Client",
       "parentclientPlaceholder": "กรอกรหัส Parent Client",
-      "secretLabel": "Secret",
-      "secretPlaceholder": "กรอก Secret Key",
       "aglevelLabel": "ระดับ Agent",
-      "aglevelPlaceholder": "ไม่บังคับ เช่น 1",
+      "aglevelPlaceholder": "เลือกระดับ Agent",
       "submit": "สร้าง Pay Agent",
       "processing": "กำลังสร้าง..."
     },
@@ -390,7 +388,7 @@
     "validation": {
       "clientidaddRequired": "ต้องระบุรหัสลูกค้า",
       "parentclientRequired": "ต้องระบุ Parent Client",
-      "secretRequired": "ต้องระบุ Secret"
+      "aglevelRequired": "ต้องระบุระดับ Agent"
     }
   },
   "userManagement": {
