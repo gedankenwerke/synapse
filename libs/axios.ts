@@ -49,6 +49,7 @@ function setAuthCookies(accessToken: string, refreshToken: string) {
 function clearAuthCookies() {
     Cookies.remove(AUTH_COOKIE, { path: '/' });
     Cookies.remove(REFRESH_COOKIE, { path: '/' });
+    Cookies.remove('role', { path: '/' });
 }
 
 baseRequest.interceptors.response.use(

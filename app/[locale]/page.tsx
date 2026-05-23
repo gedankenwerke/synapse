@@ -16,7 +16,7 @@ import {
 } from "@mantine/core";
 import { useState } from "react";
 import { authentication } from "@/services/authentication";
-import { useAppStore } from "@/store/useAppStore";
+import { useAppStore, getLayer } from "@/store/useAppStore";
 import { usePermissionStore } from "@/store/usePermissionStore";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -49,7 +49,8 @@ export default function LoginPage() {
       setLogin(response.data.access_token, response.data.refresh_token, response.data.user);
       await usePermissionStore.getState().fetchPolicies();
       await usePermissionStore.getState().fetchUserPermissions();
-      router.push("/dashboard");
+      const layer = getLayer();
+      router.push(`/${layer}/dashboard`);
     } catch (err: any) {
       const errorMessage = err?.message || t("error.loginFailed");
       setError(errorMessage);
