@@ -1,10 +1,13 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import Cookies from "js-cookie";
-import { LoginRequestUser } from "../services/authentication/types";
+import { LoginRequestUser, UserRole } from "../services/authentication/types";
+
+export type { UserRole };
 
 const AUTH_COOKIE = "auth_token";
 const REFRESH_COOKIE = "refresh_token";
+const ROLE_COOKIE = "role";
 const COOKIE_MAX_AGE_DAYS = 7;
 
 interface AppState {
@@ -40,7 +43,7 @@ function safeLocalStorage(): Storage {
   }
 }
 
-function setAuthCookies(accessToken: string, refreshToken: string) {
+function setAuthCookies(accessToken: string, refreshToken: string, role: string) {
   const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
   const options: Cookies.CookieAttributes = {
     path: "/",
@@ -50,11 +53,13 @@ function setAuthCookies(accessToken: string, refreshToken: string) {
   };
   Cookies.set(AUTH_COOKIE, accessToken, options);
   Cookies.set(REFRESH_COOKIE, refreshToken, options);
+  Cookies.set(ROLE_COOKIE, role, options);
 }
 
 function removeAuthCookies() {
   Cookies.remove(AUTH_COOKIE, { path: "/" });
   Cookies.remove(REFRESH_COOKIE, { path: "/" });
+  Cookies.remove(ROLE_COOKIE, { path: "/" });
 }
 
 export const useAppStore = create<AppState>()(
@@ -73,7 +78,7 @@ export const useAppStore = create<AppState>()(
       isAuthenticated: false,
 
       setLogin: (accessToken, refreshToken, user) => {
-        setAuthCookies(accessToken, refreshToken);
+        setAuthCookies(accessToken, refreshToken, user.role || "user");
         set({ token: accessToken, refreshToken, user, isAuthenticated: true });
       },
       setLogout: () => {
@@ -81,7 +86,8 @@ export const useAppStore = create<AppState>()(
         set({ token: null, refreshToken: null, user: null, isAuthenticated: false });
       },
       updateTokens: (accessToken, refreshToken) => {
-        setAuthCookies(accessToken, refreshToken);
+        const role = useAppStore.getState().user?.role || Cookies.get(ROLE_COOKIE) || "user";
+        setAuthCookies(accessToken, refreshToken, role);
         set({ token: accessToken, refreshToken });
       },
     }),
@@ -103,9 +109,16 @@ export const useAppStore = create<AppState>()(
   )
 );
 
-// Derived helper — not stored in state, survives rehydration
+// Derived helpers — not stored in state, survive rehydration
+export function getLayer(): UserRole {
+  const { user } = useAppStore.getState();
+  if (user?.role) return user.role;
+  // Fallback shim until backend returns role field
+  return user?.tenant_id === "1" ? "superadmin" : "user";
+}
+
 export function isSuperAdmin(): boolean {
-  return useAppStore.getState().user?.tenant_id === "1";
+  return getLayer() === "superadmin";
 }
 
 // Listen for token refresh events from the axios interceptor

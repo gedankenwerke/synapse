@@ -3,7 +3,11 @@ import { policy } from "../services/policy";
 import { PolicyCatalogItem, PolicyName } from "../services/policy/types";
 import { tenantUser } from "../services/tenant-user";
 import { tenantPermission } from "../services/tenant-permission";
-import { useAppStore, isSuperAdmin } from "./useAppStore";
+import { useAppStore, getLayer, isSuperAdmin } from "./useAppStore";
+import type { NavItem } from "../components/sidebars/types";
+import { SUPERADMIN_NAV_ITEMS } from "../components/sidebars/superadminNav";
+import { SENIOR_NAV_ITEMS } from "../components/sidebars/seniorNav";
+import { USER_NAV_ITEMS } from "../components/sidebars/userNav";
 
 interface PermissionState {
   policies: PolicyCatalogItem[];
@@ -18,6 +22,7 @@ interface PermissionState {
   hasPermission: (name: PolicyName) => boolean;
   isSuperAdminOnly: (name: PolicyName) => boolean;
   canSeePage: (name: PolicyName) => boolean;
+  getNavItems: () => NavItem[];
 }
 
 export const usePermissionStore = create<PermissionState>()((set, get) => ({
@@ -116,5 +121,16 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
     if (policyItem?.superadmin_only) return false;
     // All other pages are visible to any authenticated user
     return true;
+  },
+
+  getNavItems: () => {
+    const layer = getLayer();
+    if (layer === "superadmin") return SUPERADMIN_NAV_ITEMS;
+    if (layer === "senior") return SENIOR_NAV_ITEMS;
+    // user layer: filter by RBAC actions
+    return USER_NAV_ITEMS.filter((item) => {
+      if (!item.requiredAction) return true;
+      return get().hasAction(item.requiredAction);
+    });
   },
 }));
