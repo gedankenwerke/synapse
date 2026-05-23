@@ -63,7 +63,9 @@
     "apiKeys": "API Keys",
     "customerSettlement": "Customer Settlement",
     "payAgent": "Pay Agent",
-    "userManagement": "User Management"
+    "userManagement": "User Management",
+    "tenants": "Tenants",
+    "policies": "Policies"
   },
   "breadcrumb": {
     "home": "Home",

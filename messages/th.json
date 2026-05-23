@@ -63,7 +63,9 @@
     "apiKeys": "API Keys",
     "customerSettlement": "การชำระเงินลูกค้า",
     "payAgent": "Pay Agent",
-    "userManagement": "จัดการผู้ใช้"
+    "userManagement": "จัดการผู้ใช้",
+    "tenants": "เทนแนนท์",
+    "policies": "นโยบาย"
   },
   "breadcrumb": {
     "home": "หน้าแรก",
