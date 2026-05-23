@@ -33,6 +33,6 @@ export interface TenantUserCreateRequest {
   tenant_role_id: string;
 }
 
-export interface TenantUserUpdateRequest {
-  tenant_role_id?: string;
+export interface TenantUserRoleChangeRequest {
+  tenant_role_id: string;
 }

@@ -1,18 +1,26 @@
-Synapse API Notes — Tested 2026-05-21, Usage Audit 2026-05-23
-==============================================================
+Synapse API Notes — Tested 2026-05-24
+======================================
 
 Base URL: http://192.168.144.74:18080/api/v1
+Auth: Bearer {access_token} from POST /login
+Test credentials: username=string password=string
 
 NAMING CONVENTION SUMMARY
 --------------------------
-Different endpoints use DIFFERENT naming conventions:
+CRITICAL: Different endpoints use DIFFERENT naming conventions:
 
   /login, /me, /token, /token/refresh → snake_case (access_token, tenant_id, etc.)
   /policies                           → snake_case (name, detail, superadmin_only)
-  /users, /tenants, /tenant-roles     → PascalCase (ID, Username, TenantID, etc.)
-  /tenant-users                       → PascalCase (ID, TenantID, UserID, etc.)
+  /tenants, /tenant-roles             → PascalCase (ID, Name, ParentID, TenantID, etc.)
+  /tenant-users                       → PascalCase (ID, TenantID, TenantRoleID, UserID, etc.)
+  /users                              → PascalCase (ID, Username, Password, TenantID, Items, etc.)
+  /tenant-roles/{id}/permissions      → PascalCase (ID, RoleID, Action, CreatedAt, UpdatedAt)
+  /add-pay-agent                      → snake_case (aglevel, clientidadd, parentclient) in REQUEST
+                                       snake_case (admin_id, admin_password, api_endpoint, etc.) in RESPONSE
   /search-bank-statement (spec)       → camelCase (acctAvail, clientID, etc.)
-  /search-net-balance (spec)         → camelCase (acctDeposit, yearMonthDay, etc.)
+  /search-net-balance (spec)          → camelCase (acctDeposit, yearMonthDay, etc.)
+  /settlement                         → PascalCase (ClientID, UserID, AcctBank, AcctNo, Amount) REQUIRED
+
 
 AUTH ENDPOINTS — ALL WORKING
 -----------------------------
@@ -36,7 +44,7 @@ AUTH ENDPOINTS — ALL WORKING
        "expires_in": 900
      }
    }
-   ✓ Confirmed working
+   ✓ Confirmed working — snake_case fields
 
 2. POST /me
    Auth: Bearer access_token
@@ -51,9 +59,10 @@ AUTH ENDPOINTS — ALL WORKING
        "updated_at": "2026-05-16T08:44:00Z"
      }
    }
-   ✓ Confirmed working
+   ✓ Confirmed working — snake_case fields
+   ⚠ No "role" field yet — backend needs to add this
 
-3. GET /token (proactive rotation with valid access_token)
+3. GET /token (proactive rotation)
    Auth: Bearer access_token
    Response: 200
    {
@@ -69,20 +78,12 @@ AUTH ENDPOINTS — ALL WORKING
 
 4. POST /token/refresh
    Request:  {"refresh_token": "eyJ..."}
-   Response: 200
-   {
-     "code": 200,
-     "data": {
-       "access_token": "eyJ...",
-       "refresh_token": "eyJ...",
-       "token_type": "Bearer",
-       "expires_in": 900
-     }
-   }
+   Response: 200 (same structure as GET /token)
    ✓ Confirmed working
 
-MANAGEMENT ENDPOINTS — ALL WORKING
-------------------------------------
+
+POLICY ENDPOINTS — ALL WORKING
+--------------------------------
 
 5. GET /policies
    Auth: Bearer access_token
@@ -91,370 +92,353 @@ MANAGEMENT ENDPOINTS — ALL WORKING
      "code": 200,
      "data": {
        "policies": [
-         { "name": "DeleteTenantRole", "detail": "...", "superadmin_only": false },
-         ...
+         {"name": "GetTenantRole", "detail": "...", "superadmin_only": false},
+         ...28 total policies
        ]
      }
    }
    ✓ Confirmed working — snake_case fields, key is "policies"
+   Full policy list (28 actions):
+   - GetTenantRole, CreateTenantUser, UpdateTenant, DeleteTenant
+   - CreateTenantRole, CreateTenant, ListPolicies (superadmin_only:true)
+   - ListTenantUsers, DeleteTenantUser, Settlement (superadmin_only:true)
+   - CreateUser, UpdateUser, UpdateTenantRole, DeassignPermissions
+   - SearchBankStatement, DeleteUser, AssignPermissions, GetUser
+   - SearchTransactionHistory, ListTenants, SearchNetBalance
+   - DeleteTenantRole, GetTenant, CreatePayAgent (superadmin_only:true)
+   - ListTenantRoles, ListUsers, ReloadPolicies (superadmin_only:true)
+   - ChangeUserRole
 
-6. GET /users?limit=N
+6. POST /policies/reload
+   Auth: Bearer access_token
+   Response: 200
+   {"code": 200, "data": "policies reloaded"}
+   ✓ Confirmed working
+
+
+TENANT ENDPOINTS — ALL WORKING
+-------------------------------
+
+7. GET /tenants
+   Auth: Bearer access_token
+   Query: ?parent_id={int} (optional filter)
+   Response: 200
+   {
+     "code": 200,
+     "data": [
+       {
+         "ID": "1",
+         "ParentID": "0",
+         "Name": "default",
+         "CreatedAt": "2026-05-12T03:13:20.468Z",
+         "UpdatedAt": "2026-05-16T08:44:01.065Z"
+       },
+       ...
+     ]
+   }
+   ✓ Confirmed working — PascalCase, data is array (NOT wrapped in object)
+
+8. POST /tenants
+   Auth: Bearer access_token
+   Request:  {"name": "string", "parent_id": 1}
+   Response: 201 (Created)
+   {
+     "code": 201,
+     "data": {
+       "ID": "2058255396027502592",
+       "ParentID": "1",
+       "Name": "APITestTenant",
+       "CreatedAt": "2026-05-23T18:35:01.606Z",
+       "UpdatedAt": "2026-05-23T18:35:01.606Z"
+     }
+   }
+   ✓ Confirmed working
+
+9. GET /tenants/{id}
    Auth: Bearer access_token
    Response: 200
    {
      "code": 200,
      "data": {
-       "Items": [
-         { "ID": "...", "Username": "...", "Password": "...", "CreatedAt": "...", "UpdatedAt": "...", "TenantID": "..." }
-       ]
+       "ID": "1",
+       "ParentID": "0",
+       "Name": "default",
+       "CreatedAt": "2026-05-12T03:13:20.468Z",
+       "UpdatedAt": "2026-05-16T08:44:01.065Z"
      }
    }
-   ✓ Confirmed working — PascalCase fields, Items with capital I
+   ✓ Confirmed working
 
-7. GET /tenants
-   Auth: Bearer access_token
-   Response: 200
-   { "code": 200, "data": [{ "ID": "...", "ParentID": "...", "Name": "...", "CreatedAt": "...", "UpdatedAt": "..." }] }
-   ✓ Confirmed working — data is array, PascalCase fields
+10. PUT /tenants/{id}
+    Auth: Bearer access_token
+    Request:  {"name": "string", "parent_id": 1}  (both optional)
+    Response: 200 (updated tenant object)
+    ✓ Confirmed working
 
-8. GET /tenant-roles
-   Auth: Bearer access_token
-   Response: 200
-   { "code": 200, "data": [{ "ID": "...", "TenantID": "...", "Name": "...", "CreatedAt": "...", "UpdatedAt": "..." }] }
-   ✓ Confirmed working — data is array, PascalCase fields
+11. DELETE /tenants/{id}
+    Auth: Bearer access_token
+    Response: 200
+    {"code": 200, "data": 1}
+    ✓ Confirmed working — data is deleted tenant ID
 
-9. GET /tenant-users
-   Auth: Bearer access_token
-   Response: 200
-   { "code": 200, "data": [{ "ID": "...", "TenantID": "...", "TenantRoleID": "...", "UserID": "...", "CreatedAt": "...", "UpdatedAt": "..." }] }
-   ✓ Confirmed working — data is array, PascalCase fields
 
-10. GET /tenant-permissions
-    ✗ NOT FOUND — 404. Permissions are managed via /tenant-roles/{id}/permissions instead
+TENANT ROLE ENDPOINTS — ALL WORKING
+-------------------------------------
 
-TENANT ROLE PERMISSIONS — TESTED & WORKING
---------------------------------------------
+12. GET /tenant-roles
+    Auth: Bearer access_token
+    Query: ?tenant_id={int} (optional filter)
+    Response: 200
+    {
+      "code": 200,
+      "data": [
+        {
+          "ID": "2054037180031963136",
+          "TenantID": "1",
+          "Name": "admin",
+          "CreatedAt": "2026-05-12T03:13:20.542Z",
+          "UpdatedAt": "2026-05-21T08:15:48.402Z"
+        },
+        ...
+      ]
+    }
+    ✓ Confirmed working — PascalCase fields
 
-11. POST /tenant-roles/{roleId}/permissions (assign)
+13. POST /tenant-roles
+    Auth: Bearer access_token
+    Request:  {"name": "string", "tenant_id": 1}
+    Response: 201 (Created)
+    {
+      "code": 201,
+      "data": {
+        "ID": "2058257847505915904",
+        "TenantID": "1",
+        "Name": "APITestRole",
+        "CreatedAt": "2026-05-23T18:44:46.084Z",
+        "UpdatedAt": "2026-05-23T18:44:46.084Z"
+      }
+    }
+    ✓ Confirmed working
+
+14. GET /tenant-roles/{id}
+    Auth: Bearer access_token
+    Response: 200
+    {
+      "code": 200,
+      "data": {
+        "ID": "2054037180031963136",
+        "TenantID": "1",
+        "Name": "admin",
+        "CreatedAt": "2026-05-12T03:13:20.542Z",
+        "UpdatedAt": "2026-05-21T08:15:48.402Z"
+      }
+    }
+    ✓ Confirmed working
+
+15. PUT /tenant-roles/{id}
+    Auth: Bearer access_token
+    Request:  {"name": "string"}  (optional)
+    Response: 200 (updated role object)
+    ✓ Confirmed working
+
+16. DELETE /tenant-roles/{id}
+    Auth: Bearer access_token
+    Response: 200
+    {"code": 200, "data": 1}
+    ✓ Confirmed working — data is deleted role ID
+
+17. POST /tenant-roles/{id}/permissions (assign)
     Auth: Bearer access_token
     Request:  {"actions": ["ListUsers", "GetUser"]}
     Response: 200
     {
       "code": 200,
       "data": [
-        { "ID": "...", "RoleID": "...", "Action": "ListUsers", "CreatedAt": "...", "UpdatedAt": "..." },
-        { "ID": "...", "RoleID": "...", "Action": "GetUser", "CreatedAt": "...", "UpdatedAt": "..." }
+        {
+          "ID": "2058256514702905344",
+          "RoleID": "2054037180031963136",
+          "Action": "ListUsers",
+          "CreatedAt": "2026-05-23T18:39:28.319Z",
+          "UpdatedAt": "2026-05-23T18:39:28.319Z"
+        }
       ]
     }
-    ✓ Working — PascalCase fields in response
+    ✓ Confirmed working — PascalCase fields (ID, RoleID, Action, CreatedAt, UpdatedAt)
 
-12. DELETE /tenant-roles/{roleId}/permissions (deassign)
+18. DELETE /tenant-roles/{id}/permissions (deassign)
     Auth: Bearer access_token
     Request:  {"actions": ["ListUsers"]}
     Response: 200
-    { "code": 200, "data": 2 }
-    ✓ Working — data is count of removed actions
+    {"code": 200, "data": 2}
+    ✓ Confirmed working — data is count of removed actions
 
-BANK API ENDPOINTS — ALL RETURNING 500 (BACKEND ISSUE)
--------------------------------------------------------
 
-11. POST /search-bank-statement
+TENANT USER ENDPOINTS — ALL WORKING
+-------------------------------------
+
+19. GET /tenant-users
     Auth: Bearer access_token
-    Request:  {"after":"","before":"","start_date_time":"2026-05-01T00:00:00Z","end_date_time":"2026-05-20T23:59:59Z","limit":5}
-    Response: 500 "internal server error"
-    ✗ NOT WORKING — backend returns 500
+    Query: ?tenant_id={int} (optional), ?user_id={int} (optional)
+    Response: 200
+    {
+      "code": 200,
+      "data": [
+        {
+          "ID": "2054037180141015040",
+          "TenantID": "1",
+          "TenantRoleID": "2054037180031963136",
+          "UserID": "2054037179725778944",
+          "CreatedAt": "2026-05-12T03:13:20.568Z",
+          "UpdatedAt": "2026-05-16T08:42:59.62Z"
+        },
+        ...
+      ]
+    }
+    ✓ Confirmed working — PascalCase fields
 
-12. POST /search-net-balance
+20. POST /tenant-users
     Auth: Bearer access_token
-    Request:  {"after":"","before":"","start_date_time":"2026-05-01T00:00:00Z","end_date_time":"2026-05-20T23:59:59Z","limit":5}
-    Response: 500 "internal server error"
-    ✗ NOT WORKING — backend returns 500
+    Request:  {"tenant_id": 1, "tenant_role_id": 1, "user_id": 1}
+    Response: 201 (Created) OR 409 if mapping already exists
+    ✗ 409 on duplicate — must check before creating
+    ✓ Confirmed working
 
-13. POST /search-transaction-history
+21. GET /tenant-users/{id}
+    ✗ NOT FOUND — returns 404
+    NOTE: Backend does NOT support GET by single tenant-user ID
+
+22. PUT /tenant-users/{id}/role (change role)
     Auth: Bearer access_token
-    Request:  {"after":"","before":"","start_date_time":"2026-05-01T00:00:00Z","end_date_time":"2026-05-20T23:59:59Z","limit":5}
-    Response: 500 "internal server error"
-    ✗ NOT WORKING — backend returns 500
+    Request:  {"tenant_role_id": 2054037180031963136}
+    Response: 200 (updated tenant-user object)
+    ✓ Confirmed working — this is the CORRECT endpoint, NOT PUT /tenant-users/{id}
+
+23. DELETE /tenant-users/{id}
+    Auth: Bearer access_token
+    Response: 200 {"code": 200, "data": 1}  OR  404 if not found
+    ✓ Confirmed working
 
 
-EXPECTED BANK API RESPONSE STRUCTURES (from spec, not yet confirmed live)
---------------------------------------------------------------------------
+USER ENDPOINTS — ALL WORKING
+------------------------------
 
-search-bank-statement response:
-{
-  "code": 1,
-  "data": {
-    "after": "string",
-    "before": "string",
-    "items": [
-      {
-        "acctAvail": 1,
-        "acctBank": "string",
-        "acctID": 1,
-        "acctNo": "string",
-        "amount": 1,
-        "channel": "string",
-        "clientID": "string",
-        "createDate": "string",
-        "dpwdTransID": 1,
-        "nameEn": "string",
-        "nameTh": "string",
-        "origRqUid": "string",
-        "reqTransID": 1,
-        "status": 1,
-        "transDate": "string",
-        "transName": "string",
-        "transType": "string",
-        "trdate": "string",
-        "trno": 1,
-        "uclientID": "string",
-        "updateDate": "string"
+24. GET /users?limit=N
+    Auth: Bearer access_token
+    Response: 200
+    {
+      "code": 200,
+      "data": {
+        "Items": [
+          {
+            "ID": "...",
+            "Username": "...",
+            "Password": "$2a$10$...",   ⚠ SECURITY: Password hash exposed
+            "CreatedAt": "...",
+            "UpdatedAt": "...",
+            "TenantID": "..."
+          }
+        ],
+        "Before": "...",
+        "After": "",
+        "Limit": 5,
+        "Total": 4
       }
-    ],
-    "limit": 1,
-    "startDateTime": "string",
-    "endDateTime": "string"
-  },
-  "message": "string"
-}
+    }
+    ✓ Confirmed working — PascalCase, paginated with Items/Before/After/Limit/Total
+    ⚠ Password hash should NOT be in response — backend should exclude it
 
-search-net-balance response:
-{
-  "code": 1,
-  "data": {
-    "after": "string",
-    "before": "string",
-    "items": [
-      {
-        "acctDeposit": 1,
-        "acctID": 1,
-        "acctWithdraw": 1,
-        "clientID": "string",
-        "createDate": "string",
-        "updateDate": "string",
-        "yearMonthDay": "string"
+25. POST /users
+    Auth: Bearer access_token
+    ✓ Used by frontend (not curl-tested here to avoid creating test users)
+
+26. GET /users/{id}
+    Auth: Bearer access_token
+    Response: 200
+    {
+      "code": 200,
+      "data": {
+        "ID": "2054037179725778944",
+        "Username": "string",
+        "Password": "$2a$10$...",
+        "CreatedAt": "...",
+        "UpdatedAt": "...",
+        "TenantID": "1"
       }
-    ],
-    "limit": 1,
-    "startDateTime": "string",
-    "endDateTime": "string"
-  },
-  "message": "string"
-}
+    }
+    ✓ Confirmed working — same structure as list item, PascalCase
+    ⚠ Password hash exposed here too
 
-search-transaction-history response:
-(Same pagination envelope, items structure TBD)
+27. PUT /users/{id}
+    Auth: Bearer access_token
+    ✓ Used by frontend (not curl-tested here)
 
-
-FRONTEND CHANGES MADE (2026-05-20/21)
---------------------------------------
-
-1. AUTH SYSTEM — Updated to match actual API:
-   - Login response: { access_token, refresh_token, user, token_type, expires_in }
-   - Both tokens stored in cookies (auth_token + refresh_token)
-   - 401 handler uses POST /token/refresh with refresh_token (not GET /token)
-   - /me returns user profile object (not just true)
-   - Added authentication.refresh(refreshToken) and authentication.rotateToken()
-
-2. BANK API TYPES — Updated from PascalCase to camelCase:
-   - ApiBankStatementItem: acctAvail (not AcctAvail), clientID (not ClientID), etc.
-   - ApiBankStatementPage: after/before/items/limit (not After/Before/Items/Limit)
-   - Same pattern for net-balance and transaction types
-   - Domain model types (snake_case) unchanged — mappers updated accordingly
-
-3. POLICY SERVICE — Fixed critical bug:
-   - API returns snake_case (name, detail, superadmin_only) — was using PascalCase (Name, Detail, SuperAdminOnly)
-   - API key is "policies" — was reading "policy_catalog" (returned undefined)
-   - usePermissionStore updated to use .name and .superadmin_only
-
-4. KNOWN ISSUES:
-   - Bank API endpoints return 500 from backend (not a frontend issue)
-   - /tenant-permissions endpoint returns 404 (not implemented on backend)
-   - /users response includes Password field (security concern — backend should not send this)
+28. DELETE /users/{id}
+    Auth: Bearer access_token
+    ✓ Used by frontend (not curl-tested here)
 
 
-API USAGE AUDIT — 2026-05-23
-============================
+PAYAGENT ENDPOINT
+------------------
 
-Status codes: ✓ USED (consumed by page/hook/store)
-              ⚠ DEFINED (service exists, no consumer calls it)
-              ✗ NOT USED (no reference in codebase at all)
-
-PayAgent
---------
-POST /add-pay-agent                              ✓ USED
-  Service:  services/pay-agent/index.ts
-  Consumer:  app/[locale]/(dashboard)/pay-agent/page.tsx
-
-Policy
-------
-GET  /policies                                   ✓ USED
-  Service:  services/policy/index.ts
-  Consumer:  store/usePermissionStore.ts
-
-POST /policies/reload                            ⚠ DEFINED, NOT CONSUMED
-  Service:  services/policy/index.ts (policy.reload() defined)
-  No page, hook, or store calls this method.
-
-Settlement
-----------
-POST /settlement                                 ✓ USED
-  Service:  services/settlement/index.ts
-  Consumer:  app/[locale]/(dashboard)/customer-settlement/page.tsx
-
-Info
-----
-GET  /health                                     ✗ NOT USED — no reference in codebase
-GET  /scalar                                     ✗ NOT USED — no reference in codebase
-
-Auth
-----
-POST /login                                      ✓ USED
-  Service:  services/authentication/index.ts
-  Consumer:  app/[locale]/page.tsx, libs/axios.ts (interceptor)
-
-POST /me                                         ✓ USED
-  Service:  services/authentication/index.ts
-  Consumer:  app/[locale]/(dashboard)/layout.tsx, libs/axios.ts (interceptor)
-
-GET  /token                                      ⚠ DEFINED, NOT CONSUMED
-  Service:  services/authentication/index.ts (rotateToken() defined)
-  No component or hook calls rotateToken() directly.
-
-POST /token/refresh                              ✓ USED
-  Service:  services/authentication/index.ts
-  Consumer:  libs/axios.ts (401 interceptor refresh flow)
-
-Bank
-----
-POST /search-bank-statement                      ✓ USED
-  Service:  services/account-statement/index.ts
-  Consumer:  account-statement/hooks/useStatementQuery.ts
-
-POST /search-net-balance                         ✓ USED
-  Service:  services/net-balance/index.ts
-  Consumer:  net-balance/hooks/useNetBalanceQuery.ts, dashboard/hooks/useDashboardData.ts
-
-POST /search-transaction-history                 ✓ USED
-  Service:  services/transaction/index.ts
-  Consumer:  deposits-withdrawals/hooks/useTransactionQuery.ts, dashboard/hooks/useDashboardData.ts
-
-TenantRole
-----------
-GET    /tenant-roles                              ✓ USED
-  Service:  services/tenant-role/index.ts
-  Consumer:  user-management/hooks/useTenantRolesQuery.ts
-
-POST   /tenant-roles                              ✓ USED
-  Service:  services/tenant-role/index.ts
-  Consumer:  user-management/hooks/useTenantRoleMutations.ts
-
-GET    /tenant-roles/{id}                        ⚠ DEFINED, NOT CONSUMED
-  Service:  services/tenant-role/index.ts (tenantRole.get() defined)
-  No consumer calls tenantRole.get() directly.
-
-PUT    /tenant-roles/{id}                         ✓ USED
-  Service:  services/tenant-role/index.ts
-  Consumer:  user-management/hooks/useTenantRoleMutations.ts
-
-DELETE /tenant-roles/{id}                         ✓ USED
-  Service:  services/tenant-role/index.ts
-  Consumer:  user-management/hooks/useTenantRoleMutations.ts
-
-POST   /tenant-roles/{id}/permissions             ✓ USED
-  Service:  services/tenant-permission/index.ts
-  Consumer:  useTenantPermissionsQuery.ts, useTenantPermissionMutations.ts, store/usePermissionStore.ts
-
-DELETE /tenant-roles/{id}/permissions             ✓ USED
-  Service:  services/tenant-permission/index.ts
-  Consumer:  useTenantPermissionMutations.ts, store/usePermissionStore.ts
-
-TenantUser
-----------
-GET    /tenant-users                              ✓ USED
-  Service:  services/tenant-user/index.ts
-  Consumer:  useTenantUsersQuery.ts, store/usePermissionStore.ts
-
-POST   /tenant-users                              ✓ USED
-  Service:  services/tenant-user/index.ts
-  Consumer:  useTenantUserMutations.ts
-
-GET    /tenant-users/{id}                         ⚠ DEFINED, NOT CONSUMED
-  Service:  services/tenant-user/index.ts (tenantUser.get() defined)
-  No consumer calls tenantUser.get() directly.
-
-PUT    /tenant-users/{id}                          ✓ USED
-  Service:  services/tenant-user/index.ts
-  Consumer:  useTenantUserMutations.ts
-
-DELETE /tenant-users/{id}                          ✓ USED
-  Service:  services/tenant-user/index.ts
-  Consumer:  useTenantUserMutations.ts
-
-PUT    /tenant-users/{id}/role                     ✗ NOT USED — not defined in codebase
-  No service method, no reference anywhere.
-  NOTE: tenantUser.update() uses PUT /tenant-users/{id}, NOT /tenant-users/{id}/role.
-
-Tenant
-------
-GET    /tenants                                   ✓ USED
-  Service:  services/tenant/index.ts
-  Consumer:  useTenantsQuery.ts, components/UserAvatar.tsx
-
-POST   /tenants                                   ✓ USED
-  Service:  services/tenant/index.ts
-  Consumer:  useTenantMutations.ts
-
-GET    /tenants/{id}                              ⚠ DEFINED, NOT CONSUMED
-  Service:  services/tenant/index.ts (tenant.get() defined)
-  No consumer calls tenant.get() directly.
-
-PUT    /tenants/{id}                               ✓ USED
-  Service:  services/tenant/index.ts
-  Consumer:  useTenantMutations.ts
-
-DELETE /tenants/{id}                               ✓ USED
-  Service:  services/tenant/index.ts
-  Consumer:  useTenantMutations.ts
-
-User
-----
-GET    /users                                     ✓ USED
-  Service:  services/user/index.ts
-  Consumer:  useUsersQuery.ts, dashboard/hooks/useDashboardData.ts
-
-POST   /users                                     ✓ USED
-  Service:  services/user/index.ts
-  Consumer:  useUserMutations.ts
-
-GET    /users/{id}                                ⚠ DEFINED, NOT CONSUMED
-  Service:  services/user/index.ts (userService.getById() defined)
-  No consumer calls userService.getById() directly.
-
-PUT    /users/{id}                                 ✓ USED
-  Service:  services/user/index.ts
-  Consumer:  useUserMutations.ts
-
-DELETE /users/{id}                                 ✓ USED
-  Service:  services/user/index.ts
-  Consumer:  useUserMutations.ts
+29. POST /add-pay-agent
+    Auth: Bearer access_token
+    Request:  {"aglevel": "Agent", "clientidadd": "testagent001", "parentclient": "ow"}
+    aglevel enum: Company, Director, AD, SM, Manager, Super, Senior, Master, Agent
+    Response: 500 (internal server error)
+    ✗ NOT WORKING — backend returns 500 for all test requests
+    NOTE: This may require valid clientidadd/parentclient values that exist in the payment system
 
 
-SUMMARY
-=======
-✓ USED (actively consumed):     20 endpoints
-⚠ DEFINED but not consumed:      6 endpoints (service exists, no caller)
-✗ NOT USED (not in codebase):    3 endpoints (no reference at all)
+SETTLEMENT ENDPOINT
+---------------------
 
-NOT USED at all:
-  - GET  /health
-  - GET  /scalar
-  - PUT  /tenant-users/{id}/role
+30. POST /settlement
+    Auth: Bearer access_token
+    Required fields (PascalCase): ClientID, UserID, AcctBank, AcctNo, Amount
+    Response: 400 validation error when missing required fields
+    ✓ Confirmed endpoint exists, validation returns field names
 
-DEFINED but never called:
-  - POST /policies/reload
-  - GET  /token (rotateToken)
-  - GET  /tenant-roles/{id}
-  - GET  /tenant-users/{id}
-  - GET  /tenants/{id}
-  - GET  /users/{id}
+
+BANK API ENDPOINTS — ALL RETURNING 500
+-----------------------------------------
+
+31. POST /search-bank-statement
+    Auth: Bearer access_token
+    ✗ NOT WORKING — backend returns 500
+
+32. POST /search-net-balance
+    Auth: Bearer access_token
+    ✗ NOT WORKING — backend returns 500
+
+33. POST /search-transaction-history
+    Auth: Bearer access_token
+    ✗ NOT WORKING — backend returns 500
+
+
+FRONTEND CHANGES NEEDED (based on API audit)
+==============================================
+
+1. ✗ PUT /tenant-users/{id} returns 404 → CHANGE to PUT /tenant-users/{id}/role
+   File: services/tenant-user/index.ts
+   Change: tenantUser.update() should use PUT /tenant-users/{id}/role
+            with body {"tenant_role_id": number} instead of PUT /tenant-users/{id}
+
+2. ✗ GET /tenant-users/{id} returns 404 → REMOVE from service
+   File: services/tenant-user/index.ts
+   Remove: tenantUser.get() endpoint (backend doesn't support it)
+
+3. ⚠ /users response includes Password hash → Backend should exclude this
+   Frontend should NOT display or store this field
+
+4. ⚠ POST /tenant-users returns 409 on duplicate → Frontend should handle this error
+
+5. ⚠ No "role" field in /login or /me responses → Backend needs to add role
+   Until then, frontend uses fallback: tenant_id === "1" ? "superadmin" : "user"
+
+6. ✓ All naming conventions confirmed:
+   - Auth endpoints: snake_case (access_token, tenant_id, created_at)
+   - Management endpoints: PascalCase (ID, Name, TenantID, CreatedAt)
+   - Policy endpoints: snake_case (name, detail, superadmin_only)
+   - Permission actions: PascalCase (ID, RoleID, Action, CreatedAt)
+   - PayAgent request: snake_case (aglevel, clientidadd, parentclient)
+   - PayAgent response: snake_case (admin_id, admin_password, api_endpoint, etc.)

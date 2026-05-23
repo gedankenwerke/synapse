@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { tenantUser } from "@/services/tenant-user";
-import type { TenantUserCreateRequest, TenantUserUpdateRequest } from "@/services/tenant-user/types";
+import type { TenantUserCreateRequest, TenantUserRoleChangeRequest } from "@/services/tenant-user/types";
 
 export function useCreateTenantUser() {
   const queryClient = useQueryClient();
@@ -13,11 +13,11 @@ export function useCreateTenantUser() {
   });
 }
 
-export function useUpdateTenantUser() {
+export function useChangeTenantUserRole() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: TenantUserUpdateRequest }) =>
-      tenantUser.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: TenantUserRoleChangeRequest }) =>
+      tenantUser.changeRole(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tenant-users"] });
       queryClient.invalidateQueries({ queryKey: ["users"] });

@@ -1,5 +1,5 @@
 import httpClient from "@/libs/axios";
-import { TenantUser, TenantUserCreateRequest, TenantUserUpdateRequest, ApiTenantUser, mapApiTenantUser } from "./types";
+import { TenantUser, TenantUserCreateRequest, TenantUserRoleChangeRequest, ApiTenantUser, mapApiTenantUser } from "./types";
 import { ResponseWrapper } from "@/types/response";
 
 export const tenantUser = {
@@ -14,13 +14,6 @@ export const tenantUser = {
     return data.map(mapApiTenantUser);
   },
 
-  get: async (id: string): Promise<TenantUser> => {
-    const response = await httpClient.get<ResponseWrapper<ApiTenantUser>>(
-      `/api/v1/tenant-users/${id}`
-    );
-    return mapApiTenantUser((response as unknown as ResponseWrapper<ApiTenantUser>).data);
-  },
-
   create: async (payload: TenantUserCreateRequest): Promise<TenantUser> => {
     const response = await httpClient.post<ResponseWrapper<ApiTenantUser>>(
       "/api/v1/tenant-users",
@@ -29,9 +22,9 @@ export const tenantUser = {
     return mapApiTenantUser((response as unknown as ResponseWrapper<ApiTenantUser>).data);
   },
 
-  update: async (id: string, payload: TenantUserUpdateRequest): Promise<TenantUser> => {
+  changeRole: async (id: string, payload: TenantUserRoleChangeRequest): Promise<TenantUser> => {
     const response = await httpClient.put<ResponseWrapper<ApiTenantUser>>(
-      `/api/v1/tenant-users/${id}`,
+      `/api/v1/tenant-users/${id}/role`,
       payload
     );
     return mapApiTenantUser((response as unknown as ResponseWrapper<ApiTenantUser>).data);
