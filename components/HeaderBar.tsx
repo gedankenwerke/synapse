@@ -16,15 +16,33 @@ interface HeaderBarProps {
   breadcrumbs?: BreadcrumbItem[];
 }
 
-const ROUTE_BREADCRUMBS: Record<string, { labelKey: string; hrefKey?: string }[]> = {
-  "/dashboard": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "dashboard" }],
-  "/account-statement": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "accountStatement" }],
-  "/net-balance": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "netBalance" }],
-  "/deposits-withdrawals": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "transaction" }],
-  "/customer-settlement": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "customerSettlement" }],
-  "/pay-agent": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "payAgent" }],
-  "/user-management": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "userManagement" }],
-  "/transactions": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "transactions" }],
+/** Layer prefixes used in 3-layer routing */
+const LAYER_PREFIXES = ["/superadmin", "/senior", "/user"];
+
+/**
+ * Strip the layer prefix from a pathname to get the route suffix.
+ * e.g. "/superadmin/dashboard" → "/dashboard"
+ */
+function stripLayerPrefix(pathname: string): { layer: string; suffix: string } {
+  for (const prefix of LAYER_PREFIXES) {
+    if (pathname.startsWith(prefix)) {
+      return { layer: prefix, suffix: pathname.slice(prefix.length) || "/" };
+    }
+  }
+  return { layer: "", suffix: pathname };
+}
+
+const ROUTE_BREADCRUMBS: Record<string, { labelKey: string; hrefSuffix?: string }[]> = {
+  "/dashboard": [{ labelKey: "home", hrefSuffix: "/dashboard" }, { labelKey: "dashboard" }],
+  "/account-statement": [{ labelKey: "home", hrefSuffix: "/dashboard" }, { labelKey: "accountStatement" }],
+  "/net-balance": [{ labelKey: "home", hrefSuffix: "/dashboard" }, { labelKey: "netBalance" }],
+  "/deposits-withdrawals": [{ labelKey: "home", hrefSuffix: "/dashboard" }, { labelKey: "transaction" }],
+  "/settlement": [{ labelKey: "home", hrefSuffix: "/dashboard" }, { labelKey: "settlement" }],
+  "/pay-agent": [{ labelKey: "home", hrefSuffix: "/dashboard" }, { labelKey: "payAgent" }],
+  "/user-management": [{ labelKey: "home", hrefSuffix: "/dashboard" }, { labelKey: "userManagement" }],
+  "/tenants": [{ labelKey: "home", hrefSuffix: "/dashboard" }, { labelKey: "tenants" }],
+  "/policies": [{ labelKey: "home", hrefSuffix: "/dashboard" }, { labelKey: "policies" }],
+  "/transactions": [{ labelKey: "home", hrefSuffix: "/dashboard" }, { labelKey: "transactions" }],
 };
 
 export function HeaderBar({ breadcrumbs }: HeaderBarProps) {
@@ -32,14 +50,15 @@ export function HeaderBar({ breadcrumbs }: HeaderBarProps) {
   const t = useTranslations("breadcrumb");
   const ta = useTranslations("a11y");
   const items = breadcrumbs ?? (() => {
-    const routeItems = ROUTE_BREADCRUMBS[pathname];
+    const { layer, suffix } = stripLayerPrefix(pathname);
+    const routeItems = ROUTE_BREADCRUMBS[suffix];
     if (routeItems) {
       return routeItems.map((item) => ({
         label: t(item.labelKey),
-        href: item.hrefKey || undefined,
+        href: item.hrefSuffix ? `${layer}${item.hrefSuffix}` : undefined,
       }));
     }
-    return [{ label: t("home"), href: "/dashboard" }, { label: t("dashboard") }];
+    return [{ label: t("home"), href: `${layer}/dashboard` }, { label: t("dashboard") }];
   })();
   const { colorScheme, toggleColorScheme } = useAppStore();
 
