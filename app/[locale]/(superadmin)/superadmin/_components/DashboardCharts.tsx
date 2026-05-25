@@ -37,7 +37,7 @@ function useContainerReady() {
 }
 
 export function DashboardCharts({ areaData, donutData, isLoading }: DashboardChartsProps) {
-  const t = useTranslations("dashboard");
+  const t = useTranslations("superadmin");
   const { ref, ready } = useContainerReady();
 
   if (isLoading) {

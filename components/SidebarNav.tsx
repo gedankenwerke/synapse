@@ -16,7 +16,7 @@ import { usePermissionStore } from "@/store/usePermissionStore";
 import type { PolicyName } from "@/services/policy/types";
 
 const navItems: { labelKey: string; icon: typeof IconChartBar; href: string; policy: PolicyName }[] = [
-  { labelKey: "dashboard", icon: IconChartBar, href: "/dashboard", policy: "SearchTransactionHistory" },
+  { labelKey: "superadmin", icon: IconChartBar, href: "/superadmin", policy: "SearchTransactionHistory" },
   { labelKey: "accountStatement", icon: IconFileDescription, href: "/account-statement", policy: "SearchBankStatement" },
   { labelKey: "netBalance", icon: IconScale, href: "/net-balance", policy: "SearchNetBalance" },
   { labelKey: "transaction", icon: IconArrowsExchange, href: "/deposits-withdrawals", policy: "SearchTransactionHistory" },

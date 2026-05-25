@@ -56,7 +56,7 @@
     }
   },
   "nav": {
-    "dashboard": "แดชบอร์ด",
+    "superadmin": "Synapse Admin",
     "accountStatement": "รายการบัญชี",
     "netBalance": "ยอดคงเหลือสุทธิ",
     "transaction": "ธุรกรรม",
@@ -67,7 +67,7 @@
   },
   "breadcrumb": {
     "home": "หน้าแรก",
-    "dashboard": "แดชบอร์ด",
+    "superadmin": "Synapse Admin",
     "accountStatement": "รายการบัญชี",
     "netBalance": "ยอดคงเหลือสุทธิ",
     "transaction": "ธุรกรรม",
@@ -91,8 +91,8 @@
       "language": "ภาษา"
     }
   },
-  "dashboard": {
-    "title": "ภาพรวมแดชบอร์ด",
+  "superadmin": {
+    "title": "Synapse Admin",
     "stats": {
       "totalBalance": "ยอดคงเหลือทั้งหมด",
       "todayDeposits": "ฝากวันนี้",

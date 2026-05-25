@@ -14,7 +14,7 @@ export function usePageGuard(policy: PolicyName): { allowed: boolean; loading: b
 
   useEffect(() => {
     if (!isLoading && !allowed) {
-      router.replace("/dashboard");
+      router.replace("/superadmin");
     }
   }, [allowed, isLoading, router]);
 
