@@ -1,0 +1,40 @@
+<h2>Architecture Approach Comparison</h2>
+<p class="subtitle">Three ways to implement the 3-layer routing</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Route Groups + Shared Components</h3>
+      <p>Three Next.js route groups: <code>(superadmin)/</code>, <code>(senior)/</code>, <code>(user)/</code>. Each has its own <code>layout.tsx</code> with layer-specific guard and sidebar. Pages import shared components from <code>components/</code> but compose them differently per layer. Middleware reads role cookie and redirects to the correct layer.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Clear physical separation in URL and filesystem</li><li>Middleware can enforce access at the edge</li><li>Each layer's layout is independent</li><li>Easy to add layer-specific pages later</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>More files (3 layouts, 3 sidebar configs)</li><li>Some pages appear in multiple layers (Dashboard, Settlement)</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Single Route Group + Dynamic Layout</h3>
+      <p>Keep one <code>(dashboard)</code> route group. Layout reads role from cookie and dynamically renders the appropriate sidebar and guard. URLs stay flat (<code>/dashboard</code>, <code>/user-management</code>). Middleware only checks auth, not role-based routing.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Fewer files, single layout</li><li>Pages only exist once</li><li>Simpler migration from current structure</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>No URL-level separation — User can't tell they're in /user vs /senior</li><li>Doesn't match the spec's /superadmin/*, /senior/*, /user/* routing</li><li>Client-only role guard is less secure than middleware</li><li>Can't easily restrict which pages exist per layer at the routing level</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Hybrid: Route Groups + Smart Redirects</h3>
+      <p>Same 3 route groups as Approach A, but pages that exist in multiple layers (Dashboard, Settlement, Bank APIs) are defined once in a <code>components/</code> directory and imported into each layer's page. Middleware reads role cookie, enforces access, and redirects <code>/dashboard</code> → <code>/{role}/dashboard</code> so users always land in the right layer.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Best of both: URL separation + shared components</li><li>Middleware enforces at the edge</li><li>Smart redirect means /dashboard auto-routes to /{role}/dashboard</li><li>Components are truly DRY — one StatementTable, one NetBalanceChart</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Slightly more complex file structure</li><li>Need to maintain layer-specific page.tsx files that import shared components</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,4 @@
+{"type":"server-started","port":60471,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:60471","screen_dir":"/Users/shinnamon/working/Synapse/.superpowers/brainstorm/82837-1779505153/content","state_dir":"/Users/shinnamon/working/Synapse/.superpowers/brainstorm/82837-1779505153/state"}
+{"type":"screen-added","file":"/Users/shinnamon/working/Synapse/.superpowers/brainstorm/82837-1779505153/content/architecture-overview.html"}
+{"type":"screen-added","file":"/Users/shinnamon/working/Synapse/.superpowers/brainstorm/82837-1779505153/content/role-decision.html"}
+{"type":"server-stopped","reason":"idle timeout"}

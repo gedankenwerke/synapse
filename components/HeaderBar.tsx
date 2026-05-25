@@ -3,7 +3,7 @@
 import { ActionIcon, Anchor, Breadcrumbs, Group, Text } from "@mantine/core";
 import { IconMoonStars, IconSun } from "@tabler/icons-react";
 import { Link, usePathname } from "@/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useAppStore } from "@/store/useAppStore";
 
@@ -29,6 +29,7 @@ const ROUTE_BREADCRUMBS: Record<string, { labelKey: string; hrefKey?: string }[]
 
 export function HeaderBar({ breadcrumbs }: HeaderBarProps) {
   const pathname = usePathname();
+  const locale = useLocale();
   const t = useTranslations("breadcrumb");
   const ta = useTranslations("a11y");
   const items = breadcrumbs ?? (() => {
@@ -36,10 +37,10 @@ export function HeaderBar({ breadcrumbs }: HeaderBarProps) {
     if (routeItems) {
       return routeItems.map((item) => ({
         label: t(item.labelKey),
-        href: item.hrefKey || undefined,
+        href: item.hrefKey ? `/${locale}${item.hrefKey}` : undefined,
       }));
     }
-    return [{ label: t("home"), href: "/superadmin" }, { label: t("superadmin") }];
+    return [{ label: t("home"), href: `/${locale}` }, { label: t("superadmin") }];
   })();
   const { colorScheme, toggleColorScheme } = useAppStore();
 

@@ -47,7 +47,7 @@ interface RecentTableProps {
 }
 
 export function RecentTable({ transactions, isLoading }: RecentTableProps) {
-  const t = useTranslations("dashboard.recentTransactions");
+  const t = useTranslations("superadmin.recentTransactions");
 
   const rows = isLoading
     ? Array.from({ length: 5 }).map((_, i) => (

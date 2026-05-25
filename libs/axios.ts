@@ -1,8 +1,8 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import Cookies from 'js-cookie';
 
-const COOKIE_NAME = 'auth_token';
-const REFRESH_COOKIE_NAME = 'refresh_token';
+const ACCESS_TOKEN_COOKIE = 'auth_token';
+const REFRESH_TOKEN_COOKIE = 'refresh_token';
 
 const baseRequest = axios.create({
     baseURL: '',
@@ -10,7 +10,7 @@ const baseRequest = axios.create({
 });
 
 baseRequest.interceptors.request.use((config) => {
-    const token = Cookies.get(COOKIE_NAME);
+    const token = Cookies.get(ACCESS_TOKEN_COOKIE);
     if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -19,14 +19,14 @@ baseRequest.interceptors.request.use((config) => {
 
 let isRefreshing = false;
 let failedQueue: Array<{
-    resolve: (accessToken: string) => void;
+    resolve: (token: string) => void;
     reject: (error: unknown) => void;
 }> = [];
 
-function processQueue(accessToken: string | null, error: unknown = null) {
+function processQueue(token: string | null, error: unknown = null) {
     failedQueue.forEach(({ resolve, reject }) => {
-        if (accessToken) {
-            resolve(accessToken);
+        if (token) {
+            resolve(token);
         } else {
             reject(error);
         }
@@ -41,10 +41,13 @@ baseRequest.interceptors.response.use(
         const status = error.response?.status;
         const serverData = error.response?.data as Record<string, unknown> | undefined;
 
-        // If 401 and we haven't retried yet, try to refresh the token
         if (status === 401 && originalRequest && !originalRequest._retry) {
-            // Don't try to refresh if the failing request IS the refresh endpoint
-            if (originalRequest.url === '/api/v1/token' || originalRequest.url === '/api/v1/login') {
+            // Don't try to refresh if the failing request is auth-related
+            if (
+                originalRequest.url === '/api/v1/token/refresh' ||
+                originalRequest.url === '/api/v1/token' ||
+                originalRequest.url === '/api/v1/login'
+            ) {
                 return Promise.reject({
                     message: (serverData as any)?.message || error.message || 'Authentication failed',
                     code: error.code,
@@ -54,11 +57,10 @@ baseRequest.interceptors.response.use(
             }
 
             if (isRefreshing) {
-                // Queue up while another refresh is in progress
                 return new Promise((resolve, reject) => {
                     failedQueue.push({
-                        resolve: (newAccessToken: string) => {
-                            originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                        resolve: (newToken: string) => {
+                            originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
                             resolve(baseRequest(originalRequest));
                         },
                         reject,
@@ -70,33 +72,37 @@ baseRequest.interceptors.response.use(
             isRefreshing = true;
 
             try {
+                const refreshToken = Cookies.get(REFRESH_TOKEN_COOKIE);
+                if (!refreshToken) {
+                    throw new Error('No refresh token available');
+                }
+
                 // Use raw axios (no interceptors) to avoid infinite loop
-                const refreshToken = Cookies.get(REFRESH_COOKIE_NAME);
-                const response = await axios.get('/api/v1/token', {
-                    headers: { Authorization: `Bearer ${refreshToken}` },
+                const response = await axios.post('/api/v1/token/refresh', {
+                    refresh_token: refreshToken,
                 });
 
-                const data = response.data?.data ?? response.data;
+                const data = response.data?.data || response.data;
                 const newAccessToken = data?.access_token;
                 const newRefreshToken = data?.refresh_token;
+
                 if (newAccessToken) {
-                    const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
-                    const cookieOpts = {
+                    Cookies.set(ACCESS_TOKEN_COOKIE, newAccessToken, {
                         path: '/',
                         expires: 7,
-                        sameSite: 'Strict' as const,
-                        ...(isSecure && { secure: true }),
-                    };
-                    Cookies.set(COOKIE_NAME, newAccessToken, cookieOpts);
+                        sameSite: 'Strict',
+                    });
+
                     if (newRefreshToken) {
-                        Cookies.set(REFRESH_COOKIE_NAME, newRefreshToken, cookieOpts);
+                        Cookies.set(REFRESH_TOKEN_COOKIE, newRefreshToken, {
+                            path: '/',
+                            expires: 7,
+                            sameSite: 'Strict',
+                        });
                     }
 
-                    // Dispatch a custom event so the store can update
                     if (typeof window !== 'undefined') {
-                        window.dispatchEvent(new CustomEvent('token-refreshed', {
-                            detail: { access_token: newAccessToken, refresh_token: newRefreshToken },
-                        }));
+                        window.dispatchEvent(new CustomEvent('token-refreshed', { detail: newAccessToken }));
                     }
 
                     processQueue(newAccessToken);
@@ -113,9 +119,8 @@ baseRequest.interceptors.response.use(
                 }
             } catch (refreshError) {
                 processQueue(null, refreshError);
-                // Refresh failed — clear token and redirect to login
-                Cookies.remove(COOKIE_NAME, { path: '/' });
-                Cookies.remove(REFRESH_COOKIE_NAME, { path: '/' });
+                Cookies.remove(ACCESS_TOKEN_COOKIE, { path: '/' });
+                Cookies.remove(REFRESH_TOKEN_COOKIE, { path: '/' });
                 if (typeof window !== 'undefined') {
                     window.dispatchEvent(new CustomEvent('token-refresh-failed'));
                 }

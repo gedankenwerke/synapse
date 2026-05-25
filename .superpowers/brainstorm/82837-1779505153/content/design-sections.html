@@ -1,0 +1,84 @@
+<h2>Design Section 1: Auth & Middleware</h2>
+<p class="subtitle">Cookie-based role enforcement with server-side guards</p>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">Auth Data Flow</div>
+    <div class="mockup-body" style="padding:16px;font-size:12px;">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:220px;">
+          <div style="font-weight:700;margin-bottom:8px;color:#1565c0;">Login Response</div>
+          <div style="background:#e3f2fd;padding:10px;border-radius:6px;font-family:monospace;font-size:11px;">
+            POST /login →<br>
+            {<br>
+            &nbsp;&nbsp;user: { id, username,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;tenant_id, <strong>role</strong>,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;created_at, updated_at },<br>
+            &nbsp;&nbsp;access_token: "eyJ...",<br>
+            &nbsp;&nbsp;refresh_token: "eyJ...",<br>
+            &nbsp;&nbsp;token_type: "Bearer",<br>
+            &nbsp;&nbsp;expires_in: 900<br>
+            }
+          </div>
+        </div>
+        <div style="flex:1;min-width:220px;">
+          <div style="font-weight:700;margin-bottom:8px;color:#6a1b9a;">Cookies Set (client-side)</div>
+          <div style="background:#f3e5f5;padding:10px;border-radius:6px;font-family:monospace;font-size:11px;">
+            auth_token=eyJ...<br>
+            &nbsp;&nbsp;httpOnly=true<br>
+            &nbsp;&nbsp;path=/<br><br>
+            refresh_token=eyJ...<br>
+            &nbsp;&nbsp;httpOnly=true<br>
+            &nbsp;&nbsp;path=/<br><br>
+            <strong>role=superadmin|senior|user</strong><br>
+            &nbsp;&nbsp;httpOnly=true<br>
+            &nbsp;&nbsp;path=/
+          </div>
+        </div>
+        <div style="flex:1;min-width:220px;">
+          <div style="font-weight:700;margin-bottom:8px;color:#2e7d32;">Zustand Store (client-side)</div>
+          <div style="background:#e8f5e9;padding:10px;border-radius:6px;font-family:monospace;font-size:11px;">
+            useAppStore:<br>
+            &nbsp;&nbsp;user: { id, username,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;tenant_id, <strong>role</strong>,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;created_at, updated_at }<br>
+            &nbsp;&nbsp;token: "eyJ..."<br>
+            &nbsp;&nbsp;refreshToken: "eyJ..."<br>
+            &nbsp;&nbsp;isAuthenticated: true
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px;">
+  <div class="mockup">
+    <div class="mockup-header">Middleware Logic (middleware.ts)</div>
+    <div class="mockup-body" style="padding:16px;font-size:12px;">
+      <div style="background:#263238;color:#eceff1;padding:16px;border-radius:6px;font-family:monospace;font-size:11px;line-height:1.6;white-space:pre;">
+const role = request.cookies.get('role')?.value;
+const token = request.cookies.get('auth_token')?.value;
+const locale = extractLocale(pathname);
+
+<span style="color:#80cbc4;">// No token → login</span>
+if (!token) redirect(`/${locale}/`);
+
+<span style="color:#80cbc4;">// No role → try /me to get role, set cookie, retry</span>
+if (!role) { /* call /me, set role cookie, continue */ }
+
+<span style="color:#80cbc4;">// Role mismatch → redirect to correct layer</span>
+const layerPath = `/${locale}/${role}`;
+if (!pathname.startsWith(layerPath)) {
+  redirect(`${layerPath}/dashboard`);
+}
+
+<span style="color:#80cbc4;">// Role matches → pass through</span>
+next();</div>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:center;min-height:10vh;margin-top:16px;">
+  <p class="subtitle">Section 2: Route Groups & Directory Structure coming next...</p>
+</div>

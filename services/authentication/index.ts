@@ -1,22 +1,25 @@
 import httpClient from "@/libs/axios";
-import { LoginRequestBody, LoginRequestResponse, RefreshTokenResponse, ApiLoginRequestResponse, ApiRefreshTokenResponse, mapApiLoginResponse, mapApiRefreshResponse } from './types';
+import { LoginRequestBody, LoginRequestResponse, RefreshTokenRequest, TokenResponse, MeResponse } from './types';
 import { ResponseWrapper } from '@/types/response';
 
 export const authentication = {
-    login: async (payload: LoginRequestBody): Promise<LoginRequestResponse> => {
-        const response = await httpClient.post<ResponseWrapper<ApiLoginRequestResponse>>('/api/v1/login', payload);
-        const apiData = (response as unknown as ResponseWrapper<ApiLoginRequestResponse>).data;
-        return mapApiLoginResponse(apiData);
+    login: async (payload: LoginRequestBody): Promise<ResponseWrapper<LoginRequestResponse>> => {
+        const response = await httpClient.post<ResponseWrapper<LoginRequestResponse>>('/api/v1/login', payload);
+        return response as unknown as ResponseWrapper<LoginRequestResponse>;
     },
 
-    me: async (): Promise<boolean> => {
-        await httpClient.post('/api/v1/me');
-        return true;
+    me: async (): Promise<ResponseWrapper<MeResponse>> => {
+        const response = await httpClient.post<ResponseWrapper<MeResponse>>('/api/v1/me');
+        return response as unknown as ResponseWrapper<MeResponse>;
     },
 
-    refresh: async (): Promise<RefreshTokenResponse> => {
-        const response = await httpClient.get<ResponseWrapper<ApiRefreshTokenResponse>>('/api/v1/token');
-        const apiData = (response as unknown as ResponseWrapper<ApiRefreshTokenResponse>).data;
-        return mapApiRefreshResponse(apiData);
+    token: async (): Promise<ResponseWrapper<TokenResponse>> => {
+        const response = await httpClient.get<ResponseWrapper<TokenResponse>>('/api/v1/token');
+        return response as unknown as ResponseWrapper<TokenResponse>;
+    },
+
+    refresh: async (payload: RefreshTokenRequest): Promise<ResponseWrapper<TokenResponse>> => {
+        const response = await httpClient.post<ResponseWrapper<TokenResponse>>('/api/v1/token/refresh', payload);
+        return response as unknown as ResponseWrapper<TokenResponse>;
     },
 };

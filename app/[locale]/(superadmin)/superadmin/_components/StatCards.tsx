@@ -25,7 +25,7 @@ interface StatCardsProps {
 }
 
 export function StatCards({ statCards, isLoading }: StatCardsProps) {
-  const t = useTranslations("dashboard");
+  const t = useTranslations("superadmin");
 
   if (isLoading) {
     return (
