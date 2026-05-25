@@ -20,10 +20,12 @@ import { useAppStore } from "@/store/useAppStore";
 import { usePermissionStore } from "@/store/usePermissionStore";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { deriveRole, getHomePath } from "@/utils/role";
+import { tenant } from "@/services/tenant";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setLogin } = useAppStore();
+  const { setLogin, setUserRole } = useAppStore();
 
   const t = useTranslations("login");
   const [username, setUsername] = useState("");
@@ -49,7 +51,12 @@ export default function LoginPage() {
       setLogin(response.data.access_token, response.data.refresh_token, response.data.user);
       await usePermissionStore.getState().fetchPolicies();
       await usePermissionStore.getState().fetchUserPermissions();
-      router.push("/superadmin");
+
+      const tenants = await tenant.list();
+      const role = deriveRole(response.data.user, tenants);
+      setUserRole(role);
+
+      router.push(getHomePath(role));
     } catch (err: any) {
       const errorMessage = err?.message || t("error.loginFailed");
       setError(errorMessage);

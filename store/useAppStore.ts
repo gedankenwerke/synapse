@@ -2,9 +2,11 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import Cookies from "js-cookie";
 import { LoginRequestUser } from "../services/authentication/types";
+import type { UserRole } from "@/utils/role";
 
 const ACCESS_TOKEN_COOKIE = "auth_token";
 const REFRESH_TOKEN_COOKIE = "refresh_token";
+const ROLE_COOKIE = "user_role";
 const COOKIE_MAX_AGE_DAYS = 7;
 
 interface AppState {
@@ -15,10 +17,13 @@ interface AppState {
   user: LoginRequestUser | null;
   token: string | null;
   isAuthenticated: boolean;
+  isSuperAdmin: boolean;
+  userRole: UserRole;
 
   setLogin: (accessToken: string, refreshToken: string, user: LoginRequestUser) => void;
   setLogout: () => void;
   updateToken: (token: string) => void;
+  setUserRole: (role: UserRole) => void;
 }
 
 const noopStorage = {
@@ -39,6 +44,16 @@ function safeLocalStorage(): Storage {
   }
 }
 
+function setCookie(name: string, value: string) {
+  const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
+  Cookies.set(name, value, {
+    path: "/",
+    expires: COOKIE_MAX_AGE_DAYS,
+    sameSite: "Strict",
+    ...(isSecure && { secure: true }),
+  });
+}
+
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
@@ -52,37 +67,29 @@ export const useAppStore = create<AppState>()(
       user: null,
       token: null,
       isAuthenticated: false,
+      isSuperAdmin: false,
+      userRole: "agent" as UserRole,
 
       setLogin: (accessToken, refreshToken, user) => {
-        const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
-        Cookies.set(ACCESS_TOKEN_COOKIE, accessToken, {
-          path: "/",
-          expires: COOKIE_MAX_AGE_DAYS,
-          sameSite: "Strict",
-          ...(isSecure && { secure: true }),
-        });
-        Cookies.set(REFRESH_TOKEN_COOKIE, refreshToken, {
-          path: "/",
-          expires: COOKIE_MAX_AGE_DAYS,
-          sameSite: "Strict",
-          ...(isSecure && { secure: true }),
-        });
-        set({ token: accessToken, user, isAuthenticated: true });
+        const isSuperAdmin = user.tenant_id === "1";
+        setCookie(ACCESS_TOKEN_COOKIE, accessToken);
+        setCookie(REFRESH_TOKEN_COOKIE, refreshToken);
+        // Role cookie is set later by setUserRole after tenant data is fetched
+        set({ token: accessToken, user, isAuthenticated: true, isSuperAdmin });
       },
       setLogout: () => {
         Cookies.remove(ACCESS_TOKEN_COOKIE, { path: "/" });
         Cookies.remove(REFRESH_TOKEN_COOKIE, { path: "/" });
-        set({ token: null, user: null, isAuthenticated: false });
+        Cookies.remove(ROLE_COOKIE, { path: "/" });
+        set({ token: null, user: null, isAuthenticated: false, isSuperAdmin: false, userRole: "agent" as UserRole });
       },
       updateToken: (token: string) => {
-        const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
-        Cookies.set(ACCESS_TOKEN_COOKIE, token, {
-          path: "/",
-          expires: COOKIE_MAX_AGE_DAYS,
-          sameSite: "Strict",
-          ...(isSecure && { secure: true }),
-        });
+        setCookie(ACCESS_TOKEN_COOKIE, token);
         set({ token });
+      },
+      setUserRole: (role: UserRole) => {
+        setCookie(ROLE_COOKIE, role);
+        set({ userRole: role });
       },
     }),
     {

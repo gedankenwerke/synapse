@@ -2,7 +2,7 @@
 
 import { AuthGuard } from "@/components/AuthGuard";
 
-export default function SuperadminLayout({
+export default function AgentLayout({
   children,
 }: {
   children: React.ReactNode;

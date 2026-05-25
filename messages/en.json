@@ -57,6 +57,7 @@
   },
   "nav": {
     "superadmin": "Synapse Admin",
+    "dashboard": "Dashboard",
     "accountStatement": "Account Statement",
     "netBalance": "Net Balance",
     "transaction": "Transaction",
@@ -68,6 +69,7 @@
   "breadcrumb": {
     "home": "Home",
     "superadmin": "Synapse Admin",
+    "dashboard": "Dashboard",
     "accountStatement": "Account Statement",
     "netBalance": "Net Balance",
     "transaction": "Transaction",

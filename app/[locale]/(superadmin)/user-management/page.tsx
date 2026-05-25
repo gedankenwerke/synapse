@@ -71,6 +71,7 @@ export default function UserManagementPage() {
   if (!allowed) return null;
   const currentTenantId = useAppStore((s) => s.user?.tenant_id ?? "");
   const isSuperAdmin = useAppStore((s) => s.isSuperAdmin);
+  const userRole = useAppStore((s) => s.userRole);
 
   // ── Active tab ──
   const [activeTab, setActiveTab] = useState<string | null>("users");
@@ -378,7 +379,9 @@ export default function UserManagementPage() {
       <Tabs value={activeTab} onChange={setActiveTab}>
         <Tabs.List mb="md">
           <Tabs.Tab value="users">{t("tab.users")}</Tabs.Tab>
-          <Tabs.Tab value="permissions">{t("tab.roles")}</Tabs.Tab>
+          {userRole === "superadmin" && (
+            <Tabs.Tab value="permissions">{t("tab.roles")}</Tabs.Tab>
+          )}
         </Tabs.List>
 
         <Tabs.Panel value="users">
@@ -394,6 +397,7 @@ export default function UserManagementPage() {
         </Tabs.Panel>
 
         <Tabs.Panel value="permissions">
+          {userRole === "superadmin" && (
           <PermissionsTab
             tenants={scopedTenants}
             roles={scopedRoles}
@@ -405,13 +409,11 @@ export default function UserManagementPage() {
             onAddDept={openAddTenant}
             onEditDept={handleEditTenant}
             onDeleteDept={handleDeleteTenant}
-            onAddAgent={openAddTenant}
-            onEditAgent={handleEditTenant}
-            onDeleteAgent={handleDeleteTenant}
             onAddRole={openAddRole}
             onEditRole={handleEditRole}
             onDeleteRole={handleDeleteRole}
           />
+          )}
         </Tabs.Panel>
       </Tabs>
 

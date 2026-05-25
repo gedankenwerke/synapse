@@ -57,6 +57,7 @@
   },
   "nav": {
     "superadmin": "Synapse Admin",
+    "dashboard": "แดชบอร์ด",
     "accountStatement": "รายการบัญชี",
     "netBalance": "ยอดคงเหลือสุทธิ",
     "transaction": "ธุรกรรม",
@@ -68,6 +69,7 @@
   "breadcrumb": {
     "home": "หน้าแรก",
     "superadmin": "Synapse Admin",
+    "dashboard": "แดชบอร์ด",
     "accountStatement": "รายการบัญชี",
     "netBalance": "ยอดคงเหลือสุทธิ",
     "transaction": "ธุรกรรม",
