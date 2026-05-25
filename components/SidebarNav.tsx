@@ -3,37 +3,30 @@
 import { AppShell, NavLink } from "@mantine/core";
 import { Link, usePathname } from "@/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import {
-  IconChartBar,
-  IconFileDescription,
-  IconArrowsExchange,
-  IconBuildingBank,
-  IconUsers,
-  IconScale,
-  IconRobot,
-} from "@tabler/icons-react";
 import { usePermissionStore } from "@/store/usePermissionStore";
-import type { PolicyName } from "@/services/policy/types";
-
-const navItems: { labelKey: string; icon: typeof IconChartBar; href: string; policy: PolicyName }[] = [
-  { labelKey: "superadmin", icon: IconChartBar, href: "/superadmin", policy: "SearchTransactionHistory" },
-  { labelKey: "accountStatement", icon: IconFileDescription, href: "/account-statement", policy: "SearchBankStatement" },
-  { labelKey: "netBalance", icon: IconScale, href: "/net-balance", policy: "SearchNetBalance" },
-  { labelKey: "transaction", icon: IconArrowsExchange, href: "/deposits-withdrawals", policy: "SearchTransactionHistory" },
-  { labelKey: "customerSettlement", icon: IconBuildingBank, href: "/customer-settlement", policy: "Settlement" },
-  { labelKey: "payAgent", icon: IconRobot, href: "/pay-agent", policy: "CreatePayAgent" },
-  { labelKey: "userManagement", icon: IconUsers, href: "/user-management", policy: "ListUsers" },
-];
+import { useAppStore } from "@/store/useAppStore";
+import { getNavItems } from "@/configs/navConfig";
 
 export function SidebarNav() {
   const pathname = usePathname();
   const locale = useLocale();
   const t = useTranslations("nav");
   const canSeePage = usePermissionStore((s) => s.canSeePage);
+  const policies = usePermissionStore((s) => s.policies);
+  const userRole = useAppStore((s) => s.userRole);
+  const isSuperAdmin = useAppStore((s) => s.isSuperAdmin);
+
+  // Subscribe to policies and isSuperAdmin to trigger re-render when they change
+  // canSeePage itself is a function reference that doesn't change, so we need
+  // these subscriptions to ensure the filter re-evaluates after policies load
+  void policies;
+  void isSuperAdmin;
+
+  const items = getNavItems(userRole);
 
   return (
     <AppShell.Section>
-      {navItems
+      {items
         .filter((item) => canSeePage(item.policy))
         .map((item) => (
           <NavLink

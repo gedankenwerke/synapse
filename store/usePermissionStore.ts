@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { policy } from "../services/policy";
-import { PolicyCatalogItem, PolicyName } from "../services/policy/types";
+import { PolicyCatalogItem, PolicyName, POLICY_CATALOG } from "../services/policy/types";
 import { tenantUser } from "../services/tenant-user";
 import { tenantPermission } from "../services/tenant-permission";
 import { useAppStore } from "./useAppStore";
@@ -46,7 +46,7 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const tenantUsers = await tenantUser.list({ user_id: user.id });
-      const roleIds = tenantUsers.map((tu) => tu.tenant_role_id);
+      const roleIds = tenantUsers.map((tu) => tu.TenantRoleID);
 
       if (roleIds.length === 0) {
         set({ userActions: [], isLoading: false });
@@ -55,8 +55,8 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
 
       const allPermissions = await tenantPermission.list();
       const actions = allPermissions
-        .filter((p) => roleIds.includes(p.role_id))
-        .map((p) => p.action);
+        .filter((p) => roleIds.includes(p.RoleID))
+        .map((p) => p.Action);
 
       const uniqueActions = Array.from(new Set(actions));
 
@@ -71,6 +71,8 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
   },
 
   hasPermission: (name: PolicyName) => {
+    const { isSuperAdmin } = useAppStore.getState();
+    if (isSuperAdmin) return true;
     const policies = get().policies ?? [];
     const policyItem = policies.find((p) => p.Name === name);
     if (!policyItem) return false;
@@ -88,9 +90,13 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
   },
 
   canSeePage: (name: PolicyName) => {
+    const { isSuperAdmin } = useAppStore.getState();
+    if (isSuperAdmin) return true;
+    // Use API policies if available, fall back to local POLICY_CATALOG
     const policies = get().policies ?? [];
-    const policyItem = policies.find((p) => p.Name === name);
-    if (policyItem?.SuperAdminOnly) return false;
+    const policyItem = policies.find((p) => p.Name === name) ?? POLICY_CATALOG[name];
+    if (!policyItem) return false;
+    if (policyItem.SuperAdminOnly) return false;
     return true;
   },
 }));

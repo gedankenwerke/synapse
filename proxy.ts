@@ -3,6 +3,19 @@ import { routing } from "./i18n/routing";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+type UserRole = "superadmin" | "senior" | "agent";
+
+function getHomePath(role: UserRole): string {
+  switch (role) {
+    case "superadmin":
+      return "/superadmin";
+    case "senior":
+      return "/senior";
+    case "agent":
+      return "/agent";
+  }
+}
+
 const intlMiddleware = createMiddleware(routing);
 
 const localePattern = new RegExp(`^/(${routing.locales.join("|")})(/.*)?$`);
@@ -29,12 +42,15 @@ export default function proxy(request: NextRequest) {
   // Authenticated user accessing login page -> redirect to dashboard
   const isLoginPage = subPath === "/" || subPath === "" || subPath === "/login";
   if (isLoginPage && token) {
-    return NextResponse.redirect(new URL(`/${locale}/superadmin`, request.url));
+    const role = (request.cookies.get("user_role")?.value || "superadmin") as UserRole;
+    return NextResponse.redirect(new URL(`/${locale}${getHomePath(role)}`, request.url));
   }
 
   // Unauthenticated user accessing protected route -> redirect to login
   const isProtectedRoute =
     subPath.startsWith("/superadmin") ||
+    subPath.startsWith("/senior") ||
+    subPath.startsWith("/agent") ||
     subPath.startsWith("/account-statement") ||
     subPath.startsWith("/net-balance") ||
     subPath.startsWith("/deposits-withdrawals") ||
@@ -55,5 +71,7 @@ export const config = {
   matcher: [
     "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
     "/([\\w-]+)?/superadmin/:path*",
+    "/([\\w-]+)?/senior/:path*",
+    "/([\\w-]+)?/agent/:path*",
   ],
 };

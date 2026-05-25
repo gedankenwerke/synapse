@@ -11,7 +11,13 @@ export const policy = {
     const response = await httpClient.get<ResponseWrapper<PolicyListResponse>>(
       "/api/v1/policies"
     );
-    return (response as unknown as ResponseWrapper<PolicyListResponse>).data.policy_catalog;
+    const data = (response as unknown as ResponseWrapper<PolicyListResponse>).data;
+    // API may return { policy_catalog: [...] } nested or a flat array
+    if (Array.isArray(data)) {
+      return data as unknown as PolicyCatalogItem[];
+    }
+    const catalog = data?.policy_catalog;
+    return Array.isArray(catalog) ? catalog : [];
   },
 
   reload: async (): Promise<PolicyReloadResponse> => {

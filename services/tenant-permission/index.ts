@@ -1,37 +1,36 @@
 import httpClient from "@/libs/axios";
-import { TenantPermission, TenantPermissionCreateRequest, TenantPermissionUpdateRequest, ApiTenantPermission, mapApiTenantPermission } from "./types";
+import { TenantPermission, TenantPermissionCreateRequest, TenantPermissionUpdateRequest } from "./types";
 import { ResponseWrapper } from "@/types/response";
 
 export const tenantPermission = {
   list: async (): Promise<TenantPermission[]> => {
-    const response = await httpClient.get<ResponseWrapper<ApiTenantPermission[]>>(
+    const response = await httpClient.get<ResponseWrapper<TenantPermission[]>>(
       "/api/v1/tenant-permissions"
     );
-    const data = (response as unknown as ResponseWrapper<ApiTenantPermission[]>).data;
-    return data.map(mapApiTenantPermission);
+    return (response as unknown as ResponseWrapper<TenantPermission[]>).data;
   },
 
   get: async (id: string): Promise<TenantPermission> => {
-    const response = await httpClient.get<ResponseWrapper<ApiTenantPermission>>(
+    const response = await httpClient.get<ResponseWrapper<TenantPermission>>(
       `/api/v1/tenant-permissions/${id}`
     );
-    return mapApiTenantPermission((response as unknown as ResponseWrapper<ApiTenantPermission>).data);
+    return (response as unknown as ResponseWrapper<TenantPermission>).data;
   },
 
   create: async (payload: TenantPermissionCreateRequest): Promise<TenantPermission> => {
-    const response = await httpClient.post<ResponseWrapper<ApiTenantPermission>>(
+    const response = await httpClient.post<ResponseWrapper<TenantPermission>>(
       "/api/v1/tenant-permissions",
       payload
     );
-    return mapApiTenantPermission((response as unknown as ResponseWrapper<ApiTenantPermission>).data);
+    return (response as unknown as ResponseWrapper<TenantPermission>).data;
   },
 
   update: async (id: string, payload: TenantPermissionUpdateRequest): Promise<TenantPermission> => {
-    const response = await httpClient.put<ResponseWrapper<ApiTenantPermission>>(
+    const response = await httpClient.put<ResponseWrapper<TenantPermission>>(
       `/api/v1/tenant-permissions/${id}`,
       payload
     );
-    return mapApiTenantPermission((response as unknown as ResponseWrapper<ApiTenantPermission>).data);
+    return (response as unknown as ResponseWrapper<TenantPermission>).data;
   },
 
   delete: async (id: string): Promise<void> => {

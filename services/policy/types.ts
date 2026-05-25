@@ -21,7 +21,7 @@ export const POLICY_CATALOG = {
   CreateTenantPermission: { Detail: "สร้างสิทธิ์เทนแนนท์", SuperAdminOnly: false },
   CreateTenantRole: { Detail: "สร้างบทบาทเทนแนนท์", SuperAdminOnly: false },
   GetTenant: { Detail: "ดูรายละเอียดเทนแนนท์", SuperAdminOnly: false },
-  Settlement: { Detail: "ยืนยันการถอนเงิน / settlement processing", SuperAdminOnly: true },
+  Settlement: { Detail: "ยืนยันการถอนเงิน / settlement processing", SuperAdminOnly: false },
   GetTenantUser: { Detail: "ดูรายละเอียดผู้ใช้เทนแนนท์", SuperAdminOnly: false },
   DeleteTenant: { Detail: "ลบเทนแนนท์", SuperAdminOnly: false },
   DeleteUser: { Detail: "ลบผู้ใช้", SuperAdminOnly: false },

@@ -11,5 +11,6 @@ export function ActionGuard({ action, children }: ActionGuardProps) {
   const hasAction = usePermissionStore((s) => s.hasAction);
 
   if (!hasAction(action)) return null;
+
   return <>{children}</>;
 }

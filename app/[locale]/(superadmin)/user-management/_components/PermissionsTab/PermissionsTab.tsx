@@ -77,18 +77,18 @@ export function PermissionsTab({
   const [drawerRole, setDrawerRole] = useState<TenantRole | null>(null);
 
   const deptOptions = tenants.map((tenant) => ({
-    value: tenant.id,
-    label: tenant.name,
+    value: tenant.ID,
+    label: tenant.Name,
   }));
 
   const filteredRoles = roles.filter((r) => {
-    if (selectedDeptId && r.tenant_id !== selectedDeptId) return false;
-    if (roleSearch && !r.name.toLowerCase().includes(roleSearch.toLowerCase())) return false;
+    if (selectedDeptId && r.TenantID !== selectedDeptId) return false;
+    if (roleSearch && !r.Name.toLowerCase().includes(roleSearch.toLowerCase())) return false;
     return true;
   });
 
   const rolePermissions = drawerRole
-    ? permissions.filter((p) => p.role_id === drawerRole.id)
+    ? permissions.filter((p) => p.RoleID === drawerRole.ID)
     : [];
 
   const handleEditRole = (role: TenantRole) => {
@@ -139,7 +139,7 @@ export function PermissionsTab({
       </Group>
 
       {selectedDeptId && (() => {
-        const dept = tenants.find((t) => t.id === selectedDeptId);
+        const dept = tenants.find((t) => t.ID === selectedDeptId);
         return dept ? (
           <Group gap={4} mt={-8}>
             <ActionGuard action="UpdateTenant">
@@ -175,12 +175,12 @@ export function PermissionsTab({
               </Table.Tr>
             ) : (
               filteredRoles.map((role) => {
-                const tenantMap = new Map((tenants ?? []).map((t) => [t.id, t.name]));
+                const tenantMap = new Map((tenants ?? []).map((t) => [t.ID, t.Name]));
                 return (
-                  <Table.Tr key={role.id}>
-                    <Table.Td><Text size="sm" fw={500}>{role.name}</Text></Table.Td>
-                    <Table.Td><Text size="sm">{tenantMap.get(role.tenant_id) ?? "—"}</Text></Table.Td>
-                    <Table.Td><Text size="sm">{formatThaiDate(role.created_at)}</Text></Table.Td>
+                  <Table.Tr key={role.ID}>
+                    <Table.Td><Text size="sm" fw={500}>{role.Name}</Text></Table.Td>
+                    <Table.Td><Text size="sm">{tenantMap.get(role.TenantID) ?? "—"}</Text></Table.Td>
+                    <Table.Td><Text size="sm">{formatThaiDate(role.CreatedAt)}</Text></Table.Td>
                     <Table.Td>
                       <Group gap={4} wrap="nowrap">
                         <ActionGuard action="UpdateTenantRole">

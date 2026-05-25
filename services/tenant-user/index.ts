@@ -1,5 +1,5 @@
 import httpClient from "@/libs/axios";
-import { TenantUser, TenantUserCreateRequest, TenantUserUpdateRequest, ApiTenantUser, mapApiTenantUser } from "./types";
+import { TenantUser, TenantUserCreateRequest, TenantUserUpdateRequest } from "./types";
 import { ResponseWrapper } from "@/types/response";
 
 export const tenantUser = {
@@ -9,32 +9,31 @@ export const tenantUser = {
     if (params?.user_id) query.set("user_id", params.user_id);
     const qs = query.toString();
     const url = qs ? `/api/v1/tenant-users?${qs}` : "/api/v1/tenant-users";
-    const response = await httpClient.get<ResponseWrapper<ApiTenantUser[]>>(url);
-    const data = (response as unknown as ResponseWrapper<ApiTenantUser[]>).data;
-    return data.map(mapApiTenantUser);
+    const response = await httpClient.get<ResponseWrapper<TenantUser[]>>(url);
+    return (response as unknown as ResponseWrapper<TenantUser[]>).data;
   },
 
   get: async (id: string): Promise<TenantUser> => {
-    const response = await httpClient.get<ResponseWrapper<ApiTenantUser>>(
+    const response = await httpClient.get<ResponseWrapper<TenantUser>>(
       `/api/v1/tenant-users/${id}`
     );
-    return mapApiTenantUser((response as unknown as ResponseWrapper<ApiTenantUser>).data);
+    return (response as unknown as ResponseWrapper<TenantUser>).data;
   },
 
   create: async (payload: TenantUserCreateRequest): Promise<TenantUser> => {
-    const response = await httpClient.post<ResponseWrapper<ApiTenantUser>>(
+    const response = await httpClient.post<ResponseWrapper<TenantUser>>(
       "/api/v1/tenant-users",
       payload
     );
-    return mapApiTenantUser((response as unknown as ResponseWrapper<ApiTenantUser>).data);
+    return (response as unknown as ResponseWrapper<TenantUser>).data;
   },
 
   update: async (id: string, payload: TenantUserUpdateRequest): Promise<TenantUser> => {
-    const response = await httpClient.put<ResponseWrapper<ApiTenantUser>>(
+    const response = await httpClient.put<ResponseWrapper<TenantUser>>(
       `/api/v1/tenant-users/${id}`,
       payload
     );
-    return mapApiTenantUser((response as unknown as ResponseWrapper<ApiTenantUser>).data);
+    return (response as unknown as ResponseWrapper<TenantUser>).data;
   },
 
   delete: async (id: string): Promise<void> => {
