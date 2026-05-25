@@ -68,7 +68,7 @@ export default function LoginPage() {
       await usePermissionStore.getState().fetchPolicies();
       await usePermissionStore.getState().fetchUserPermissions();
 
-      router.push("/dashboard");
+      router.push("/superadmin");
     } catch (err: any) {
       const errorMessage = err?.message || t("error.loginFailed");
       setError(errorMessage);

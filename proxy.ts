@@ -29,12 +29,12 @@ export default function proxy(request: NextRequest) {
   // Authenticated user accessing login page -> redirect to dashboard
   const isLoginPage = subPath === "/" || subPath === "" || subPath === "/login";
   if (isLoginPage && token) {
-    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+    return NextResponse.redirect(new URL(`/${locale}/superadmin`, request.url));
   }
 
   // Unauthenticated user accessing protected route -> redirect to login
   const isProtectedRoute =
-    subPath.startsWith("/dashboard") ||
+    subPath.startsWith("/superadmin") ||
     subPath.startsWith("/account-statement") ||
     subPath.startsWith("/net-balance") ||
     subPath.startsWith("/deposits-withdrawals") ||
@@ -54,6 +54,6 @@ export default function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
-    "/([\\w-]+)?/dashboard/:path*",
+    "/([\\w-]+)?/superadmin/:path*",
   ],
 };

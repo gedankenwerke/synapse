@@ -17,14 +17,14 @@ interface HeaderBarProps {
 }
 
 const ROUTE_BREADCRUMBS: Record<string, { labelKey: string; hrefKey?: string }[]> = {
-  "/dashboard": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "dashboard" }],
-  "/account-statement": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "accountStatement" }],
-  "/net-balance": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "netBalance" }],
-  "/deposits-withdrawals": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "transaction" }],
-  "/customer-settlement": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "customerSettlement" }],
-  "/pay-agent": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "payAgent" }],
-  "/user-management": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "userManagement" }],
-  "/transactions": [{ labelKey: "home", hrefKey: "/dashboard" }, { labelKey: "transactions" }],
+  "/superadmin": [{ labelKey: "home", hrefKey: "/superadmin" }, { labelKey: "superadmin" }],
+  "/account-statement": [{ labelKey: "home", hrefKey: "/superadmin" }, { labelKey: "accountStatement" }],
+  "/net-balance": [{ labelKey: "home", hrefKey: "/superadmin" }, { labelKey: "netBalance" }],
+  "/deposits-withdrawals": [{ labelKey: "home", hrefKey: "/superadmin" }, { labelKey: "transaction" }],
+  "/customer-settlement": [{ labelKey: "home", hrefKey: "/superadmin" }, { labelKey: "customerSettlement" }],
+  "/pay-agent": [{ labelKey: "home", hrefKey: "/superadmin" }, { labelKey: "payAgent" }],
+  "/user-management": [{ labelKey: "home", hrefKey: "/superadmin" }, { labelKey: "userManagement" }],
+  "/transactions": [{ labelKey: "home", hrefKey: "/superadmin" }, { labelKey: "transactions" }],
 };
 
 export function HeaderBar({ breadcrumbs }: HeaderBarProps) {
@@ -39,7 +39,7 @@ export function HeaderBar({ breadcrumbs }: HeaderBarProps) {
         href: item.hrefKey || undefined,
       }));
     }
-    return [{ label: t("home"), href: "/dashboard" }, { label: t("dashboard") }];
+    return [{ label: t("home"), href: "/superadmin" }, { label: t("superadmin") }];
   })();
   const { colorScheme, toggleColorScheme } = useAppStore();
 
