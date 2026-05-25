@@ -1,0 +1,178 @@
+<h2>Design Section 2: Route Groups & Directory Structure</h2>
+<p class="subtitle">3-layer route groups with shared components and layer-specific layouts</p>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">Directory Structure — app/[locale]/</div>
+    <div class="mockup-body" style="padding:16px;font-family:monospace;font-size:12px;line-height:1.7;">
+      <div>app/[locale]/</div>
+      <div style="padding-left:16px;">page.tsx <span style="color:#888;">← Login page (unchanged)</span></div>
+      <div style="padding-left:16px;">layout.tsx <span style="color:#888;">← Locale layout (unchanged)</span></div>
+      <div style="padding-left:16px;">error.tsx <span style="color:#888;">← Locale error boundary (unchanged)</span></div>
+      <div style="padding-left:16px;"></div>
+      <div style="padding-left:16px;color:#1a237e;font-weight:700;">(superadmin)/</div>
+      <div style="padding-left:32px;">layout.tsx <span style="color:#888;">← SuperadminLayout: guard + shell + SuperadminSidebar</span></div>
+      <div style="padding-left:32px;">loading.tsx</div>
+      <div style="padding-left:32px;">error.tsx</div>
+      <div style="padding-left:32px;">dashboard/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared DashboardView</span></div>
+      <div style="padding-left:32px;">tenants/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← Tenant management (superadmin only)</span></div>
+      <div style="padding-left:32px;">policies/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← Policy management (superadmin only)</span></div>
+      <div style="padding-left:32px;">pay-agent/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared PayAgentView</span></div>
+      <div style="padding-left:32px;">settlement/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared SettlementView</span></div>
+      <div style="padding-left:32px;">account-statement/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared AccountStatementView</span></div>
+      <div style="padding-left:32px;">net-balance/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared NetBalanceView</span></div>
+      <div style="padding-left:16px;"></div>
+      <div style="padding-left:16px;color:#e65100;font-weight:700;">(senior)/</div>
+      <div style="padding-left:32px;">layout.tsx <span style="color:#888;">← SeniorLayout: guard + shell + SeniorSidebar</span></div>
+      <div style="padding-left:32px;">loading.tsx</div>
+      <div style="padding-left:32px;">error.tsx</div>
+      <div style="padding-left:32px;">dashboard/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared DashboardView</span></div>
+      <div style="padding-left:32px;">user-management/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared UserManagementView</span></div>
+      <div style="padding-left:32px;">settlement/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared SettlementView</span></div>
+      <div style="padding-left:32px;">account-statement/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared AccountStatementView</span></div>
+      <div style="padding-left:32px;">net-balance/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared NetBalanceView</span></div>
+      <div style="padding-left:32px;">deposits-withdrawals/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared TransactionView</span></div>
+      <div style="padding-left:16px;"></div>
+      <div style="padding-left:16px;color:#2e7d32;font-weight:700;">(user)/</div>
+      <div style="padding-left:32px;">layout.tsx <span style="color:#888;">← UserLayout: guard + shell + UserSidebar</span></div>
+      <div style="padding-left:32px;">loading.tsx</div>
+      <div style="padding-left:32px;">error.tsx</div>
+      <div style="padding-left:32px;">dashboard/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared DashboardView</span></div>
+      <div style="padding-left:32px;">account-statement/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared AccountStatementView</span></div>
+      <div style="padding-left:32px;">net-balance/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared NetBalanceView</span></div>
+      <div style="padding-left:32px;">deposits-withdrawals/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared TransactionView</span></div>
+      <div style="padding-left:32px;">settlement/</div>
+      <div style="padding-left:48px;">page.tsx <span style="color:#888;">← imports shared SettlementView</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px;">
+  <div class="mockup">
+    <div class="mockup-header">Shared Components Structure</div>
+    <div class="mockup-body" style="padding:16px;font-family:monospace;font-size:12px;line-height:1.7;">
+      <div>components/</div>
+      <div style="padding-left:16px;color:#6a1b9a;font-weight:700;">views/ <span style="color:#888;font-weight:normal;">← NEW: shared page-level components</span></div>
+      <div style="padding-left:32px;">DashboardView.tsx <span style="color:#888;">← accepts role prop for conditional rendering</span></div>
+      <div style="padding-left:32px;">AccountStatementView.tsx</div>
+      <div style="padding-left:32px;">NetBalanceView.tsx</div>
+      <div style="padding-left:32px;">TransactionView.tsx</div>
+      <div style="padding-left:32px;">SettlementView.tsx</div>
+      <div style="padding-left:32px;">PayAgentView.tsx</div>
+      <div style="padding-left:32px;">UserManagementView.tsx</div>
+      <div style="padding-left:32px;">TenantManagementView.tsx <span style="color:#888;">← superadmin only</span></div>
+      <div style="padding-left:32px;">PolicyManagementView.tsx <span style="color:#888;">← superadmin only</span></div>
+      <div style="padding-left:16px;"></div>
+      <div style="padding-left:16px;color:#6a1b9a;font-weight:700;">layouts/ <span style="color:#888;font-weight:normal;">← NEW: layer-specific layouts</span></div>
+      <div style="padding-left:32px;">SuperadminLayout.tsx</div>
+      <div style="padding-left:32px;">SeniorLayout.tsx</div>
+      <div style="padding-left:32px;">UserLayout.tsx</div>
+      <div style="padding-left:16px;"></div>
+      <div style="padding-left:16px;color:#6a1b9a;font-weight:700;">sidebars/ <span style="color:#888;font-weight:normal;">← NEW: layer-specific nav configs</span></div>
+      <div style="padding-left:32px;">superadminNav.ts <span style="color:#888;">← nav items for superadmin</span></div>
+      <div style="padding-left:32px;">seniorNav.ts <span style="color:#888;">← nav items for senior</span></div>
+      <div style="padding-left:32px;">userNav.ts <span style="color:#888;">← nav items for user</span></div>
+      <div style="padding-left:16px;"></div>
+      <div style="padding-left:16px;color:#888;">AppShellLayout.tsx <span style="color:#888;">← kept, used by all 3 layouts</span></div>
+      <div style="padding-left:16px;color:#888;">HeaderBar.tsx <span style="color:#888;">← kept, shared across all layers</span></div>
+      <div style="padding-left:16px;color:#888;">SidebarNav.tsx <span style="color:#888;">← REFACTORED: accepts navItems prop</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px;">
+  <h3>Page-to-Layer Mapping</h3>
+  <div class="mockup">
+    <div class="mockup-body" style="padding:16px;">
+      <table style="width:100%;font-size:11px;border-collapse:collapse;">
+        <tr style="background:#37474f;color:#fff;">
+          <th style="padding:6px;text-align:left;">Page</th>
+          <th style="padding:6px;text-align:center;color:#1a237e;">Superadmin</th>
+          <th style="padding:6px;text-align:center;color:#e65100;">Senior</th>
+          <th style="padding:6px;text-align:center;color:#2e7d32;">User</th>
+          <th style="padding:6px;text-align:left;">Shared Component</th>
+        </tr>
+        <tr>
+          <td style="padding:6px;font-weight:600;">Dashboard</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;"><code>DashboardView</code></td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:6px;font-weight:600;">Account Statement</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;"><code>AccountStatementView</code></td>
+        </tr>
+        <tr>
+          <td style="padding:6px;font-weight:600;">Net Balance</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;"><code>NetBalanceView</code></td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:6px;font-weight:600;">Deposits/Withdrawals</td>
+          <td style="padding:6px;text-align:center;">—</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;"><code>TransactionView</code></td>
+        </tr>
+        <tr>
+          <td style="padding:6px;font-weight:600;">Settlement</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;"><code>SettlementView</code></td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:6px;font-weight:600;">Pay Agent</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;text-align:center;">—</td>
+          <td style="padding:6px;text-align:center;">—</td>
+          <td style="padding:6px;"><code>PayAgentView</code></td>
+        </tr>
+        <tr>
+          <td style="padding:6px;font-weight:600;">User Management</td>
+          <td style="padding:6px;text-align:center;">—</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;text-align:center;">—</td>
+          <td style="padding:6px;"><code>UserManagementView</code></td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:6px;font-weight:600;">Tenant Management</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;text-align:center;">—</td>
+          <td style="padding:6px;text-align:center;">—</td>
+          <td style="padding:6px;"><code>TenantManagementView</code></td>
+        </tr>
+        <tr>
+          <td style="padding:6px;font-weight:600;">Policy Management</td>
+          <td style="padding:6px;text-align:center;">✅</td>
+          <td style="padding:6px;text-align:center;">—</td>
+          <td style="padding:6px;text-align:center;">—</td>
+          <td style="padding:6px;"><code>PolicyManagementView</code></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
