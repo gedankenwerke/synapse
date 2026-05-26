@@ -8,16 +8,16 @@ interface TenantCardGridProps {
   tenants: Tenant[];
   tenantUserCounts: Map<string, number>;
   tenantMap: Map<string, string>;
-  selectedTenantId: string | null;
-  onSelectTenant: (tenantId: string) => void;
+  onEditTenant: (tenant: Tenant) => void;
+  onDeleteTenant: (tenant: Tenant) => void;
 }
 
 export function TenantCardGrid({
   tenants,
   tenantUserCounts,
   tenantMap,
-  selectedTenantId,
-  onSelectTenant,
+  onEditTenant,
+  onDeleteTenant,
 }: TenantCardGridProps) {
   return (
     <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
@@ -29,8 +29,8 @@ export function TenantCardGrid({
           parentName={
             tenant.ParentID ? (tenantMap.get(tenant.ParentID) ?? null) : null
           }
-          isSelected={selectedTenantId === tenant.ID}
-          onClick={() => onSelectTenant(tenant.ID)}
+          onEdit={onEditTenant}
+          onDelete={onDeleteTenant}
         />
       ))}
     </SimpleGrid>
