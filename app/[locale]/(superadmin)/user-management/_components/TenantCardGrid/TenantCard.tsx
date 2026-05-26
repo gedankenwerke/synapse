@@ -10,6 +10,8 @@ interface TenantCardProps {
   tenant: Tenant;
   userCount: number;
   parentName: string | null;
+  isSelected: boolean;
+  onClick: () => void;
   onEdit: (tenant: Tenant) => void;
   onDelete: (tenant: Tenant) => void;
 }
@@ -18,13 +20,30 @@ export function TenantCard({
   tenant,
   userCount,
   parentName,
+  isSelected,
+  onClick,
   onEdit,
   onDelete,
 }: TenantCardProps) {
   const t = useTranslations("userManagement");
 
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
+    <Card
+      shadow="sm"
+      padding="lg"
+      radius="md"
+      withBorder
+      style={{ cursor: "pointer", borderColor: isSelected ? "var(--mantine-color-orange-6)" : undefined }}
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+    >
       <Group justify="space-between" mb="xs">
         <Text fw={700} size="lg">{tenant.Name}</Text>
         <Badge variant="light" color="orange" size="sm">
@@ -38,12 +57,28 @@ export function TenantCard({
       </Text>
       <Group justify="flex-end" mt="sm">
         <ActionGuard action="UpdateTenant">
-          <ActionIcon variant="subtle" color="orange" onClick={() => onEdit(tenant)} aria-label="Edit tenant">
+          <ActionIcon
+            variant="subtle"
+            color="orange"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(tenant);
+            }}
+            aria-label="Edit tenant"
+          >
             <IconPencil size={16} />
           </ActionIcon>
         </ActionGuard>
         <ActionGuard action="DeleteTenant">
-          <ActionIcon variant="subtle" color="red" onClick={() => onDelete(tenant)} aria-label="Delete tenant">
+          <ActionIcon
+            variant="subtle"
+            color="red"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(tenant);
+            }}
+            aria-label="Delete tenant"
+          >
             <IconTrash size={16} />
           </ActionIcon>
         </ActionGuard>
