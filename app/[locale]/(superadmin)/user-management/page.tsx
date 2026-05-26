@@ -15,20 +15,20 @@ import { mapApiUserToUserData } from "@/services/user/types";
 import type { UserData, AssignmentData } from "@/services/user/types";
 import type { Tenant } from "@/services/tenant/types";
 import type { TenantRole } from "@/services/tenant-role/types";
-import { UserToolbar } from "./_components/UsersTab/UsersToolbar";
-import { UserTable } from "./_components/UsersTab/UsersTable";
 import { UserPagination } from "./_components/UsersTab/UsersPagination";
-import { EditUserDrawer } from "./_components/UsersTab/EditUserDrawer";
 import {
   useCreateTenantUser,
   useUpdateTenantUser,
   useDeleteTenantUser,
 } from "./hooks/useTenantUserMutations";
-import {
-  AddUserModal,
-  DeleteConfirmModal,
-} from "./_components/UsersTab/UserModals";
+import { AddUserModal } from "./_components/UsersTab/UserModals";
 import type { UserFormValues } from "./_components/UsersTab/UserModals";
+import { TenantCardGrid } from "./_components/TenantCardGrid/TenantCardGrid";
+import { UserTable } from "./_components/UserTable/UserTable";
+import { UserTableHeader } from "./_components/UserTable/UserTableHeader";
+import { ViewUserModal } from "./_components/UserModals/ViewUserModal";
+import { EditUserModal } from "./_components/UserModals/EditUserModal";
+import { DeleteConfirmModal as NewDeleteConfirmModal } from "./_components/UserModals/DeleteConfirmModal";
 import { PermissionsTab } from "./_components/PermissionsTab/PermissionsTab";
 import {
   AddTenantModal,
@@ -82,7 +82,9 @@ export default function UserManagementPage() {
   const [addOpened, { open: openAdd, close: closeAdd }] = useDisclosure(false);
   const [deleteOpened, { open: openDelete, close: closeDelete }] = useDisclosure(false);
   const [editOpened, { open: openEdit, close: closeEdit }] = useDisclosure(false);
+  const [viewOpened, { open: openView, close: closeView }] = useDisclosure(false);
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+  const [selectedTenantId, setSelectedTenantId] = useState<string | null>(null);
 
   const {
     data: usersData,
@@ -139,6 +141,17 @@ export default function UserManagementPage() {
   });
   const totalItems = usersData?.pages[0]?.total ?? users.length;
 
+  // Compute user count per tenant for card grid
+  const tenantUserCountMap = new Map<string, number>();
+  for (const tu of scopedTenantUsers) {
+    tenantUserCountMap.set(tu.TenantID, (tenantUserCountMap.get(tu.TenantID) ?? 0) + 1);
+  }
+
+  // Filter users by selected tenant
+  const filteredUsers = selectedTenantId
+    ? users.filter((u) => u.assignments.some((a) => a.tenantId === selectedTenantId) || u.tenantId === selectedTenantId)
+    : users;
+
   const handleAddUser = (formData: UserFormValues) => {
     createUser.mutate(
       { username: formData.username, password: formData.password, tenant_id: currentTenantId },
@@ -156,6 +169,18 @@ export default function UserManagementPage() {
   };
 
   const handleSearchChange = (value: string) => { setSearchQuery(value); };
+
+  const handleView = (user: UserData) => { setSelectedUser(user); openView(); };
+
+  const handleSelectTenant = (tenantId: string) => {
+    setSelectedTenantId(tenantId);
+    setSearchQuery("");
+  };
+
+  const handleBackToTenants = () => {
+    setSelectedTenantId(null);
+    setSearchQuery("");
+  };
 
   const handleEdit = (user: UserData) => { setSelectedUser(user); openEdit(); };
 
@@ -385,15 +410,34 @@ export default function UserManagementPage() {
         </Tabs.List>
 
         <Tabs.Panel value="users">
-          <Stack gap="md">
-            <UserToolbar
-              searchValue={searchQuery}
-              onSearchChange={handleSearchChange}
-              onAddUser={openAdd}
+          {selectedTenantId === null ? (
+            <TenantCardGrid
+              tenants={scopedTenants}
+              tenantUserCounts={tenantUserCountMap}
+              tenantMap={tenantMap}
+              selectedTenantId={null}
+              onSelectTenant={handleSelectTenant}
             />
-            <UserTable data={users} isLoading={usersLoading} onEdit={handleEdit} onDelete={handleDelete} />
-            <UserPagination totalItems={totalItems} hasNextPage={hasNextPage ?? false} isFetchingNextPage={isFetchingNextPage} fetchNextPage={fetchNextPage} />
-          </Stack>
+          ) : (
+            <Stack gap="md">
+              <UserTableHeader
+                tenantName={tenantMap.get(selectedTenantId) ?? ""}
+                userCount={filteredUsers.length}
+                searchValue={searchQuery}
+                onSearchChange={handleSearchChange}
+                onBack={handleBackToTenants}
+                onAddUser={openAdd}
+              />
+              <UserTable
+                data={filteredUsers}
+                isLoading={usersLoading}
+                onView={handleView}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+              <UserPagination totalItems={totalItems} hasNextPage={hasNextPage ?? false} isFetchingNextPage={isFetchingNextPage} fetchNextPage={fetchNextPage} />
+            </Stack>
+          )}
         </Tabs.Panel>
 
         <Tabs.Panel value="permissions">
@@ -418,9 +462,24 @@ export default function UserManagementPage() {
       </Tabs>
 
       {/* Users modals */}
+      <ViewUserModal opened={viewOpened} onClose={closeView} user={selectedUser} />
+      <EditUserModal
+        opened={editOpened}
+        onClose={closeEdit}
+        user={selectedUser}
+        onSave={handleSave}
+        loading={updateUser.isPending}
+        tenants={scopedTenants}
+        roles={scopedRoles}
+      />
+      <NewDeleteConfirmModal
+        opened={deleteOpened}
+        onClose={closeDelete}
+        onConfirm={handleDeleteConfirm}
+        userName={selectedUser?.username ?? ""}
+        loading={deleteUser.isPending}
+      />
       <AddUserModal opened={addOpened} onClose={closeAdd} onSave={handleAddUser} loading={createUser.isPending} />
-      <DeleteConfirmModal opened={deleteOpened} onClose={closeDelete} onConfirm={handleDeleteConfirm} userName={selectedUser?.username ?? ""} loading={deleteUser.isPending} />
-      <EditUserDrawer opened={editOpened} onClose={closeEdit} user={selectedUser} onSave={handleSave} loading={updateUser.isPending} tenants={scopedTenants} roles={scopedRoles} />
 
       {/* Tenant modals */}
       <AddTenantModal opened={addTenantOpened} onClose={closeAddTenant} onSave={handleAddTenant} tenants={scopedTenants} loading={createTenant.isPending} />

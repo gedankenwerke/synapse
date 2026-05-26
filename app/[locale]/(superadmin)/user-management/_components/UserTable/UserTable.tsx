@@ -14,22 +14,10 @@ import {
 import { IconEye, IconPencil, IconTrash } from "@tabler/icons-react";
 import { getColumns } from "./columns";
 import { ActionGuard } from "@/components/ActionGuard";
+import { formatThaiDate } from "../utils/formatDate";
 import type { UserData } from "@/services/user/types";
 
-const TH_TZ = "Asia/Bangkok";
-
-function formatThaiDate(iso: string): string {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  return d.toLocaleString("en-GB", {
-    timeZone: TH_TZ,
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+const MAX_VISIBLE_ASSIGNMENTS = 2;
 
 interface UserTableProps {
   data: UserData[];
@@ -58,7 +46,9 @@ export function UserTable({
   }
 
   const rows = data.map((user) => {
-    const firstAssignment = user.assignments[0];
+    const assignments = user.assignments ?? [];
+    const visibleAssignments = assignments.slice(0, MAX_VISIBLE_ASSIGNMENTS);
+    const overflowCount = assignments.length - MAX_VISIBLE_ASSIGNMENTS;
 
     return (
       <Table.Tr key={user.id}>
@@ -68,10 +58,19 @@ export function UserTable({
           </Text>
         </Table.Td>
         <Table.Td>
-          {firstAssignment ? (
-            <Badge variant="light" color="blue" size="sm">
-              {firstAssignment.roleName}
-            </Badge>
+          {assignments.length > 0 ? (
+            <Group gap={4} wrap="wrap">
+              {visibleAssignments.map((a) => (
+                <Badge key={a.id} variant="light" color="blue" size="sm">
+                  {a.tenantName}: {a.roleName}
+                </Badge>
+              ))}
+              {overflowCount > 0 && (
+                <Badge variant="light" color="gray" size="sm">
+                  {t("badgeMore", { count: overflowCount })}
+                </Badge>
+              )}
+            </Group>
           ) : (
             <Text size="sm" c="dimmed">
               —

@@ -27,12 +27,20 @@ export function TenantCard({
       padding="lg"
       radius="md"
       withBorder
+      role="button"
+      tabIndex={0}
       style={{
         cursor: "pointer",
         borderColor: isSelected ? "var(--mantine-primary-color-filled)" : undefined,
         borderWidth: isSelected ? 2 : 1,
       }}
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
     >
       <Group justify="space-between" mb="xs">
         <Text fw={700} size="lg">

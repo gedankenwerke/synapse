@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Modal, Stack, Text, Badge, Group, Button } from "@mantine/core";
+import { formatThaiDate } from "../utils/formatDate";
 import type { UserData } from "@/services/user/types";
 
 interface ViewUserModalProps {
@@ -10,28 +11,13 @@ interface ViewUserModalProps {
   user: UserData | null;
 }
 
-function formatDate(dateStr: string): string {
-  try {
-    return new Date(dateStr).toLocaleString("en-GB", {
-      timeZone: "Asia/Bangkok",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return dateStr;
-  }
-}
-
 export function ViewUserModal({ opened, onClose, user }: ViewUserModalProps) {
   const t = useTranslations("userManagement");
   const tc = useTranslations("common");
 
   if (!user) return null;
 
-  const firstAssignment = user.assignments[0];
+  const firstAssignment = user.assignments?.[0];
 
   return (
     <Modal opened={opened} onClose={onClose} title={t("userDetails")} centered size="md">
@@ -61,7 +47,7 @@ export function ViewUserModal({ opened, onClose, user }: ViewUserModalProps) {
 
         <div>
           <Text size="xs" c="dimmed">{t("colCreated")}</Text>
-          <Text fw={500}>{formatDate(user.createdAt)}</Text>
+          <Text fw={500}>{formatThaiDate(user.createdAt)}</Text>
         </div>
 
         <Group justify="flex-end" mt="xl">
