@@ -1,0 +1,11 @@
+{"type":"server-started","port":62634,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:62634","screen_dir":"/Users/shinnamon/working/Synapse/.superpowers/brainstorm/94962-1779779683/content","state_dir":"/Users/shinnamon/working/Synapse/.superpowers/brainstorm/94962-1779779683/state"}
+{"type":"screen-added","file":"/Users/shinnamon/working/Synapse/.superpowers/brainstorm/94962-1779779683/content/tenant-card-grid.html"}
+{"type":"screen-added","file":"/Users/shinnamon/working/Synapse/.superpowers/brainstorm/94962-1779779683/content/design-summary.html"}
+{"source":"user-event","type":"click","text":"1\n      \n        Tenant Selection → Card Grid\n        แสดง tenant เป็น card มีชื่อ + จำนวน user + parent tenant","choice":"tenant","id":null,"timestamp":1779780082353}
+{"source":"user-event","type":"click","text":"1\n      \n        Tenant Selection → Card Grid\n        แสดง tenant เป็น card มีชื่อ + จำนวน user + parent tenant","choice":"tenant","id":null,"timestamp":1779780082518}
+{"source":"user-event","type":"click","text":"1\n      \n        Tenant Selection → Card Grid\n        แสดง tenant เป็น card มีชื่อ + จำนวน user + parent tenant","choice":"tenant","id":null,"timestamp":1779780083503}
+{"source":"user-event","type":"click","text":"1\n      \n        Tenant Selection → Card Grid\n        แสดง tenant เป็น card มีชื่อ + จำนวน user + parent tenant","choice":"tenant","id":null,"timestamp":1779780084235}
+{"source":"user-event","type":"click","text":"1\n      \n        Tenant Selection → Card Grid\n        แสดง tenant เป็น card มีชื่อ + จำนวน user + parent tenant","choice":"tenant","id":null,"timestamp":1779780084402}
+{"source":"user-event","type":"click","text":"1\n      \n        Tenant Selection → Card Grid\n        แสดง tenant เป็น card มีชื่อ + จำนวน user + parent tenant","choice":"tenant","id":null,"timestamp":1779780084871}
+{"type":"screen-added","file":"/Users/shinnamon/working/Synapse/.superpowers/brainstorm/94962-1779779683/content/waiting.html"}
+{"type":"server-stopped","reason":"idle timeout"}

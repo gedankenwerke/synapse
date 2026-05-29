@@ -67,6 +67,8 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
   },
 
   hasAction: (action: string) => {
+    const { isSuperAdmin } = useAppStore.getState();
+    if (isSuperAdmin) return true;
     return get().userActions.includes(action);
   },
 

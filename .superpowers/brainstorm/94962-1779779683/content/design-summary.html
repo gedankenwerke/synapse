@@ -1,0 +1,188 @@
+<h2>Design Summary — Tenant-Based User Management</h2>
+<p class="subtitle">สรุป design ที่เลือกทั้งหมด</p>
+
+<div class="section">
+  <h3>✅ การเลือกทั้งหมด</h3>
+  <div class="options">
+    <div class="option selected" data-choice="tenant">
+      <div class="letter">1</div>
+      <div class="content">
+        <h3>Tenant Selection → Card Grid</h3>
+        <p>แสดง tenant เป็น card มีชื่อ + จำนวน user + parent tenant</p>
+      </div>
+    </div>
+    <div class="option selected" data-choice="view">
+      <div class="letter">2</div>
+      <div class="content">
+        <h3>View Details → Modal กลางจอ</h3>
+        <p>กด 👁 แสดง Modal ดูรายละเอียด user (ชื่อ, tenant, role, permissions)</p>
+      </div>
+    </div>
+    <div class="option selected" data-choice="edit">
+      <div class="letter">3</div>
+      <div class="content">
+        <h3>Edit User → Modal แก้ไข</h3>
+        <p>กด ✏️ เปิด Modal ฟอร์มแก้ไขข้อมูล user ทั้งหมด</p>
+      </div>
+    </div>
+    <div class="option selected" data-choice="delete">
+      <div class="letter">4</div>
+      <div class="content">
+        <h3>Delete User → Confirmation Modal</h3>
+        <p>กด 🗑️ เปิด Modal ยืนยันการลบ แสดงชื่อ user ที่จะลบ</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 32px;">
+  <h3>🔄 User Flow ทั้งหมด</h3>
+</div>
+
+<div class="mockup">
+  <div class="mockup-header">Step 1: Tenant Selection</div>
+  <div class="mockup-body">
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; padding: 24px;">
+      <div style="border: 2px solid #f97316; border-radius: 12px; padding: 20px; min-width: 180px; background: #fff7ed; box-shadow: 0 2px 8px rgba(249,115,22,0.15);">
+        <div style="font-size: 16px; font-weight: 700; color: #333;">🏦 Alpha Corp</div>
+        <div style="color: #888; font-size: 13px; margin-top: 4px;">12 users</div>
+      </div>
+      <div style="border: 2px solid #e0e0e0; border-radius: 12px; padding: 20px; min-width: 180px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+        <div style="font-size: 16px; font-weight: 700; color: #333;">🏢 Beta Ltd</div>
+        <div style="color: #888; font-size: 13px; margin-top: 4px;">5 users</div>
+      </div>
+      <div style="border: 2px solid #e0e0e0; border-radius: 12px; padding: 20px; min-width: 180px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+        <div style="font-size: 16px; font-weight: 700; color: #333;">🏭 Gamma Inc</div>
+        <div style="color: #888; font-size: 13px; margin-top: 4px;">8 users</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align: center; font-size: 24px; padding: 8px;">⬇️ Click a tenant card</div>
+
+<div class="mockup">
+  <div class="mockup-header">Step 2: User List in Selected Tenant</div>
+  <div class="mockup-body">
+    <div style="padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="color: #f97316; cursor: pointer; font-weight: 600;">← Tenants</span>
+        <span style="color: #ccc;">|</span>
+        <span style="font-weight: 700; font-size: 16px;">Alpha Corp</span>
+        <span style="color: #888; font-size: 13px;">12 users</span>
+      </div>
+      <div style="position: relative;">
+        <input class="mock-input" placeholder="Search users..." style="width: 240px;">
+      </div>
+    </div>
+    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+      <thead>
+        <tr style="background: #f5f5f5; text-align: left;">
+          <th style="padding: 10px 16px; font-weight: 600;">Username</th>
+          <th style="padding: 10px 16px; font-weight: 600;">Role</th>
+          <th style="padding: 10px 16px; font-weight: 600;">Created</th>
+          <th style="padding: 10px 16px; font-weight: 600; text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid #eee;">
+          <td style="padding: 10px 16px; font-weight: 500;">john_doe</td>
+          <td style="padding: 10px 16px;"><span style="background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 4px; font-size: 12px;">Admin</span></td>
+          <td style="padding: 10px 16px; color: #888;">2025-01-15</td>
+          <td style="padding: 10px 16px; text-align: right;">
+            <span style="margin-right: 12px; cursor: pointer; color: #1976d2;" title="View Details">👁</span>
+            <span style="margin-right: 12px; cursor: pointer; color: #f57c00;" title="Edit">✏️</span>
+            <span style="cursor: pointer; color: #d32f2f;" title="Delete">🗑️</span>
+          </td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee;">
+          <td style="padding: 10px 16px; font-weight: 500;">jane_smith</td>
+          <td style="padding: 10px 16px;"><span style="background: #fff3e0; color: #e65100; padding: 2px 8px; border-radius: 4px; font-size: 12px;">Operator</span></td>
+          <td style="padding: 10px 16px; color: #888;">2025-03-22</td>
+          <td style="padding: 10px 16px; text-align: right;">
+            <span style="margin-right: 12px; cursor: pointer; color: #1976d2;" title="View Details">👁</span>
+            <span style="margin-right: 12px; cursor: pointer; color: #f57c00;" title="Edit">✏️</span>
+            <span style="cursor: pointer; color: #d32f2f;" title="Delete">🗑️</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div style="text-align: center; font-size: 24px; padding: 8px;">⬇️ Click 👁 / ✏️ / 🗑️</div>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">👁 View Details Modal</div>
+    <div class="mockup-body" style="padding: 20px;">
+      <div style="border: 2px solid #e0e0e0; border-radius: 12px; max-width: 400px; margin: 0 auto; background: white; padding: 24px;">
+        <div style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">User Details</div>
+        <div style="margin-bottom: 12px;">
+          <div style="color: #888; font-size: 12px; text-transform: uppercase;">Username</div>
+          <div style="font-weight: 500;">john_doe</div>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <div style="color: #888; font-size: 12px; text-transform: uppercase;">Tenant</div>
+          <div style="font-weight: 500;">Alpha Corp</div>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <div style="color: #888; font-size: 12px; text-transform: uppercase;">Role</div>
+          <div><span style="background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 4px; font-size: 12px;">Admin</span></div>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <div style="color: #888; font-size: 12px; text-transform: uppercase;">Permissions</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;">
+            <span style="background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 3px; font-size: 11px;">ListUsers</span>
+            <span style="background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 3px; font-size: 11px;">CreateUser</span>
+            <span style="background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 3px; font-size: 11px;">UpdateUser</span>
+            <span style="background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 3px; font-size: 11px;">DeleteUser</span>
+          </div>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <div style="color: #888; font-size: 12px; text-transform: uppercase;">Created</div>
+          <div style="font-weight: 500;">2025-01-15</div>
+        </div>
+        <div style="text-align: right; margin-top: 16px;">
+          <button class="mock-button" style="background: #666; color: white; border: none; padding: 8px 16px; border-radius: 6px;">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mockup">
+    <div class="mockup-header">✏️ Edit Modal</div>
+    <div class="mockup-body" style="padding: 20px;">
+      <div style="border: 2px solid #e0e0e0; border-radius: 12px; max-width: 400px; margin: 0 auto; background: white; padding: 24px;">
+        <div style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Edit User</div>
+        <div style="margin-bottom: 12px;">
+          <div style="color: #555; font-size: 13px; margin-bottom: 4px;">Username</div>
+          <input class="mock-input" value="john_doe" style="width: 100%;">
+        </div>
+        <div style="margin-bottom: 12px;">
+          <div style="color: #555; font-size: 13px; margin-bottom: 4px;">New Password</div>
+          <input class="mock-input" placeholder="Leave blank to keep current" style="width: 100%;">
+        </div>
+        <div style="margin-bottom: 12px;">
+          <div style="color: #555; font-size: 13px; margin-bottom: 4px;">Role</div>
+          <select class="mock-input" style="width: 100%;">
+            <option>Admin</option>
+            <option>Operator</option>
+            <option>Viewer</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <div style="color: #555; font-size: 13px; margin-bottom: 4px;">Tenant</div>
+          <select class="mock-input" style="width: 100%;">
+            <option>Alpha Corp</option>
+            <option>Beta Ltd</option>
+            <option>Gamma Inc</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px;">
+          <button class="mock-button" style="background: #666; color: white; border: none; padding: 8px 16px; border-radius: 6px;">Cancel</button>
+          <button class="mock-button" style="background: #f97316; color: white; border: none; padding: 8px 16px; border-radius: 6px;">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
