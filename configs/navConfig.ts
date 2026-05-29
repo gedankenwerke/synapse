@@ -6,6 +6,7 @@ import {
   IconUsers,
   IconScale,
   IconRobot,
+  IconKey,
 } from "@tabler/icons-react";
 import type { PolicyName } from "@/services/policy/types";
 import type { UserRole } from "@/utils/role";
@@ -25,6 +26,7 @@ const dashboardItems: NavItem[] = [
   { labelKey: "customerSettlement", icon: IconBuildingBank, href: "/customer-settlement", policy: "Settlement" },
   { labelKey: "payAgent", icon: IconRobot, href: "/pay-agent", policy: "CreatePayAgent" },
   { labelKey: "userManagement", icon: IconUsers, href: "/user-management", policy: "ListUsers" },
+  { labelKey: "pats", icon: IconKey, href: "/pats", policy: "ListPats" },
 ];
 
 export function getNavItems(_role: UserRole): NavItem[] {

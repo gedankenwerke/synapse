@@ -55,6 +55,9 @@ export const POLICY_CATALOG = {
   ReloadPolicies: { Detail: "โหลดนโยบายใหม่", SuperAdminOnly: true },
   GetUser: { Detail: "ดูรายละเอียดผู้ใช้", SuperAdminOnly: false },
   ListPolicies: { Detail: "ดูรายการนโยบาย", SuperAdminOnly: true },
+  ListPats: { Detail: "ดูรายการโทเค็นส่วนตัว", SuperAdminOnly: false },
+  CreatePat: { Detail: "สร้างโทเค็นส่วนตัว", SuperAdminOnly: false },
+  DeletePat: { Detail: "ลบโทเค็นส่วนตัว", SuperAdminOnly: false },
 } as const;
 
 export type PolicyName = keyof typeof POLICY_CATALOG;

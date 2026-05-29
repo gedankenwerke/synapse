@@ -34,7 +34,10 @@
     },
     "dateRange": "ช่วงวันที่",
     "startDate": "วันที่เริ่มต้น",
-    "endDate": "วันที่สิ้นสุด"
+    "endDate": "วันที่สิ้นสุด",
+    "create": "สร้าง",
+    "delete": "ลบ",
+    "copyToken": "คัดลอกโทเค็น"
   },
   "login": {
     "title": "Synapse",
@@ -56,7 +59,7 @@
     }
   },
   "nav": {
-    "superadmin": "Synapse Admin",
+    "superadmin": "Dashboard",
     "dashboard": "แดชบอร์ด",
     "accountStatement": "รายการบัญชี",
     "netBalance": "ยอดคงเหลือสุทธิ",
@@ -64,7 +67,8 @@
     "apiKeys": "API Keys",
     "customerSettlement": "การชำระเงินลูกค้า",
     "payAgent": "Pay Agent",
-    "userManagement": "จัดการผู้ใช้"
+    "userManagement": "จัดการผู้ใช้",
+    "pats": "โทเค็นส่วนตัว"
   },
   "breadcrumb": {
     "home": "หน้าแรก",
@@ -94,7 +98,7 @@
     }
   },
   "superadmin": {
-    "title": "Synapse Admin",
+    "title": "Dashboard",
     "stats": {
       "totalBalance": "ยอดคงเหลือทั้งหมด",
       "todayDeposits": "ฝากวันนี้",
@@ -582,6 +586,32 @@
         "deleteFailed": "ลบผู้เช่าไม่สำเร็จ",
         "loadFailed": "โหลดข้อมูลผู้เช่าไม่สำเร็จ"
       }
+    }
+  },
+  "pats": {
+    "title": "โทเค็นส่วนตัว",
+    "createPat": "สร้างโทเค็น",
+    "noPats": "ยังไม่มีโทเค็น สร้างโทเค็นเพื่อเริ่มใช้งาน",
+    "columns": {
+      "name": "ชื่อ",
+      "prefix": "คำนำหน้า",
+      "createdAt": "สร้างเมื่อ",
+      "actions": "การกระทำ"
+    },
+    "modals": {
+      "createTitle": "สร้างโทเค็นส่วนตัว",
+      "namePlaceholder": "เช่น ci-pipeline, dev-token",
+      "deleteTitle": "ลบโทเค็น",
+      "deleteConfirm": "คุณแน่ใจหรือไม่ที่จะลบ \"{name}\"? การกระทำนี้ไม่สามารถย้อนกลับได้ ระบบที่ใช้โทเค็นนี้จะไม่สามารถเข้าถึงได้ทันที"
+    },
+    "tokenWarning": "คัดลอกโทเค็นของคุณเดี๋ยวนี้",
+    "tokenWarningDetail": "นี่เป็นครั้งเดียวที่โทเค็นเต็มรูปแบบจะถูกแสดง คุณจะไม่สามารถเห็นมันอีก",
+    "validation": {
+      "nameRequired": "จำเป็นต้องระบุชื่อโทเค็น"
+    },
+    "success": {
+      "created": "สร้างโทเค็นสำเร็จ",
+      "deleted": "ลบโทเค็นสำเร็จ"
     }
   }
 }

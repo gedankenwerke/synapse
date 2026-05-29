@@ -15,6 +15,7 @@ const PAGE_ACTION_MAP: Partial<Record<PolicyName, string[]>> = {
   Settlement: ["Settlement"],
   CreatePayAgent: ["CreatePayAgent"],
   ListUsers: ["ListUsers"],
+  ListPats: ["ListPats"],
   ListPolicies: ["ListPolicies"],
   ReloadPolicies: ["ReloadPolicies"],
 };

@@ -34,7 +34,10 @@
     },
     "dateRange": "Date range",
     "startDate": "Start date",
-    "endDate": "End date"
+    "endDate": "End date",
+    "create": "Create",
+    "delete": "Delete",
+    "copyToken": "Copy Token"
   },
   "login": {
     "title": "Synapse",
@@ -56,7 +59,7 @@
     }
   },
   "nav": {
-    "superadmin": "Synapse Admin",
+    "superadmin": "Dashboard",
     "dashboard": "Dashboard",
     "accountStatement": "Account Statement",
     "netBalance": "Net Balance",
@@ -64,7 +67,8 @@
     "apiKeys": "API Keys",
     "customerSettlement": "Customer Settlement",
     "payAgent": "Pay Agent",
-    "userManagement": "User Management"
+    "userManagement": "User Management",
+    "pats": "Personal Access Tokens"
   },
   "breadcrumb": {
     "home": "Home",
@@ -94,7 +98,7 @@
     }
   },
   "superadmin": {
-    "title": "Synapse Admin",
+    "title": "Dashboard",
     "stats": {
       "totalBalance": "Total Balance",
       "todayDeposits": "Today's Deposits",
@@ -582,6 +586,32 @@
         "deleteFailed": "Failed to delete tenant",
         "loadFailed": "Failed to load tenants"
       }
+    }
+  },
+  "pats": {
+    "title": "Personal Access Tokens",
+    "createPat": "Create Token",
+    "noPats": "No tokens yet. Create one to get started.",
+    "columns": {
+      "name": "Name",
+      "prefix": "Prefix",
+      "createdAt": "Created",
+      "actions": "Actions"
+    },
+    "modals": {
+      "createTitle": "Create Personal Access Token",
+      "namePlaceholder": "e.g. ci-pipeline, dev-token",
+      "deleteTitle": "Delete Token",
+      "deleteConfirm": "Are you sure you want to delete \"{name}\"? This action cannot be undone. Any integrations using this token will immediately lose access."
+    },
+    "tokenWarning": "Copy your token now",
+    "tokenWarningDetail": "This is the only time the full token will be shown. You won't be able to see it again.",
+    "validation": {
+      "nameRequired": "Token name is required"
+    },
+    "success": {
+      "created": "Token created successfully",
+      "deleted": "Token deleted successfully"
     }
   }
 }
