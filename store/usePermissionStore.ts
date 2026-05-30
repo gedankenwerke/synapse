@@ -23,7 +23,7 @@ interface PermissionState {
 export const usePermissionStore = create<PermissionState>()((set, get) => ({
   policies: [],
   userActions: [],
-  isLoading: false,
+  isLoading: true,
   error: null,
 
   fetchPolicies: async () => {

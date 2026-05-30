@@ -3,10 +3,11 @@
 import { ActionIcon, Anchor, Breadcrumbs, Group, Text } from "@mantine/core";
 import { IconMoonStars, IconSun } from "@tabler/icons-react";
 import { Link, usePathname } from "@/navigation";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useAppStore } from "@/store/useAppStore";
-import { HOME_PATH } from "@/utils/role";
+import { tenantHomePath } from "@/utils/role";
 
 interface BreadcrumbItem {
   label: string;
@@ -19,13 +20,16 @@ interface HeaderBarProps {
 
 export function HeaderBar({ breadcrumbs }: HeaderBarProps) {
   const pathname = usePathname();
-  const locale = useLocale();
+  const params = useParams();
+  const tenantId = params.tenantId as string;
   const t = useTranslations("breadcrumb");
   const ta = useTranslations("a11y");
   const { colorScheme, toggleColorScheme } = useAppStore();
 
   const items = breadcrumbs ?? (() => {
-    const homeHref = `/${locale}${HOME_PATH}`;
+    const homeHref = tenantHomePath(tenantId);
+    // pathname from next-intl excludes locale prefix: e.g. "/1/dashboard"
+    // Route config uses paths without tenantId prefix — we match by suffix
     const routeConfig: Record<string, { labelKey: string }[]> = {
       "/dashboard": [{ labelKey: "dashboard" }],
       "/account-statement": [{ labelKey: "accountStatement" }],
@@ -36,7 +40,9 @@ export function HeaderBar({ breadcrumbs }: HeaderBarProps) {
       "/user-management": [{ labelKey: "userManagement" }],
       "/transactions": [{ labelKey: "transactions" }],
     };
-    const routeItems = routeConfig[pathname];
+    // Match by stripping tenantId from the path: /{tenantId}/dashboard → /dashboard
+    const pathWithoutTenant = pathname.replace(/^\/[^/]+/, "") || "/";
+    const routeItems = routeConfig[pathWithoutTenant];
     if (routeItems) {
       return [
         { label: t("home"), href: homeHref } as BreadcrumbItem,

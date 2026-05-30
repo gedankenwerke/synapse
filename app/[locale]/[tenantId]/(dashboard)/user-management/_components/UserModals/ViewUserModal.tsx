@@ -51,7 +51,7 @@ export function ViewUserModal({ opened, onClose, user, onEditPassword }: ViewUse
           <div style={{ flex: 1 }}>
             <Text size="xs" c="dimmed">{t("password")}</Text>
             <PasswordInput
-              value="••••••••"
+              value={user.password || "—"}
               readOnly
               variant="filled"
               radius="sm"

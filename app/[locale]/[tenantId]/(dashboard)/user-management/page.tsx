@@ -7,8 +7,11 @@ import { useDisclosure } from "@mantine/hooks";
 import { useDebouncedValue } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
+import { useRouter } from "@/navigation";
 import { usePageGuard } from "@/hooks/usePageGuard";
 import { useAppStore } from "@/store/useAppStore";
+import { SUPERADMIN_TENANT_ID } from "@/utils/role";
 import { getVisibleTenantIds } from "@/services/tenant/helpers";
 import type { Tenant } from "@/services/tenant/types";
 import type { TenantCreateRequest, TenantUpdateRequest } from "@/services/tenant/types";
@@ -51,18 +54,24 @@ export default function UserManagementPage() {
   const t = useTranslations("userManagement");
   const tc = useTranslations("common");
   const { allowed, loading } = usePageGuard("ListUsers");
+  const params = useParams();
+  const router = useRouter();
+  const tenantId = params.tenantId as string;
 
   const currentTenantId = useAppStore((s) => s.user?.tenant_id ?? "");
   const isSuperAdmin = useAppStore((s) => s.isSuperAdmin);
 
+  // ── View mode: superadmin at their own tenant sees tenant cards, everyone else sees user list ──
+  const showTenantCards = isSuperAdmin && tenantId === SUPERADMIN_TENANT_ID;
+
   // ── Tenant data ──
   const tenantsQuery = useTenantsQuery();
-  const tenantUsersQuery = useTenantUsersQuery();
+  // Superadmin needs all tenant-users for card counts; non-superadmin only needs their own tenant's data
+  const tenantUsersQuery = useTenantUsersQuery(
+    isSuperAdmin ? undefined : { tenantId }
+  );
   const tenants = tenantsQuery.data ?? [];
   const tenantUsers = tenantUsersQuery.data ?? [];
-
-  // Debug: trace API state (remove after stabilizing)
-  console.log("[UserManagement] tenants:", tenants.length, "loading:", tenantsQuery.isLoading, "error:", tenantsQuery.error);
 
   // ── Tenant-scoped filtering ──
   const visibleTenantIds = getVisibleTenantIds(currentTenantId, tenants, isSuperAdmin);
@@ -77,9 +86,6 @@ export default function UserManagementPage() {
     tenantUserCountMap.set(tu.TenantID, (tenantUserCountMap.get(tu.TenantID) ?? 0) + 1);
   }
 
-  // ── Selected tenant (user list view) ──
-  const [selectedTenantId, setSelectedTenantId] = useState<string | null>(null);
-
   // ── User search ──
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch] = useDebouncedValue(searchQuery, 300);
@@ -88,8 +94,9 @@ export default function UserManagementPage() {
   const { data: roles = [] } = useTenantRolesQuery();
   const { data: permissions = [] } = useTenantPermissionsQuery();
 
-  // ── User data (filtered by selected tenant at API level) ──
-  const usersQuery = useUsersQuery(debouncedSearch, selectedTenantId);
+  // ── User data (filtered by tenant at API level) ──
+  const effectiveTenantId = showTenantCards ? null : tenantId;
+  const usersQuery = useUsersQuery(debouncedSearch, effectiveTenantId);
   const rawUsers = usersQuery.data?.pages.flatMap((p) => p.items) ?? [];
   const totalUserCount = usersQuery.data?.pages[0]?.total ?? 0;
 
@@ -98,7 +105,6 @@ export default function UserManagementPage() {
 
   const users: UserData[] = rawUsers.map((user) => {
     const base = mapApiUserToUserData(user);
-    // Enrich with assignments from tenantUsers data
     const userAssignments: AssignmentData[] = scopedTenantUsers
       .filter((tu) => tu.UserID === user.id)
       .map((tu) => {
@@ -110,14 +116,11 @@ export default function UserManagementPage() {
           tenantName,
           roleId: tu.TenantRoleID,
           roleName: role?.Name ?? "",
-          permissions: [], // permissions are loaded per-role on demand
+          permissions: [],
         };
       });
     return { ...base, assignments: userAssignments };
   });
-
-  // Debug: trace user data flow
-  console.log("[UserManagement] selectedTenantId:", selectedTenantId, "rawUsers:", rawUsers.length, "enriched users:", users.length, "total:", totalUserCount);
 
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
@@ -236,9 +239,8 @@ export default function UserManagementPage() {
   };
 
   const handleAddUser = (values: UserFormValues) => {
-    if (!selectedTenantId) return;
     createUser.mutate(
-      { username: values.username, password: values.password, tenant_id: selectedTenantId },
+      { username: values.username, password: values.password, tenant_id: tenantId },
       {
         onSuccess: () => {
           closeAdd();
@@ -252,14 +254,13 @@ export default function UserManagementPage() {
     );
   };
 
-  const handleSelectTenant = (tenantId: string) => {
-    setSelectedTenantId(tenantId);
-    setSearchQuery("");
+  // ── Navigation handlers ──
+  const handleSelectTenant = (clickedTenantId: string) => {
+    router.push(`/${clickedTenantId}/user-management`);
   };
 
   const handleBackToTenants = () => {
-    setSelectedTenantId(null);
-    setSearchQuery("");
+    router.push(`/${SUPERADMIN_TENANT_ID}/user-management`);
   };
 
   const handleSearchChange = (value: string) => {
@@ -267,8 +268,8 @@ export default function UserManagementPage() {
   };
 
   // ── Selected tenant info ──
-  const selectedTenantName = selectedTenantId ? (tenantMap.get(selectedTenantId) ?? "") : "";
-  const selectedTenantUserCount = selectedTenantId ? (tenantUserCountMap.get(selectedTenantId) ?? 0) : 0;
+  const selectedTenantName = tenantMap.get(tenantId) ?? "";
+  const selectedTenantUserCount = tenantUserCountMap.get(tenantId) ?? 0;
 
   // ── Guard: show loader while checking permissions ──
   if (loading) return <Center mih="100vh"><Loader /></Center>;
@@ -309,12 +310,11 @@ export default function UserManagementPage() {
     <Container size="xl" py="md">
       <Text fz="xl" fw={700} mb="md">{t("title")}</Text>
 
-      {selectedTenantId === null ? (
+      {showTenantCards ? (
         <TenantCardGrid
           tenants={scopedTenants}
           tenantUserCounts={tenantUserCountMap}
           tenantMap={tenantMap}
-          selectedTenantId={selectedTenantId}
           onSelectTenant={handleSelectTenant}
           onEditTenant={handleEditTenant}
           onDeleteTenant={handleDeleteTenant}
@@ -326,7 +326,7 @@ export default function UserManagementPage() {
             userCount={selectedTenantUserCount}
             searchValue={searchQuery}
             onSearchChange={handleSearchChange}
-            onBack={handleBackToTenants}
+            onBack={isSuperAdmin ? handleBackToTenants : undefined}
             onAddUser={openAdd}
           />
           <UserTable

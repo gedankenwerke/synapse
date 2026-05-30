@@ -1,6 +1,7 @@
 export interface User {
   id: string;
   username: string;
+  password: string;
   tenant_id: string;
   created_at: string;
   updated_at: string;
@@ -9,6 +10,7 @@ export interface User {
 export interface ApiUser {
   ID: string;
   Username: string;
+  Password: string;
   TenantID: string;
   CreatedAt: string;
   UpdatedAt: string;
@@ -57,6 +59,7 @@ export interface DeleteUserResponse {
 export interface UserData {
   id: string;
   username: string;
+  password: string;
   tenantId: string;
   createdAt: string;
   updatedAt: string;
@@ -72,10 +75,11 @@ export interface AssignmentData {
   permissions: string[];
 }
 
-function mapApiUser(api: ApiUser): User {
+export function mapApiUser(api: ApiUser): User {
   return {
     id: api.ID,
     username: api.Username,
+    password: api.Password,
     tenant_id: api.TenantID,
     created_at: api.CreatedAt,
     updated_at: api.UpdatedAt,
@@ -86,6 +90,7 @@ export function mapApiUserToUserData(user: User): UserData {
   return {
     id: user.id,
     username: user.username,
+    password: user.password,
     tenantId: user.tenant_id,
     createdAt: user.created_at,
     updatedAt: user.updated_at,

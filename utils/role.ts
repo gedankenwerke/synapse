@@ -6,6 +6,11 @@ export type UserRole = "superadmin" | "senior" | "agent";
 export const SUPERADMIN_TENANT_ID = "1";
 export const HOME_PATH = "/dashboard";
 
+/** Build a tenant-scoped home path: /{tenantId}/dashboard */
+export function tenantHomePath(tenantId: string): string {
+  return `/${tenantId}/dashboard`;
+}
+
 export function deriveRole(user: LoginRequestUser | null, tenants: Tenant[] | undefined | null): UserRole {
   if (!user) return "agent";
   if (user.tenant_id === SUPERADMIN_TENANT_ID) return "superadmin";

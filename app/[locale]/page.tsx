@@ -19,7 +19,7 @@ import { authentication } from "@/services/authentication";
 import { useAppStore } from "@/store/useAppStore";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { HOME_PATH } from "@/utils/role";
+import { tenantHomePath } from "@/utils/role";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -47,7 +47,7 @@ export default function LoginPage() {
       });
 
       setLogin(response.data.access_token, response.data.refresh_token, response.data.user);
-      router.push(HOME_PATH);
+      router.push(tenantHomePath(response.data.user.tenant_id));
     } catch (err: any) {
       const errorMessage = err?.message || t("error.loginFailed");
       setError(errorMessage);

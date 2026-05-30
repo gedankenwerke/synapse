@@ -9,6 +9,8 @@ import { usePermissionStore } from "@/store/usePermissionStore";
 import { authentication } from "@/services/authentication";
 import { tenant } from "@/services/tenant";
 import { deriveRole } from "@/utils/role";
+import Cookies from "js-cookie";
+import { TENANT_ID_COOKIE } from "@/store/useAppStore";
 
 const VERIFY_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -73,6 +75,14 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         // Derive user role from tenant hierarchy
         const { user } = useAppStore.getState();
         if (user) {
+          // Ensure tenant_id cookie is set (for middleware isolation)
+          if (!Cookies.get(TENANT_ID_COOKIE)) {
+            Cookies.set(TENANT_ID_COOKIE, user.tenant_id, {
+              path: "/",
+              expires: 7,
+              sameSite: "Strict",
+            });
+          }
           const tenants = await tenant.list();
           const role = deriveRole(user, tenants);
           setUserRole(role);

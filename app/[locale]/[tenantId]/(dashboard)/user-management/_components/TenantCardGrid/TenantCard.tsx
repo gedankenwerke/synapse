@@ -10,7 +10,6 @@ interface TenantCardProps {
   tenant: Tenant;
   userCount: number;
   parentName: string | null;
-  isSelected: boolean;
   onClick: () => void;
   onEdit: (tenant: Tenant) => void;
   onDelete: (tenant: Tenant) => void;
@@ -20,7 +19,6 @@ export function TenantCard({
   tenant,
   userCount,
   parentName,
-  isSelected,
   onClick,
   onEdit,
   onDelete,
@@ -33,7 +31,7 @@ export function TenantCard({
       padding="lg"
       radius="md"
       withBorder
-      style={{ cursor: "pointer", borderColor: isSelected ? "var(--mantine-color-orange-6)" : undefined }}
+      style={{ cursor: "pointer" }}
       onClick={onClick}
       role="button"
       tabIndex={0}

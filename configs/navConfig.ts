@@ -12,18 +12,18 @@ import type { PolicyName } from "@/services/policy/types";
 export interface NavItem {
   labelKey: string;
   icon: typeof IconChartBar;
-  href: string;
+  href: (tenantId: string) => string;
   policy: PolicyName;
 }
 
 const navItems: NavItem[] = [
-  { labelKey: "dashboard", icon: IconChartBar, href: "/dashboard", policy: "SearchTransactionHistory" },
-  { labelKey: "accountStatement", icon: IconFileDescription, href: "/account-statement", policy: "SearchBankStatement" },
-  { labelKey: "netBalance", icon: IconScale, href: "/net-balance", policy: "SearchNetBalance" },
-  { labelKey: "transaction", icon: IconArrowsExchange, href: "/deposits-withdrawals", policy: "SearchTransactionHistory" },
-  { labelKey: "customerSettlement", icon: IconBuildingBank, href: "/customer-settlement", policy: "Settlement" },
-  { labelKey: "payAgent", icon: IconRobot, href: "/pay-agent", policy: "CreatePayAgent" },
-  { labelKey: "userManagement", icon: IconUsers, href: "/user-management", policy: "ListUsers" },
+  { labelKey: "dashboard", icon: IconChartBar, href: (t) => `/${t}/dashboard`, policy: "SearchTransactionHistory" },
+  { labelKey: "accountStatement", icon: IconFileDescription, href: (t) => `/${t}/account-statement`, policy: "SearchBankStatement" },
+  { labelKey: "netBalance", icon: IconScale, href: (t) => `/${t}/net-balance`, policy: "SearchNetBalance" },
+  { labelKey: "transaction", icon: IconArrowsExchange, href: (t) => `/${t}/deposits-withdrawals`, policy: "SearchTransactionHistory" },
+  { labelKey: "customerSettlement", icon: IconBuildingBank, href: (t) => `/${t}/customer-settlement`, policy: "Settlement" },
+  { labelKey: "payAgent", icon: IconRobot, href: (t) => `/${t}/pay-agent`, policy: "CreatePayAgent" },
+  { labelKey: "userManagement", icon: IconUsers, href: (t) => `/${t}/user-management`, policy: "ListUsers" },
 ];
 
 export function getNavItems(): NavItem[] {

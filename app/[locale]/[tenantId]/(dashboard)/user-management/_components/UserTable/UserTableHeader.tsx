@@ -10,7 +10,7 @@ interface UserTableHeaderProps {
   userCount: number;
   searchValue: string;
   onSearchChange: (value: string) => void;
-  onBack: () => void;
+  onBack?: () => void;
   onAddUser: () => void;
 }
 
@@ -27,15 +27,17 @@ export function UserTableHeader({
   return (
     <Group justify="space-between" mb="md">
       <Group gap="sm">
-        <Button
-          variant="subtle"
-          color="gray"
-          leftSection={<IconArrowLeft size={16} />}
-          onClick={onBack}
-          size="xs"
-        >
-          {t("backToTenants")}
-        </Button>
+        {onBack && (
+          <Button
+            variant="subtle"
+            color="gray"
+            leftSection={<IconArrowLeft size={16} />}
+            onClick={onBack}
+            size="xs"
+          >
+            {t("backToTenants")}
+          </Button>
+        )}
         <Text fw={600} size="lg">
           {tenantName}
         </Text>

@@ -7,6 +7,7 @@ import { SUPERADMIN_TENANT_ID } from "@/utils/role";
 
 const ACCESS_TOKEN_COOKIE = "auth_token";
 const REFRESH_TOKEN_COOKIE = "refresh_token";
+export const TENANT_ID_COOKIE = "tenant_id";
 const COOKIE_MAX_AGE_DAYS = 7;
 
 interface AppState {
@@ -74,11 +75,13 @@ export const useAppStore = create<AppState>()(
         const isSuperAdmin = user.tenant_id === SUPERADMIN_TENANT_ID;
         setCookie(ACCESS_TOKEN_COOKIE, accessToken);
         setCookie(REFRESH_TOKEN_COOKIE, refreshToken);
+        setCookie(TENANT_ID_COOKIE, user.tenant_id);
         set({ token: accessToken, user, isAuthenticated: true, isSuperAdmin });
       },
       setLogout: () => {
         Cookies.remove(ACCESS_TOKEN_COOKIE, { path: "/" });
         Cookies.remove(REFRESH_TOKEN_COOKIE, { path: "/" });
+        Cookies.remove(TENANT_ID_COOKIE, { path: "/" });
         set({ token: null, user: null, isAuthenticated: false, isSuperAdmin: false, userRole: "agent" as UserRole });
       },
       updateToken: (token: string) => {
