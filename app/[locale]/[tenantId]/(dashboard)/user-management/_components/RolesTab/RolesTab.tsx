@@ -13,8 +13,9 @@ import {
   Center,
   Loader,
   Stack,
+  Tooltip,
 } from "@mantine/core";
-import { IconSearch, IconPlus, IconPencil, IconTrash, IconEdit } from "@tabler/icons-react";
+import { IconSearch, IconPlus, IconPencil, IconTrash, IconEdit, IconLock } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { useDisclosure } from "@mantine/hooks";
 import type { TenantRole } from "@/services/tenant-role/types";
@@ -27,6 +28,10 @@ import {
 import type { RoleFormValues } from "./RolesModals";
 import { useCreateTenantRole, useUpdateTenantRole, useDeleteTenantRole } from "../../hooks/useTenantRoleMutations";
 import { useTenantRolesQuery } from "../../hooks/useTenantRolesQuery";
+import { useAppStore } from "@/store/useAppStore";
+import { usePermissionStore } from "@/store/usePermissionStore";
+import { useRolePermissionCache } from "@/store/useRolePermissionCache";
+import { useTenantUsersQuery } from "../../hooks/useTenantUsersQuery";
 
 const TH_TZ = "Asia/Bangkok";
 
@@ -43,6 +48,31 @@ function formatThaiDate(iso: string): string {
   });
 }
 
+/**
+ * Role hierarchy: superadmin > roles with AssignPermissions > other roles
+ * A user can only edit roles below their own level:
+ *   - Superadmin: can edit ALL roles
+ *   - Admin (has AssignPermissions): can edit roles that DON'T have AssignPermissions
+ *   - Regular user: cannot edit any roles (tab hidden)
+ */
+function canEditRole(
+  roleId: string,
+  isSuperAdmin: boolean,
+  userRoleIds: string[],
+  cache: ReturnType<typeof useRolePermissionCache.getState>
+): boolean {
+  if (isSuperAdmin) return true;
+
+  // Check if the target role has AssignPermissions
+  const roleActions = cache.getRoleActions(roleId);
+  if (roleActions.includes("AssignPermissions")) return false;
+
+  // Cannot edit your own role(s)
+  if (userRoleIds.includes(roleId)) return false;
+
+  return true;
+}
+
 interface RolesTabProps {
   tenantId: string;
 }
@@ -52,10 +82,21 @@ export function RolesTab({ tenantId }: RolesTabProps) {
   const tr = useTranslations("userManagement.roles");
   const tc = useTranslations("common");
 
+  const isSuperAdmin = useAppStore((s) => s.isSuperAdmin);
+  const userId = useAppStore((s) => s.user?.id ?? "");
+  const hasAction = usePermissionStore((s) => s.hasAction);
+  const cache = useRolePermissionCache();
+
   const { data: roles = [], isLoading } = useTenantRolesQuery();
   const createRole = useCreateTenantRole();
   const updateRole = useUpdateTenantRole();
   const deleteRole = useDeleteTenantRole();
+
+  // Get current user's role IDs in this tenant
+  const { data: tenantUsers = [] } = useTenantUsersQuery({ tenantId });
+  const currentUserRoleIds = tenantUsers
+    .filter((tu) => tu.UserID === userId)
+    .map((tu) => tu.TenantRoleID);
 
   // Filter state
   const [roleSearch, setRoleSearch] = useState("");
@@ -95,7 +136,6 @@ export function RolesTab({ tenantId }: RolesTabProps) {
   };
 
   const handleCreateRole = (values: RoleFormValues) => {
-    // Force tenant_id to current tenant
     createRole.mutate({ ...values, tenant_id: tenantId }, {
       onSuccess: () => {
         closeAdd();
@@ -180,25 +220,38 @@ export function RolesTab({ tenantId }: RolesTabProps) {
                 </Table.Td>
               </Table.Tr>
             ) : (
-              filteredRoles.map((role) => (
-                <Table.Tr key={role.ID}>
-                  <Table.Td><Text size="sm" fw={500}>{role.Name}</Text></Table.Td>
-                  <Table.Td><Text size="sm">{formatThaiDate(role.CreatedAt)}</Text></Table.Td>
-                  <Table.Td>
-                    <Group gap={4} wrap="nowrap">
-                      <ActionIcon variant="subtle" color="blue" onClick={() => handleEditPermissions(role)} aria-label="Edit permissions">
-                        <IconPencil size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="gray" onClick={() => handleEditRole(role)} aria-label="Edit role details">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="red" onClick={() => handleDeleteRole(role)} aria-label="Delete role">
-                        <IconTrash size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Table.Td>
-                </Table.Tr>
-              ))
+              filteredRoles.map((role) => {
+                const editable = canEditRole(role.ID, isSuperAdmin, currentUserRoleIds, cache);
+                return (
+                  <Table.Tr key={role.ID} opacity={editable ? 1 : 0.6}>
+                    <Table.Td><Text size="sm" fw={500}>{role.Name}</Text></Table.Td>
+                    <Table.Td><Text size="sm">{formatThaiDate(role.CreatedAt)}</Text></Table.Td>
+                    <Table.Td>
+                      <Group gap={4} wrap="nowrap">
+                        {editable ? (
+                          <>
+                            <ActionIcon variant="subtle" color="blue" onClick={() => handleEditPermissions(role)} aria-label="Edit permissions">
+                              <IconPencil size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="gray" onClick={() => handleEditRole(role)} aria-label="Edit role details">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="red" onClick={() => handleDeleteRole(role)} aria-label="Delete role">
+                              <IconTrash size={16} />
+                            </ActionIcon>
+                          </>
+                        ) : (
+                          <Tooltip label="You cannot edit this role">
+                            <ActionIcon variant="subtle" color="gray" disabled aria-label="Role locked">
+                              <IconLock size={16} />
+                            </ActionIcon>
+                          </Tooltip>
+                        )}
+                      </Group>
+                    </Table.Td>
+                  </Table.Tr>
+                );
+              })
             )}
           </Table.Tbody>
         </Table>

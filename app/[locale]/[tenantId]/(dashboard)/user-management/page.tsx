@@ -11,6 +11,7 @@ import { useParams } from "next/navigation";
 import { useRouter } from "@/navigation";
 import { usePageGuard } from "@/hooks/usePageGuard";
 import { useAppStore } from "@/store/useAppStore";
+import { usePermissionStore } from "@/store/usePermissionStore";
 import { SUPERADMIN_TENANT_ID } from "@/utils/role";
 import { getVisibleTenantIds } from "@/services/tenant/helpers";
 import type { Tenant } from "@/services/tenant/types";
@@ -56,6 +57,7 @@ export default function UserManagementPage() {
 
   const currentTenantId = useAppStore((s) => s.user?.tenant_id ?? "");
   const isSuperAdmin = useAppStore((s) => s.isSuperAdmin);
+  const canManageRoles = isSuperAdmin || usePermissionStore((s) => s.hasAction("AssignPermissions"));
 
   // ── View mode: superadmin at their own tenant sees tenant cards, everyone else sees user list ──
   const showTenantCards = isSuperAdmin && tenantId === SUPERADMIN_TENANT_ID;
@@ -340,7 +342,7 @@ export default function UserManagementPage() {
           <Tabs.Tab value="users" leftSection={<IconUsers size={16} />}>
             {t("tab.users")}
           </Tabs.Tab>
-          {!showTenantCards && (
+          {canManageRoles && !showTenantCards && (
             <Tabs.Tab value="roles" leftSection={<IconShield size={16} />}>
               {t("tab.roles")}
             </Tabs.Tab>
@@ -373,7 +375,7 @@ export default function UserManagementPage() {
           </Stack>
         </Tabs.Panel>
 
-        {!showTenantCards && (
+        {canManageRoles && !showTenantCards && (
           <Tabs.Panel value="roles">
             <RolesTab tenantId={tenantId} />
           </Tabs.Panel>
