@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Container, Text, Loader, Center, Stack, Alert } from "@mantine/core";
-import { IconAlertCircle } from "@tabler/icons-react";
+import { Container, Text, Loader, Center, Stack, Alert, Tabs } from "@mantine/core";
+import { IconUsers, IconShield, IconAlertCircle } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 import { useDebouncedValue } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -14,7 +14,7 @@ import { useAppStore } from "@/store/useAppStore";
 import { SUPERADMIN_TENANT_ID } from "@/utils/role";
 import { getVisibleTenantIds } from "@/services/tenant/helpers";
 import type { Tenant } from "@/services/tenant/types";
-import type { TenantCreateRequest, TenantUpdateRequest } from "@/services/tenant/types";
+import type { TenantUpdateRequest } from "@/services/tenant/types";
 import type { UserData, AssignmentData } from "@/services/user/types";
 import { TenantCardGrid } from "./_components/TenantCardGrid/TenantCardGrid";
 import {
@@ -29,6 +29,7 @@ import { EditUserModal } from "./_components/UserModals/EditUserModal";
 import { DeleteConfirmModal } from "./_components/UserModals/DeleteConfirmModal";
 import { AddUserModal } from "./_components/UsersTab/UserModals";
 import type { UserFormValues } from "./_components/UsersTab/UserModals";
+import { RolesTab } from "./_components/RolesTab/RolesTab";
 import { useTenantsQuery } from "./hooks/useTenantsQuery";
 import { useTenantUsersQuery } from "./hooks/useTenantUsersQuery";
 import {
@@ -43,12 +44,6 @@ import {
 } from "./hooks/useUserMutations";
 import { mapApiUserToUserData } from "@/services/user/types";
 import { useTenantRolesQuery } from "./hooks/useTenantRolesQuery";
-import { useTenantPermissionsQuery } from "./hooks/useTenantPermissionsQuery";
-import {
-  useCreateTenantUser,
-  useUpdateTenantUser,
-  useDeleteTenantUser,
-} from "./hooks/useTenantUserMutations";
 
 export default function UserManagementPage() {
   const t = useTranslations("userManagement");
@@ -90,9 +85,8 @@ export default function UserManagementPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch] = useDebouncedValue(searchQuery, 300);
 
-  // ── Roles & permissions (needed for user assignment enrichment) ──
+  // ── Roles (needed for user assignment enrichment) ──
   const { data: roles = [] } = useTenantRolesQuery();
-  const { data: permissions = [] } = useTenantPermissionsQuery();
 
   // ── User data (filtered by tenant at API level) ──
   const effectiveTenantId = showTenantCards ? null : tenantId;
@@ -126,9 +120,6 @@ export default function UserManagementPage() {
   const updateUser = useUpdateUser();
   const deleteUser = useDeleteUser();
 
-  const createTenantUser = useCreateTenantUser();
-  const updateTenantUser = useUpdateTenantUser();
-  const deleteTenantUser = useDeleteTenantUser();
 
   // ── User modals ──
   const [viewOpened, { open: openView, close: closeView }] = useDisclosure(false);
@@ -306,11 +297,11 @@ export default function UserManagementPage() {
     );
   }
 
-  return (
-    <Container size="xl" py="md">
-      <Text fz="xl" fw={700} mb="md">{t("title")}</Text>
-
-      {showTenantCards ? (
+  // ── Superadmin at root tenant: show tenant cards ──
+  if (showTenantCards) {
+    return (
+      <Container size="xl" py="md">
+        <Text fz="xl" fw={700} mb="md">{t("title")}</Text>
         <TenantCardGrid
           tenants={scopedTenants}
           tenantUserCounts={tenantUserCountMap}
@@ -319,35 +310,62 @@ export default function UserManagementPage() {
           onEditTenant={handleEditTenant}
           onDeleteTenant={handleDeleteTenant}
         />
-      ) : (
-        <Stack>
-          <UserTableHeader
-            tenantName={selectedTenantName}
-            userCount={selectedTenantUserCount}
-            searchValue={searchQuery}
-            onSearchChange={handleSearchChange}
-            onBack={isSuperAdmin ? handleBackToTenants : undefined}
-            onAddUser={openAdd}
-          />
-          <UserTable
-            data={users}
-            isLoading={usersQuery.isLoading}
-            onView={handleView}
-            onEdit={handleEdit}
-            onDelete={handleDeleteUser}
-          />
-          <UserPagination
-            totalItems={totalUserCount}
-            hasNextPage={!!usersQuery.hasNextPage}
-            isFetchingNextPage={usersQuery.isFetchingNextPage}
-            fetchNextPage={usersQuery.fetchNextPage}
-          />
-        </Stack>
-      )}
+        {/* Tenant modals */}
+        <EditTenantModal opened={editTenantOpened} onClose={closeEditTenant} tenant={selectedTenant} onSave={handleUpdateTenant} tenants={scopedTenants} loading={updateTenant.isPending} />
+        <DeleteTenantModal opened={deleteTenantOpened} onClose={closeDeleteTenant} onConfirm={handleDeleteTenantConfirm} tenantName={selectedTenant?.Name ?? ""} loading={deleteTenant.isPending} />
+      </Container>
+    );
+  }
 
-      {/* Tenant modals */}
-      <EditTenantModal opened={editTenantOpened} onClose={closeEditTenant} tenant={selectedTenant} onSave={handleUpdateTenant} tenants={scopedTenants} loading={updateTenant.isPending} />
-      <DeleteTenantModal opened={deleteTenantOpened} onClose={closeDeleteTenant} onConfirm={handleDeleteTenantConfirm} tenantName={selectedTenant?.Name ?? ""} loading={deleteTenant.isPending} />
+  // ── Inside a tenant: show Users/Roles tabs ──
+  return (
+    <Container size="xl" py="md">
+      <Text fz="xl" fw={700} mb="md">{t("title")}</Text>
+
+      <Tabs defaultValue="users">
+        <Tabs.List mb="md">
+          <Tabs.Tab value="users" leftSection={<IconUsers size={16} />}>
+            {t("tab.users")}
+          </Tabs.Tab>
+          {isSuperAdmin && (
+            <Tabs.Tab value="roles" leftSection={<IconShield size={16} />}>
+              {t("tab.roles")}
+            </Tabs.Tab>
+          )}
+        </Tabs.List>
+
+        <Tabs.Panel value="users">
+          <Stack>
+            <UserTableHeader
+              tenantName={selectedTenantName}
+              userCount={selectedTenantUserCount}
+              searchValue={searchQuery}
+              onSearchChange={handleSearchChange}
+              onBack={isSuperAdmin ? handleBackToTenants : undefined}
+              onAddUser={openAdd}
+            />
+            <UserTable
+              data={users}
+              isLoading={usersQuery.isLoading}
+              onView={handleView}
+              onEdit={handleEdit}
+              onDelete={handleDeleteUser}
+            />
+            <UserPagination
+              totalItems={totalUserCount}
+              hasNextPage={!!usersQuery.hasNextPage}
+              isFetchingNextPage={usersQuery.isFetchingNextPage}
+              fetchNextPage={usersQuery.fetchNextPage}
+            />
+          </Stack>
+        </Tabs.Panel>
+
+        {isSuperAdmin && (
+          <Tabs.Panel value="roles">
+            <RolesTab tenants={scopedTenants} />
+          </Tabs.Panel>
+        )}
+      </Tabs>
 
       {/* User modals */}
       <ViewUserModal opened={viewOpened} onClose={closeView} user={selectedUser} onEditPassword={(user) => { setSelectedUser(user); openEdit(); }} />

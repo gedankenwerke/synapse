@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import {
   Drawer,
@@ -13,41 +14,107 @@ import {
   Loader,
   Center,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import type { TenantRole } from "@/services/tenant-role/types";
-import type { TenantPermission } from "@/services/tenant-permission/types";
 import type { Tenant } from "@/services/tenant/types";
+import { useRolePermissionCache } from "@/store/useRolePermissionCache";
+import { useAssignPermissions, useDeassignPermissions } from "../../hooks/useTenantRoleMutations";
 import { PERMISSION_CATEGORIES } from "./permissionActions";
 
 interface EditRoleDrawerProps {
   opened: boolean;
   onClose: () => void;
   role: TenantRole | null;
-  permissions: TenantPermission[];
   tenants: Tenant[];
-  onToggle: (action: string, enabled: boolean) => void;
-  isToggling?: boolean;
-  isLoading?: boolean;
 }
 
 export function EditRoleDrawer({
   opened,
   onClose,
   role,
-  permissions,
   tenants,
-  onToggle,
-  isToggling,
-  isLoading,
 }: EditRoleDrawerProps) {
   const t = useTranslations("userManagement.roles.permissions");
   const tr = useTranslations("userManagement.roles");
+
+  const cache = useRolePermissionCache();
+  const assignMutation = useAssignPermissions();
+  const deassignMutation = useDeassignPermissions();
+
+  // Local state for checked actions, synced from cache when role changes
+  const [localActions, setLocalActions] = useState<Set<string>>(new Set());
+  const [isReady, setIsReady] = useState(false);
+
+  // Sync local state from cache when role changes or drawer opens
+  useEffect(() => {
+    if (role) {
+      const cached = cache.getRoleActions(role.ID);
+      setLocalActions(new Set(cached));
+      setIsReady(true);
+    } else {
+      setLocalActions(new Set());
+      setIsReady(false);
+    }
+  }, [role?.ID, opened]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!role) return null;
 
   const tenantMap = new Map((tenants ?? []).map((t) => [t.ID, t.Name]));
   const tenantName = tenantMap.get(role.TenantID) ?? "—";
 
-  const enabledActions = new Set(permissions.map((p) => p.Action));
+  const isToggling = assignMutation.isPending || deassignMutation.isPending;
+
+  const handleToggle = (action: string, enabled: boolean) => {
+    if (enabled) {
+      // Assign permission
+      assignMutation.mutate(
+        { roleId: role.ID, actions: [action] },
+        {
+          onSuccess: () => {
+            setLocalActions((prev) => new Set([...prev, action]));
+            notifications.show({
+              title: tr("success.updated"),
+              message: t("success.permissionAdded"),
+              color: "green",
+            });
+          },
+          onError: (err: any) => {
+            notifications.show({
+              title: tr("error.updateFailed"),
+              message: t("error.permissionAddFailed"),
+              color: "red",
+            });
+          },
+        }
+      );
+    } else {
+      // Deassign permission
+      deassignMutation.mutate(
+        { roleId: role.ID, actions: [action] },
+        {
+          onSuccess: () => {
+            setLocalActions((prev) => {
+              const next = new Set(prev);
+              next.delete(action);
+              return next;
+            });
+            notifications.show({
+              title: tr("success.updated"),
+              message: t("success.permissionRemoved"),
+              color: "green",
+            });
+          },
+          onError: (err: any) => {
+            notifications.show({
+              title: tr("error.updateFailed"),
+              message: t("error.permissionRemoveFailed"),
+              color: "red",
+            });
+          },
+        }
+      );
+    }
+  };
 
   return (
     <Drawer
@@ -69,7 +136,7 @@ export function EditRoleDrawer({
 
         <Divider my="sm" />
 
-        {isLoading ? (
+        {!isReady ? (
           <Center py="xl">
             <Loader size="sm" />
           </Center>
@@ -85,8 +152,8 @@ export function EditRoleDrawer({
                     <Checkbox
                       key={action}
                       label={action}
-                      checked={enabledActions.has(action)}
-                      onChange={(e) => onToggle(action, e.currentTarget.checked)}
+                      checked={localActions.has(action)}
+                      onChange={(e) => handleToggle(action, e.currentTarget.checked)}
                       disabled={isToggling}
                       size="sm"
                     />

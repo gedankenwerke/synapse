@@ -2,8 +2,8 @@ import { create } from "zustand";
 import { policy } from "../services/policy";
 import { PolicyCatalogItem, PolicyName, POLICY_CATALOG } from "../services/policy/types";
 import { tenantUser } from "../services/tenant-user";
-import { tenantPermission } from "../services/tenant-permission";
 import { useAppStore } from "./useAppStore";
+import { useRolePermissionCache } from "./useRolePermissionCache";
 
 interface PermissionState {
   policies: PolicyCatalogItem[];
@@ -20,6 +20,15 @@ interface PermissionState {
   canSeePage: (name: PolicyName) => boolean;
 }
 
+/** Build a PolicyCatalogItem array from the local POLICY_CATALOG */
+function localPolicies(): PolicyCatalogItem[] {
+  return Object.entries(POLICY_CATALOG).map(([Name, val]) => ({
+    Name,
+    Detail: val.Detail,
+    SuperAdminOnly: val.SuperAdminOnly,
+  }));
+}
+
 export const usePermissionStore = create<PermissionState>()((set, get) => ({
   policies: [],
   userActions: [],
@@ -31,21 +40,33 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
     try {
       const policies = await policy.list();
       set({ policies, isLoading: false });
-    } catch (err) {
-      set({ policies: [], error: String(err), isLoading: false });
+    } catch (err: any) {
+      // Non-superadmin gets 403 from /policies — fall back to local catalog
+      if (err?.status === 403 || err?.response?.status === 403) {
+        set({ policies: localPolicies(), isLoading: false });
+      } else {
+        set({ policies: localPolicies(), error: String(err), isLoading: false });
+      }
     }
   },
 
   fetchUserPermissions: async () => {
-    const { user } = useAppStore.getState();
+    const { user, isSuperAdmin } = useAppStore.getState();
 
     if (!user) {
-      set({ userActions: [] });
+      set({ userActions: [], isLoading: false });
+      return;
+    }
+
+    // Superadmin bypasses all permission checks
+    if (isSuperAdmin) {
+      set({ userActions: Object.keys(POLICY_CATALOG), isLoading: false });
       return;
     }
 
     set({ isLoading: true, error: null });
     try {
+      // Step 1: Get the user's role assignments via tenant-users
       const tenantUsers = await tenantUser.list({ user_id: user.id });
       const roleIds = tenantUsers.map((tu) => tu.TenantRoleID);
 
@@ -54,15 +75,11 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
         return;
       }
 
-      const allPermissions = await tenantPermission.list();
-      const actions = allPermissions
-        .filter((p) => roleIds.includes(p.RoleID))
-        .map((p) => p.Action);
-
-      const uniqueActions = Array.from(new Set(actions));
-
-      set({ userActions: uniqueActions, isLoading: false });
-    } catch (err) {
+      // Step 2: Read permissions from the role permission cache
+      // (populated when superadmin logged in on this browser)
+      const cachedActions = useRolePermissionCache.getState().getActionsForRoles(roleIds);
+      set({ userActions: cachedActions, isLoading: false });
+    } catch (err: any) {
       set({ userActions: [], error: String(err), isLoading: false });
     }
   },
