@@ -69,7 +69,7 @@ export default function LoginPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "var(--mantine-color-gray-1)",
+        backgroundColor: "light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-8))",
       }}
     >
       <Box pos="absolute" top="1rem" right="1rem">

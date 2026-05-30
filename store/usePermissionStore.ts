@@ -30,12 +30,6 @@ function localPolicies(): PolicyCatalogItem[] {
   }));
 }
 
-/** Minimum pages visible when permissions are loading or unavailable.
- *  Dashboard is always shown as the landing page. */
-const MINIMUM_VISIBLE_POLICIES: PolicyName[] = [
-  "SearchTransactionHistory", // Dashboard
-];
-
 export const usePermissionStore = create<PermissionState>()((set, get) => ({
   policies: [],
   userActions: [],
@@ -146,14 +140,15 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
   canSeePage: (name: PolicyName) => {
     const { isSuperAdmin } = useAppStore.getState();
     if (isSuperAdmin) return true;
+    // During loading or when permissions couldn't be resolved, hide all pages
+    // Dashboard is always accessible via the sidebar (handled separately)
+    if (get().isLoading || get().userActions.length === 0) {
+      return false;
+    }
     const policies = get().policies ?? [];
     const policyItem = policies.find((p) => p.Name === name) ?? POLICY_CATALOG[name];
     if (!policyItem) return false;
     if (policyItem.SuperAdminOnly) return false;
-    // During loading or when permissions couldn't be resolved, show only minimum pages
-    if (get().isLoading || get().userActions.length === 0) {
-      return MINIMUM_VISIBLE_POLICIES.includes(name);
-    }
     return get().userActions.includes(name);
   },
 }));

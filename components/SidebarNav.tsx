@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { usePermissionStore } from "@/store/usePermissionStore";
 import { useAppStore } from "@/store/useAppStore";
 import { getNavItems } from "@/configs/navConfig";
+import { IconChartBar } from "@tabler/icons-react";
 
 export function SidebarNav() {
   const pathname = usePathname();
@@ -25,10 +26,20 @@ export function SidebarNav() {
 
   const items = getNavItems();
 
+  // Dashboard is always visible as the landing page
+  const dashboardHref = `/${tenantId}/dashboard`;
+
   return (
     <AppShell.Section>
+      <NavLink
+        label={t("dashboard")}
+        leftSection={<IconChartBar size={20} />}
+        active={pathname.startsWith(dashboardHref)}
+        component={Link}
+        href={dashboardHref}
+      />
       {items
-        .filter((item) => canSeePage(item.policy))
+        .filter((item) => item.labelKey !== "dashboard" && canSeePage(item.policy))
         .map((item) => {
           const href = item.href(tenantId);
           return (

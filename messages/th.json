@@ -94,7 +94,7 @@
     }
   },
   "superadmin": {
-    "title": "Synapse Admin",
+    "title": "แดชบอร์ด",
     "stats": {
       "totalBalance": "ยอดคงเหลือทั้งหมด",
       "todayDeposits": "ฝากวันนี้",

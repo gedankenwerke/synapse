@@ -94,7 +94,7 @@
     }
   },
   "superadmin": {
-    "title": "Synapse Admin",
+    "title": "Dashboard",
     "stats": {
       "totalBalance": "Total Balance",
       "todayDeposits": "Today's Deposits",
