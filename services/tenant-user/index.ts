@@ -10,7 +10,8 @@ export const tenantUser = {
     const qs = query.toString();
     const url = qs ? `/api/v1/tenant-users?${qs}` : "/api/v1/tenant-users";
     const response = await httpClient.get<ResponseWrapper<TenantUser[]>>(url);
-    return (response as unknown as ResponseWrapper<TenantUser[]>).data;
+    const data = (response as unknown as ResponseWrapper<TenantUser[]>).data;
+    return Array.isArray(data) ? data : [];
   },
 
   get: async (id: string): Promise<TenantUser> => {

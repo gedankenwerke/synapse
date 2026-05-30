@@ -17,15 +17,13 @@ import {
 import { useState } from "react";
 import { authentication } from "@/services/authentication";
 import { useAppStore } from "@/store/useAppStore";
-import { usePermissionStore } from "@/store/usePermissionStore";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { deriveRole, getHomePath } from "@/utils/role";
-import { tenant } from "@/services/tenant";
+import { HOME_PATH } from "@/utils/role";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setLogin, setUserRole } = useAppStore();
+  const { setLogin } = useAppStore();
 
   const t = useTranslations("login");
   const [username, setUsername] = useState("");
@@ -49,14 +47,7 @@ export default function LoginPage() {
       });
 
       setLogin(response.data.access_token, response.data.refresh_token, response.data.user);
-      await usePermissionStore.getState().fetchPolicies();
-      await usePermissionStore.getState().fetchUserPermissions();
-
-      const tenants = await tenant.list();
-      const role = deriveRole(response.data.user, tenants);
-      setUserRole(role);
-
-      router.push(getHomePath(role));
+      router.push(HOME_PATH);
     } catch (err: any) {
       const errorMessage = err?.message || t("error.loginFailed");
       setError(errorMessage);

@@ -7,7 +7,8 @@ export const tenant = {
     const response = await httpClient.get<ResponseWrapper<Tenant[]>>(
       "/api/v1/tenants"
     );
-    return (response as unknown as ResponseWrapper<Tenant[]>).data;
+    const data = (response as unknown as ResponseWrapper<Tenant[]>).data;
+    return Array.isArray(data) ? data : [];
   },
 
   get: async (id: string): Promise<Tenant> => {

@@ -8,7 +8,7 @@ import { DashboardCharts } from "./_components/DashboardCharts";
 import { RecentTable } from "./_components/RecentTable";
 import { useDashboardData } from "./hooks/useDashboardData";
 
-export default function SuperadminPage() {
+export default function DashboardPage() {
   const t = useTranslations("superadmin");
   const { allowed, loading } = usePageGuard("SearchTransactionHistory");
   if (loading) return <Center mih="100vh"><Loader /></Center>;

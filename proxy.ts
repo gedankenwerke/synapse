@@ -2,19 +2,7 @@ import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-
-type UserRole = "superadmin" | "senior" | "agent";
-
-function getHomePath(role: UserRole): string {
-  switch (role) {
-    case "superadmin":
-      return "/superadmin";
-    case "senior":
-      return "/senior";
-    case "agent":
-      return "/agent";
-  }
-}
+import { HOME_PATH } from "./utils/role";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -42,15 +30,12 @@ export default function proxy(request: NextRequest) {
   // Authenticated user accessing login page -> redirect to dashboard
   const isLoginPage = subPath === "/" || subPath === "" || subPath === "/login";
   if (isLoginPage && token) {
-    const role = (request.cookies.get("user_role")?.value || "superadmin") as UserRole;
-    return NextResponse.redirect(new URL(`/${locale}${getHomePath(role)}`, request.url));
+    return NextResponse.redirect(new URL(`/${locale}${HOME_PATH}`, request.url));
   }
 
   // Unauthenticated user accessing protected route -> redirect to login
   const isProtectedRoute =
-    subPath.startsWith("/superadmin") ||
-    subPath.startsWith("/senior") ||
-    subPath.startsWith("/agent") ||
+    subPath.startsWith("/dashboard") ||
     subPath.startsWith("/account-statement") ||
     subPath.startsWith("/net-balance") ||
     subPath.startsWith("/deposits-withdrawals") ||
@@ -58,7 +43,8 @@ export default function proxy(request: NextRequest) {
     subPath.startsWith("/customer-settlement") ||
     subPath.startsWith("/user-management") ||
     subPath.startsWith("/transactions") ||
-    subPath.startsWith("/account");
+    subPath.startsWith("/account") ||
+    subPath.startsWith("/pay-agent");
 
   if (isProtectedRoute && !token) {
     return NextResponse.redirect(new URL(`/${locale}`, request.url));
@@ -70,8 +56,5 @@ export default function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
-    "/([\\w-]+)?/superadmin/:path*",
-    "/([\\w-]+)?/senior/:path*",
-    "/([\\w-]+)?/agent/:path*",
   ],
 };

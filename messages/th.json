@@ -421,6 +421,9 @@
       "userUpdated": "อัปเดตผู้ใช้สำเร็จ",
       "userDeleted": "ลบผู้ใช้สำเร็จ"
     },
+    "userCreated": "เพิ่มผู้ใช้สำเร็จ",
+    "userUpdated": "อัปเดตผู้ใช้สำเร็จ",
+    "userDeleted": "ลบผู้ใช้สำเร็จ",
     "viewUser": "ดูผู้ใช้",
     "colRole": "บทบาท",
     "colFullName": "ชื่อ-นามสกุล",

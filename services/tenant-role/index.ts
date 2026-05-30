@@ -7,7 +7,8 @@ export const tenantRole = {
     const response = await httpClient.get<ResponseWrapper<TenantRole[]>>(
       "/api/v1/tenant-roles"
     );
-    return (response as unknown as ResponseWrapper<TenantRole[]>).data;
+    const data = (response as unknown as ResponseWrapper<TenantRole[]>).data;
+    return Array.isArray(data) ? data : [];
   },
 
   get: async (id: string): Promise<TenantRole> => {

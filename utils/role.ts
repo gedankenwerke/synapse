@@ -3,22 +3,15 @@ import type { Tenant } from "@/services/tenant/types";
 
 export type UserRole = "superadmin" | "senior" | "agent";
 
-export function deriveRole(user: LoginRequestUser | null, tenants: Tenant[]): UserRole {
-  if (!user) return "agent";
-  if (user.tenant_id === "1") return "superadmin";
-  const myTenant = tenants.find((t) => t.ID === user.tenant_id);
-  if (!myTenant) return user.tenant_id === "1" ? "superadmin" : "agent";
-  const hasChildren = tenants.some((t) => t.ParentID === myTenant.ID);
-  return hasChildren ? "senior" : "agent";
-}
+export const SUPERADMIN_TENANT_ID = "1";
+export const HOME_PATH = "/dashboard";
 
-export function getHomePath(role: UserRole): string {
-  switch (role) {
-    case "superadmin":
-      return "/superadmin";
-    case "senior":
-      return "/senior";
-    case "agent":
-      return "/agent";
-  }
+export function deriveRole(user: LoginRequestUser | null, tenants: Tenant[] | undefined | null): UserRole {
+  if (!user) return "agent";
+  if (user.tenant_id === SUPERADMIN_TENANT_ID) return "superadmin";
+  const safeTenants = Array.isArray(tenants) ? tenants : [];
+  const myTenant = safeTenants.find((t) => t.ID === user.tenant_id);
+  if (!myTenant) return "agent";
+  const hasChildren = safeTenants.some((t) => t.ParentID === myTenant.ID);
+  return hasChildren ? "senior" : "agent";
 }

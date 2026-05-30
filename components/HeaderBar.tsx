@@ -6,7 +6,7 @@ import { Link, usePathname } from "@/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useAppStore } from "@/store/useAppStore";
-import { getHomePath } from "@/utils/role";
+import { HOME_PATH } from "@/utils/role";
 
 interface BreadcrumbItem {
   label: string;
@@ -22,15 +22,12 @@ export function HeaderBar({ breadcrumbs }: HeaderBarProps) {
   const locale = useLocale();
   const t = useTranslations("breadcrumb");
   const ta = useTranslations("a11y");
-  const userRole = useAppStore((s) => s.userRole);
   const { colorScheme, toggleColorScheme } = useAppStore();
 
   const items = breadcrumbs ?? (() => {
-    const homeHref = getHomePath(userRole);
+    const homeHref = `/${locale}${HOME_PATH}`;
     const routeConfig: Record<string, { labelKey: string }[]> = {
-      "/superadmin": [{ labelKey: "superadmin" }],
-      "/senior": [{ labelKey: "dashboard" }],
-      "/agent": [{ labelKey: "dashboard" }],
+      "/dashboard": [{ labelKey: "dashboard" }],
       "/account-statement": [{ labelKey: "accountStatement" }],
       "/net-balance": [{ labelKey: "netBalance" }],
       "/deposits-withdrawals": [{ labelKey: "transaction" }],
@@ -42,11 +39,11 @@ export function HeaderBar({ breadcrumbs }: HeaderBarProps) {
     const routeItems = routeConfig[pathname];
     if (routeItems) {
       return [
-        { label: t("home"), href: `/${locale}${homeHref}` } as BreadcrumbItem,
+        { label: t("home"), href: homeHref } as BreadcrumbItem,
         ...routeItems.map((item): BreadcrumbItem => ({ label: t(item.labelKey) })),
       ];
     }
-    return [{ label: t("home"), href: `/${locale}${homeHref}` } as BreadcrumbItem];
+    return [{ label: t("home"), href: homeHref } as BreadcrumbItem];
   })();
 
   return (

@@ -50,8 +50,6 @@ export default function UserManagementPage() {
   const t = useTranslations("userManagement");
   const tc = useTranslations("common");
   const { allowed, loading } = usePageGuard("ListUsers");
-  if (loading) return <Center mih="100vh"><Loader /></Center>;
-  if (!allowed) return null;
 
   const currentTenantId = useAppStore((s) => s.user?.tenant_id ?? "");
   const isSuperAdmin = useAppStore((s) => s.isSuperAdmin);
@@ -166,7 +164,7 @@ export default function UserManagementPage() {
       {
         onSuccess: () => {
           closeEdit();
-          notifications.show({ title: tc("success"), message: t("userUpdated"), color: "green" });
+          notifications.show({ title: tc("success"), message: t("success.userUpdated"), color: "green" });
         },
         onError: (err: any) => {
           const msg = err?.message || t("error.updateFailed");
@@ -186,7 +184,7 @@ export default function UserManagementPage() {
     deleteUser.mutate(selectedUser.id, {
       onSuccess: () => {
         closeDelete();
-        notifications.show({ title: tc("success"), message: t("userDeleted"), color: "green" });
+        notifications.show({ title: tc("success"), message: t("success.userDeleted"), color: "green" });
       },
       onError: (err: any) => {
         const msg = err?.message || t("error.deleteFailed");
@@ -202,7 +200,7 @@ export default function UserManagementPage() {
       {
         onSuccess: () => {
           closeAdd();
-          notifications.show({ title: tc("success"), message: t("userCreated"), color: "green" });
+          notifications.show({ title: tc("success"), message: t("success.userAdded"), color: "green" });
         },
         onError: (err: any) => {
           const msg = err?.message || t("error.createFailed");
@@ -229,6 +227,10 @@ export default function UserManagementPage() {
   // ── Selected tenant info ──
   const selectedTenantName = selectedTenantId ? (tenantMap.get(selectedTenantId) ?? "") : "";
   const selectedTenantUserCount = selectedTenantId ? (tenantUserCountMap.get(selectedTenantId) ?? 0) : 0;
+
+  // ── Guard: show loader or nothing while checking permissions ──
+  if (loading) return <Center mih="100vh"><Loader /></Center>;
+  if (!allowed) return null;
 
   return (
     <Container size="xl" py="md">

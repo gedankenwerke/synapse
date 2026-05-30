@@ -68,8 +68,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
       try {
         await authentication.me();
-        await usePermissionStore.getState().fetchPolicies();
-        await usePermissionStore.getState().fetchUserPermissions();
+        await usePermissionStore.getState().refreshPermissions();
 
         // Derive user role from tenant hierarchy
         const { user } = useAppStore.getState();

@@ -16,6 +16,9 @@ export const userService = {
       params,
     });
     const apiData = (response as unknown as ResponseWrapper<ApiPaginatedUserResponse>).data;
+    if (!apiData) {
+      return { items: [], total: 0, limit: 10, before: "", after: "" };
+    }
     return mapApiPaginatedResponse(apiData);
   },
 

@@ -3,10 +3,10 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import Cookies from "js-cookie";
 import { LoginRequestUser } from "../services/authentication/types";
 import type { UserRole } from "@/utils/role";
+import { SUPERADMIN_TENANT_ID } from "@/utils/role";
 
 const ACCESS_TOKEN_COOKIE = "auth_token";
 const REFRESH_TOKEN_COOKIE = "refresh_token";
-const ROLE_COOKIE = "user_role";
 const COOKIE_MAX_AGE_DAYS = 7;
 
 interface AppState {
@@ -71,16 +71,14 @@ export const useAppStore = create<AppState>()(
       userRole: "agent" as UserRole,
 
       setLogin: (accessToken, refreshToken, user) => {
-        const isSuperAdmin = user.tenant_id === "1";
+        const isSuperAdmin = user.tenant_id === SUPERADMIN_TENANT_ID;
         setCookie(ACCESS_TOKEN_COOKIE, accessToken);
         setCookie(REFRESH_TOKEN_COOKIE, refreshToken);
-        // Role cookie is set later by setUserRole after tenant data is fetched
         set({ token: accessToken, user, isAuthenticated: true, isSuperAdmin });
       },
       setLogout: () => {
         Cookies.remove(ACCESS_TOKEN_COOKIE, { path: "/" });
         Cookies.remove(REFRESH_TOKEN_COOKIE, { path: "/" });
-        Cookies.remove(ROLE_COOKIE, { path: "/" });
         set({ token: null, user: null, isAuthenticated: false, isSuperAdmin: false, userRole: "agent" as UserRole });
       },
       updateToken: (token: string) => {
@@ -88,7 +86,6 @@ export const useAppStore = create<AppState>()(
         set({ token });
       },
       setUserRole: (role: UserRole) => {
-        setCookie(ROLE_COOKIE, role);
         set({ userRole: role });
       },
     }),

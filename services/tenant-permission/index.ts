@@ -7,7 +7,8 @@ export const tenantPermission = {
     const response = await httpClient.get<ResponseWrapper<TenantPermission[]>>(
       "/api/v1/tenant-permissions"
     );
-    return (response as unknown as ResponseWrapper<TenantPermission[]>).data;
+    const data = (response as unknown as ResponseWrapper<TenantPermission[]>).data;
+    return Array.isArray(data) ? data : [];
   },
 
   get: async (id: string): Promise<TenantPermission> => {

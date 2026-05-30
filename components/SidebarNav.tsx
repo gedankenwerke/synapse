@@ -13,16 +13,17 @@ export function SidebarNav() {
   const t = useTranslations("nav");
   const canSeePage = usePermissionStore((s) => s.canSeePage);
   const policies = usePermissionStore((s) => s.policies);
-  const userRole = useAppStore((s) => s.userRole);
+  const userActions = usePermissionStore((s) => s.userActions);
   const isSuperAdmin = useAppStore((s) => s.isSuperAdmin);
 
-  // Subscribe to policies and isSuperAdmin to trigger re-render when they change
+  // Subscribe to policies, userActions, and isSuperAdmin to trigger re-render when they change
   // canSeePage itself is a function reference that doesn't change, so we need
-  // these subscriptions to ensure the filter re-evaluates after policies load
+  // these subscriptions to ensure the filter re-evaluates after permissions load
   void policies;
+  void userActions;
   void isSuperAdmin;
 
-  const items = getNavItems(userRole);
+  const items = getNavItems();
 
   return (
     <AppShell.Section>

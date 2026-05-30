@@ -13,6 +13,7 @@ interface PermissionState {
 
   fetchPolicies: () => Promise<void>;
   fetchUserPermissions: () => Promise<void>;
+  refreshPermissions: () => Promise<void>;
   hasAction: (action: string) => boolean;
   hasPermission: (name: PolicyName) => boolean;
   isSuperAdminOnly: (name: PolicyName) => boolean;
@@ -31,7 +32,7 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
       const policies = await policy.list();
       set({ policies, isLoading: false });
     } catch (err) {
-      set({ error: String(err), isLoading: false });
+      set({ policies: [], error: String(err), isLoading: false });
     }
   },
 
@@ -62,8 +63,14 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
 
       set({ userActions: uniqueActions, isLoading: false });
     } catch (err) {
-      set({ error: String(err), isLoading: false });
+      set({ userActions: [], error: String(err), isLoading: false });
     }
+  },
+
+  refreshPermissions: async () => {
+    const { fetchPolicies, fetchUserPermissions } = get();
+    await fetchPolicies();
+    await fetchUserPermissions();
   },
 
   hasAction: (action: string) => {
@@ -82,7 +89,7 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
     if (policyItem.SuperAdminOnly) {
       return false;
     }
-    return true;
+    return get().userActions.includes(name);
   },
 
   isSuperAdminOnly: (name: PolicyName) => {
@@ -94,11 +101,10 @@ export const usePermissionStore = create<PermissionState>()((set, get) => ({
   canSeePage: (name: PolicyName) => {
     const { isSuperAdmin } = useAppStore.getState();
     if (isSuperAdmin) return true;
-    // Use API policies if available, fall back to local POLICY_CATALOG
     const policies = get().policies ?? [];
     const policyItem = policies.find((p) => p.Name === name) ?? POLICY_CATALOG[name];
     if (!policyItem) return false;
     if (policyItem.SuperAdminOnly) return false;
-    return true;
+    return get().userActions.includes(name);
   },
 }));

@@ -421,6 +421,9 @@
       "userUpdated": "User updated successfully",
       "userDeleted": "User deleted successfully"
     },
+    "userCreated": "User created successfully",
+    "userUpdated": "User updated successfully",
+    "userDeleted": "User deleted successfully",
     "viewUser": "View User",
     "colRole": "Role",
     "colFullName": "Full Name",
