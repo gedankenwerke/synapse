@@ -4,11 +4,19 @@ import { ResponseWrapper } from "@/types/response";
 
 export const tenant = {
   list: async (): Promise<Tenant[]> => {
-    const response = await httpClient.get<ResponseWrapper<Tenant[]>>(
+    const response = await httpClient.get<ResponseWrapper<{ Items: Tenant[] }>>(
       "/api/v1/tenants"
     );
-    const data = (response as unknown as ResponseWrapper<Tenant[]>).data;
-    return Array.isArray(data) ? data : [];
+    const data = (response as unknown as ResponseWrapper<{ Items: Tenant[] } | Tenant[]>).data;
+    // API returns { Items: Tenant[] } — handle both wrapped and direct array shapes
+    if (Array.isArray(data)) {
+      return data;
+    }
+    if (data && Array.isArray((data as { Items: Tenant[] }).Items)) {
+      return (data as { Items: Tenant[] }).Items;
+    }
+    console.warn("[tenant.list] Unexpected response data shape:", typeof data, data);
+    return [];
   },
 
   get: async (id: string): Promise<Tenant> => {

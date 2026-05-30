@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Container, Text, Loader, Center, Stack } from "@mantine/core";
+import { Container, Text, Loader, Center, Stack, Alert } from "@mantine/core";
+import { IconAlertCircle } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 import { useDebouncedValue } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -55,8 +56,13 @@ export default function UserManagementPage() {
   const isSuperAdmin = useAppStore((s) => s.isSuperAdmin);
 
   // ── Tenant data ──
-  const { data: tenants = [] } = useTenantsQuery();
-  const { data: tenantUsers = [] } = useTenantUsersQuery();
+  const tenantsQuery = useTenantsQuery();
+  const tenantUsersQuery = useTenantUsersQuery();
+  const tenants = tenantsQuery.data ?? [];
+  const tenantUsers = tenantUsersQuery.data ?? [];
+
+  // Debug: trace API state (remove after stabilizing)
+  console.log("[UserManagement] tenants:", tenants.length, "loading:", tenantsQuery.isLoading, "error:", tenantsQuery.error);
 
   // ── Tenant-scoped filtering ──
   const visibleTenantIds = getVisibleTenantIds(currentTenantId, tenants, isSuperAdmin);
@@ -78,15 +84,40 @@ export default function UserManagementPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch] = useDebouncedValue(searchQuery, 300);
 
-  // ── User data ──
-  const usersQuery = useUsersQuery(debouncedSearch);
-  const rawUsers = usersQuery.data?.pages.flatMap((p) => p.items) ?? [];
-  const users = rawUsers.map(mapApiUserToUserData);
+  // ── Roles & permissions (needed for user assignment enrichment) ──
+  const { data: roles = [] } = useTenantRolesQuery();
+  const { data: permissions = [] } = useTenantPermissionsQuery();
 
-  // Filter users by selected tenant
-  const filteredUsers = selectedTenantId
-    ? users.filter((u) => u.assignments?.some((a) => a.tenantId === selectedTenantId) || u.tenantId === selectedTenantId)
-    : users;
+  // ── User data (filtered by selected tenant at API level) ──
+  const usersQuery = useUsersQuery(debouncedSearch, selectedTenantId);
+  const rawUsers = usersQuery.data?.pages.flatMap((p) => p.items) ?? [];
+  const totalUserCount = usersQuery.data?.pages[0]?.total ?? 0;
+
+  // Build assignment maps from tenantUsers + roles for enrichment
+  const roleMap = new Map(roles.map((r) => [r.ID, r]));
+
+  const users: UserData[] = rawUsers.map((user) => {
+    const base = mapApiUserToUserData(user);
+    // Enrich with assignments from tenantUsers data
+    const userAssignments: AssignmentData[] = scopedTenantUsers
+      .filter((tu) => tu.UserID === user.id)
+      .map((tu) => {
+        const role = roleMap.get(tu.TenantRoleID);
+        const tenantName = tenantMap.get(tu.TenantID) ?? "";
+        return {
+          id: tu.ID,
+          tenantId: tu.TenantID,
+          tenantName,
+          roleId: tu.TenantRoleID,
+          roleName: role?.Name ?? "",
+          permissions: [], // permissions are loaded per-role on demand
+        };
+      });
+    return { ...base, assignments: userAssignments };
+  });
+
+  // Debug: trace user data flow
+  console.log("[UserManagement] selectedTenantId:", selectedTenantId, "rawUsers:", rawUsers.length, "enriched users:", users.length, "total:", totalUserCount);
 
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
@@ -95,10 +126,6 @@ export default function UserManagementPage() {
   const createTenantUser = useCreateTenantUser();
   const updateTenantUser = useUpdateTenantUser();
   const deleteTenantUser = useDeleteTenantUser();
-
-  // ── Roles & permissions for edit modal ──
-  const { data: roles = [] } = useTenantRolesQuery();
-  const { data: permissions = [] } = useTenantPermissionsQuery();
 
   // ── User modals ──
   const [viewOpened, { open: openView, close: closeView }] = useDisclosure(false);
@@ -174,6 +201,21 @@ export default function UserManagementPage() {
     );
   };
 
+  const handleChangePassword = (userId: string, newPassword: string) => {
+    updateUser.mutate(
+      { id: userId, data: { password: newPassword } },
+      {
+        onSuccess: () => {
+          notifications.show({ title: tc("success"), message: t("modal.passwordChanged"), color: "green" });
+        },
+        onError: (err: any) => {
+          const msg = err?.message || t("modal.passwordChangeFailed");
+          notifications.show({ title: tc("error"), message: msg, color: "red" });
+        },
+      }
+    );
+  };
+
   const handleDeleteUser = (user: UserData) => {
     setSelectedUser(user);
     openDelete();
@@ -228,9 +270,40 @@ export default function UserManagementPage() {
   const selectedTenantName = selectedTenantId ? (tenantMap.get(selectedTenantId) ?? "") : "";
   const selectedTenantUserCount = selectedTenantId ? (tenantUserCountMap.get(selectedTenantId) ?? 0) : 0;
 
-  // ── Guard: show loader or nothing while checking permissions ──
+  // ── Guard: show loader while checking permissions ──
   if (loading) return <Center mih="100vh"><Loader /></Center>;
   if (!allowed) return null;
+
+  // ── Data loading states ──
+  const tenantsLoading = tenantsQuery.isLoading || tenantUsersQuery.isLoading;
+  const tenantsError = tenantsQuery.error || tenantUsersQuery.error;
+
+  if (tenantsError) {
+    return (
+      <Container size="xl" py="md">
+        <Text fz="xl" fw={700} mb="md">{t("title")}</Text>
+        <Alert
+          icon={<IconAlertCircle size="1rem" />}
+          title={tc("error")}
+          color="red"
+          variant="filled"
+        >
+          {tenantsError instanceof Error ? tenantsError.message : t("tenants.error.loadFailed")}
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (tenantsLoading) {
+    return (
+      <Container size="xl" py="md">
+        <Text fz="xl" fw={700} mb="md">{t("title")}</Text>
+        <Center py="xl">
+          <Loader size="lg" />
+        </Center>
+      </Container>
+    );
+  }
 
   return (
     <Container size="xl" py="md">
@@ -257,14 +330,14 @@ export default function UserManagementPage() {
             onAddUser={openAdd}
           />
           <UserTable
-            data={filteredUsers}
+            data={users}
             isLoading={usersQuery.isLoading}
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDeleteUser}
           />
           <UserPagination
-            totalItems={filteredUsers.length}
+            totalItems={totalUserCount}
             hasNextPage={!!usersQuery.hasNextPage}
             isFetchingNextPage={usersQuery.isFetchingNextPage}
             fetchNextPage={usersQuery.fetchNextPage}
@@ -277,8 +350,8 @@ export default function UserManagementPage() {
       <DeleteTenantModal opened={deleteTenantOpened} onClose={closeDeleteTenant} onConfirm={handleDeleteTenantConfirm} tenantName={selectedTenant?.Name ?? ""} loading={deleteTenant.isPending} />
 
       {/* User modals */}
-      <ViewUserModal opened={viewOpened} onClose={closeView} user={selectedUser} />
-      <EditUserModal opened={editOpened} onClose={closeEdit} user={selectedUser} onSave={handleSave} loading={updateUser.isPending} tenants={scopedTenants} roles={roles} />
+      <ViewUserModal opened={viewOpened} onClose={closeView} user={selectedUser} onEditPassword={(user) => { setSelectedUser(user); openEdit(); }} />
+      <EditUserModal opened={editOpened} onClose={closeEdit} user={selectedUser} onSave={handleSave} onChangePassword={handleChangePassword} loading={updateUser.isPending} passwordLoading={updateUser.isPending} tenants={scopedTenants} roles={roles} />
       <DeleteConfirmModal opened={deleteOpened} onClose={closeDelete} onConfirm={handleDeleteConfirm} userName={selectedUser?.username ?? ""} loading={deleteUser.isPending} />
       <AddUserModal opened={addOpened} onClose={closeAdd} onSave={handleAddUser} loading={createUser.isPending} />
     </Container>

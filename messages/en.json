@@ -397,6 +397,7 @@
   },
   "userManagement": {
     "title": "User Management",
+    "password": "Password",
     "searchPlaceholder": "Search users...",
     "allStatus": "All Status",
     "addUser": "Add User",
@@ -511,7 +512,14 @@
       "permissionsLabel": "Permissions",
       "assign": "Assign",
       "passwordLabel": "Password",
-      "passwordPlaceholder": "Enter password"
+      "passwordPlaceholder": "Enter password",
+      "changePassword": "Change Password",
+      "newPasswordLabel": "New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPasswordLabel": "Confirm New Password",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "passwordChanged": "Password changed successfully",
+      "passwordChangeFailed": "Failed to change password"
     },
     "validation": {
       "fullNameRequired": "Full name is required",
@@ -520,7 +528,9 @@
       "roleRequired": "Role is required",
       "tenantRequired": "Tenant is required",
       "duplicateAssignment": "User is already assigned to this tenant",
-      "passwordRequired": "Password is required"
+      "passwordRequired": "Password is required",
+      "passwordMismatch": "Passwords do not match",
+      "passwordMinLength": "Password must be at least {min} characters"
     },
     "colUserInfo": "User",
     "colTenants": "Tenants & Roles",
@@ -561,6 +571,7 @@
     "deleteUser": "Delete User",
     "userDetails": "User Details",
     "noUsersInTenant": "No users in this tenant",
+    "noTenants": "No tenants found.",
     "tenants": {
       "title": "Tenants",
       "searchPlaceholder": "Search tenants...",

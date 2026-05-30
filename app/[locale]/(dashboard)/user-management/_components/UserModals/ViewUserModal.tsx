@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Modal, Stack, Text, Badge, Group, Button } from "@mantine/core";
+import { Modal, Stack, Text, Badge, Group, Button, PasswordInput, ActionIcon } from "@mantine/core";
+import { IconKey } from "@tabler/icons-react";
 import { formatThaiDate } from "../utils/formatDate";
 import type { UserData } from "@/services/user/types";
 
@@ -9,9 +10,10 @@ interface ViewUserModalProps {
   opened: boolean;
   onClose: () => void;
   user: UserData | null;
+  onEditPassword?: (user: UserData) => void;
 }
 
-export function ViewUserModal({ opened, onClose, user }: ViewUserModalProps) {
+export function ViewUserModal({ opened, onClose, user, onEditPassword }: ViewUserModalProps) {
   const t = useTranslations("userManagement");
   const tc = useTranslations("common");
 
@@ -44,6 +46,30 @@ export function ViewUserModal({ opened, onClose, user }: ViewUserModalProps) {
             <Text fw={500}>—</Text>
           )}
         </div>
+
+        <Group justify="space-between" align="flex-end">
+          <div style={{ flex: 1 }}>
+            <Text size="xs" c="dimmed">{t("password")}</Text>
+            <PasswordInput
+              value="••••••••"
+              readOnly
+              variant="filled"
+              radius="sm"
+            />
+          </div>
+          {onEditPassword && (
+            <ActionIcon
+              variant="subtle"
+              color="orange"
+              size="lg"
+              onClick={() => onEditPassword(user)}
+              aria-label={t("modal.changePassword")}
+              mt="xs"
+            >
+              <IconKey size={18} />
+            </ActionIcon>
+          )}
+        </Group>
 
         <div>
           <Text size="xs" c="dimmed">{t("colCreated")}</Text>

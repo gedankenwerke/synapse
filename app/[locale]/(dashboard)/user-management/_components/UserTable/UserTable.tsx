@@ -10,8 +10,9 @@ import {
   ScrollArea,
   Center,
   Loader,
+  Stack,
 } from "@mantine/core";
-import { IconEye, IconPencil, IconTrash } from "@tabler/icons-react";
+import { IconEye, IconPencil, IconTrash, IconUsers } from "@tabler/icons-react";
 import { getColumns } from "./columns";
 import { ActionGuard } from "@/components/ActionGuard";
 import { formatThaiDate } from "../utils/formatDate";
@@ -41,6 +42,17 @@ export function UserTable({
     return (
       <Center py="xl">
         <Loader />
+      </Center>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <Center py="xl">
+        <Stack align="center" gap="xs">
+          <IconUsers size={48} stroke={1} opacity={0.4} />
+          <Text c="dimmed" size="lg">{t("noUsersInTenant")}</Text>
+        </Stack>
       </Center>
     );
   }

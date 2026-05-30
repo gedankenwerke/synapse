@@ -45,9 +45,9 @@ export interface CreateUserPayload {
 }
 
 export interface UpdateUserPayload {
-  username: string;
+  username?: string;
   password?: string;
-  tenant_id: string;
+  tenant_id?: string;
 }
 
 export interface DeleteUserResponse {

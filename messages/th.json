@@ -397,6 +397,7 @@
   },
   "userManagement": {
     "title": "จัดการผู้ใช้",
+    "password": "รหัสผ่าน",
     "searchPlaceholder": "ค้นหาผู้ใช้...",
     "allStatus": "สถานะทั้งหมด",
     "addUser": "เพิ่มผู้ใช้",
@@ -511,7 +512,14 @@
       "permissionsLabel": "สิทธิ์",
       "assign": "มอบหมาย",
       "passwordLabel": "รหัสผ่าน",
-      "passwordPlaceholder": "กรอกรหัสผ่าน"
+      "passwordPlaceholder": "กรอกรหัสผ่าน",
+      "changePassword": "เปลี่ยนรหัสผ่าน",
+      "newPasswordLabel": "รหัสผ่านใหม่",
+      "newPasswordPlaceholder": "กรอกรหัสผ่านใหม่",
+      "confirmPasswordLabel": "ยืนยันรหัสผ่านใหม่",
+      "confirmPasswordPlaceholder": "ยืนยันรหัสผ่านอีกครั้ง",
+      "passwordChanged": "เปลี่ยนรหัสผ่านสำเร็จ",
+      "passwordChangeFailed": "เปลี่ยนรหัสผ่านไม่สำเร็จ"
     },
     "validation": {
       "fullNameRequired": "ต้องระบุชื่อ-นามสกุล",
@@ -520,7 +528,9 @@
       "roleRequired": "ต้องเลือกบทบาท",
       "tenantRequired": "ต้องระบุผู้เช่า",
       "duplicateAssignment": "ผู้ใช้ถูกมอบหมายให้ผู้เช่านี้แล้ว",
-      "passwordRequired": "ต้องระบุรหัสผ่าน"
+      "passwordRequired": "ต้องระบุรหัสผ่าน",
+      "passwordMismatch": "รหัสผ่านไม่ตรงกัน",
+      "passwordMinLength": "รหัสผ่านต้องมีอย่างน้อย {min} ตัวอักษร"
     },
     "colUserInfo": "ผู้ใช้",
     "colTenants": "ผู้เช่าและบทบาท",
@@ -561,6 +571,7 @@
     "deleteUser": "ลบผู้ใช้",
     "userDetails": "รายละเอียดผู้ใช้",
     "noUsersInTenant": "ไม่มีผู้ใช้ในผู้เช่านี้",
+    "noTenants": "ไม่พบผู้เช่า",
     "tenants": {
       "title": "ผู้เช่า",
       "searchPlaceholder": "ค้นหาผู้เช่า...",

@@ -6,10 +6,15 @@ import {
   Modal,
   SimpleGrid,
   TextInput,
+  PasswordInput,
   Select,
   Button,
   Group,
+  Divider,
+  Stack,
+  Text,
 } from "@mantine/core";
+import { IconKey } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import type { UserData, AssignmentData } from "@/services/user/types";
 import type { Tenant } from "@/services/tenant/types";
@@ -17,9 +22,10 @@ import type { TenantRole } from "@/services/tenant-role/types";
 
 interface EditUserFormValues {
   username: string;
-  password: string;
   tenantId: string;
   roleId: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
 interface EditUserModalProps {
@@ -27,17 +33,23 @@ interface EditUserModalProps {
   onClose: () => void;
   user: UserData | null;
   onSave: (updatedUser: UserData, updatedAssignments: AssignmentData[]) => void;
+  onChangePassword?: (userId: string, newPassword: string) => void;
   loading?: boolean;
+  passwordLoading?: boolean;
   tenants: Tenant[];
   roles: TenantRole[];
 }
+
+const MIN_PASSWORD_LENGTH = 6;
 
 export function EditUserModal({
   opened,
   onClose,
   user,
   onSave,
+  onChangePassword,
   loading,
+  passwordLoading,
   tenants,
   roles,
 }: EditUserModalProps) {
@@ -47,13 +59,26 @@ export function EditUserModal({
   const form = useForm<EditUserFormValues>({
     initialValues: {
       username: "",
-      password: "",
       tenantId: "",
       roleId: "",
+      newPassword: "",
+      confirmPassword: "",
     },
     validate: {
       username: (val) =>
         val.trim().length > 0 ? null : t("validation.usernameRequired"),
+      confirmPassword: (val, values) => {
+        if (!values.newPassword && !val) return null; // both empty = no change
+        if (values.newPassword && !val) return t("validation.passwordMismatch");
+        if (val !== values.newPassword) return t("validation.passwordMismatch");
+        return null;
+      },
+      newPassword: (val) => {
+        if (!val) return null; // empty = no change
+        if (val.length < MIN_PASSWORD_LENGTH)
+          return t("validation.passwordMinLength", { min: MIN_PASSWORD_LENGTH });
+        return null;
+      },
     },
   });
 
@@ -63,9 +88,10 @@ export function EditUserModal({
       const firstAssignment = user.assignments[0];
       form.setValues({
         username: user.username,
-        password: "",
         tenantId: firstAssignment?.tenantId ?? "",
         roleId: firstAssignment?.roleId ?? "",
+        newPassword: "",
+        confirmPassword: "",
       });
       form.resetDirty();
     }
@@ -126,6 +152,16 @@ export function EditUserModal({
     onSave(updatedUser, updatedAssignments);
   };
 
+  const handleChangePassword = () => {
+    if (!user) return;
+    const { newPassword, confirmPassword } = form.getValues();
+    if (!newPassword || newPassword !== confirmPassword) {
+      form.setFieldError("confirmPassword", t("validation.passwordMismatch"));
+      return;
+    }
+    onChangePassword?.(user.id, newPassword);
+  };
+
   return (
     <Modal opened={opened} onClose={onClose} title={t("editUser")} centered size="lg">
       <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -134,12 +170,6 @@ export function EditUserModal({
             label={t("modal.usernameLabel")}
             placeholder={t("modal.usernamePlaceholder")}
             {...form.getInputProps("username")}
-          />
-          <TextInput
-            label={t("modal.passwordLabel")}
-            placeholder="Leave blank to keep current"
-            type="password"
-            {...form.getInputProps("password")}
           />
           <Select
             label={t("modal.tenantLabel")}
@@ -157,6 +187,41 @@ export function EditUserModal({
             searchable
           />
         </SimpleGrid>
+
+        <Divider my="lg" labelPosition="center" label={
+          <Group gap="xs">
+            <IconKey size={14} />
+            <Text size="sm" fw={500}>{t("modal.changePassword")}</Text>
+          </Group>
+        } />
+
+        <Stack gap="sm">
+          <SimpleGrid cols={2}>
+            <PasswordInput
+              label={t("modal.newPasswordLabel")}
+              placeholder={t("modal.newPasswordPlaceholder")}
+              {...form.getInputProps("newPassword")}
+            />
+            <PasswordInput
+              label={t("modal.confirmPasswordLabel")}
+              placeholder={t("modal.confirmPasswordPlaceholder")}
+              {...form.getInputProps("confirmPassword")}
+            />
+          </SimpleGrid>
+          <Group justify="flex-end">
+            <Button
+              variant="light"
+              color="orange"
+              leftSection={<IconKey size={16} />}
+              onClick={handleChangePassword}
+              loading={passwordLoading}
+              disabled={!form.getValues().newPassword}
+            >
+              {t("modal.changePassword")}
+            </Button>
+          </Group>
+        </Stack>
+
         <Group justify="flex-end" mt="xl">
           <Button variant="default" onClick={onClose} disabled={loading}>
             {tc("cancel")}
